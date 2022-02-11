@@ -3,7 +3,6 @@ import 'package:icure_dart_sdk/api.dart' as iCureApi;
 import 'package:icure_dart_sdk/crypto/crypto.dart';
 import 'package:icure_medical_device_dart_sdk/api.dart';
 import 'package:icure_medical_device_dart_sdk/medtech_api.dart';
-import 'package:icure_medical_device_dart_sdk/utils/functional_utils.dart';
 import 'package:icure_medical_device_dart_sdk/mappers/patient.dart';
 import 'package:uuid/uuid.dart';
 
