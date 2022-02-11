@@ -24,7 +24,7 @@ import 'property.dart';
 
 final uuid = Uuid();
 
-extension PatientDtoMapper on PatientDto {
+extension PatientDtoMapper on DecryptedPatientDto {
   Patient toPatient() =>
       Patient(
           id: this.id,
@@ -36,7 +36,7 @@ extension PatientDtoMapper on PatientDto {
           addresses: this.addresses.map((it) => it.toAddress()).toList(),
           mergedIds: this.mergedIds,
           active: this.active,
-          deactivationReason: this.deactivationReason?.toDeactivationReason() ?? PatientDeactivationReasonEnum.none,
+          deactivationReason: this.deactivationReason.toDeactivationReason(),
           partnerships: this.partnerships.map((it) => it.toPartnership()).toList(),
           patientHealthCareParties: this.patientHealthCareParties.map((it) => it.toPatientHealthCareParty()).toList(),
           patientProfessions: this.patientProfessions.map((it) => it.toCodingReference()).toList(),
@@ -87,7 +87,7 @@ extension PatientDtoMapper on PatientDto {
       );
 }
 extension PatientDtoDeactivationReasonEnumMapper on PatientDtoDeactivationReasonEnum {
-  PatientDeactivationReasonEnum toDeactivationReason() => PatientDeactivationReasonEnum.values.firstWhere((it) => it.value == this.value);
+  PatientDeactivationReasonEnum toDeactivationReason() => PatientDeactivationReasonEnum.values.firstWhere((it) => it.value == this.value, orElse: () => PatientDeactivationReasonEnum.none);
 }
 extension PatientDtoGenderEnumMapper on PatientDtoGenderEnum {
   PatientGenderEnum toGender() => PatientGenderEnum.values.firstWhere((it) => it.value == this.value);
@@ -100,8 +100,8 @@ extension PatientDtoPersonalStatusEnumMapper on PatientDtoPersonalStatusEnum {
 }
 
 extension PatientMapper on Patient {
-  PatientDto toPatientDto() =>
-      PatientDto(
+  DecryptedPatientDto toPatientDto() =>
+      DecryptedPatientDto(
         id: this.id?.also((it) {
           if (!Uuid.isValidUUID(fromString: it)) {
             throw FormatException("Invalid id, id must be a valid UUID");

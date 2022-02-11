@@ -7,10 +7,11 @@ class MedTechApi {
   final UserApi userApi;
   final PatientApi patientApi;
   final HealthElementApi healthElementApi;
+  final DeviceApi deviceApi;
   final HealthcarePartyApi healthcarePartyApi;
   final LocalCrypto localCrypto;
 
-  MedTechApi(this.userApi, this.patientApi, this.healthElementApi, this.healthcarePartyApi, this.localCrypto);
+  MedTechApi(this.userApi, this.patientApi, this.healthElementApi, this.deviceApi, this.healthcarePartyApi, this.localCrypto);
 }
 
 class MedTechApiBuilder {
@@ -47,6 +48,7 @@ class MedTechApiBuilder {
       UserApi(client),
       PatientApi(client),
       HealthElementApi(client),
+      DeviceApi(client),
       hcpApi,
       LocalCrypto(hcpApi, rsaKeyPairs)
     );
