@@ -11,6 +11,14 @@ import 'package:icure_dart_sdk/api.dart';
 import 'package:icure_medical_device_dart_sdk/api.dart';
 
 extension AuthenticationTokenDtoMapper on AuthenticationTokenDto {
+  AuthenticationToken toAuthenticationToken() => AuthenticationToken(
+    token: this.token,
+    creationTime: this.creationTime,
+    validity: this.validity,
+  );
+}
+
+extension AuthenticationTokenMapper on AuthenticationToken {
   AuthenticationTokenDto toAuthenticationTokenDto() => AuthenticationTokenDto(
         token: this.token,
         creationTime: this.creationTime,
@@ -18,10 +26,3 @@ extension AuthenticationTokenDtoMapper on AuthenticationTokenDto {
       );
 }
 
-extension AuthenticationTokenMapper on AuthenticationToken {
-  AuthenticationToken toAuthenticationToken() => AuthenticationToken(
-        token: this.token,
-        creationTime: this.creationTime,
-        validity: this.validity,
-      );
-}
