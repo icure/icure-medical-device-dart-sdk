@@ -1,17 +1,22 @@
-#
-# AUTO-GENERATED FILE, DO NOT MODIFY!
-#
-
-name: 'openapi'
+name: 'icure_medical_device_dart_sdk'
+description: 'icure high level sdk for medical devices'
 version: '1.0.0'
-description: 'OpenAPI API client'
-homepage: 'homepage'
+
+#homepage: 'homepage'
+
 environment:
   sdk: '>=2.12.0 <3.0.0'
+
 dependencies:
   http: '>=0.13.0 <0.14.0'
   intl: '^0.17.0'
-  json_serializable: ^6.1.4
-  meta: '^1.1.8'
+  meta: '^1.7.0'
+  uuid: ^3.0.5
+  icure_dart_sdk:
+    git:
+      url: https://github.com/icure-io/icure-dart-sdk.git
+      ref: master
+
 dev_dependencies:
-  test: '>=1.16.0 <1.18.0'
+  lints: ^1.0.0
+  test: ^1.20.1

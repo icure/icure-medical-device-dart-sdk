@@ -8,7 +8,7 @@
 // ignore_for_file: constant_identifier_names
 // ignore_for_file: lines_longer_than_80_chars
 
-library openapi.api;
+library icure_medical_device_dart_sdk.api;
 
 import 'dart:async';
 import 'dart:convert';
@@ -17,7 +17,6 @@ import 'dart:io';
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 import 'package:meta/meta.dart';
-import 'package:json_annotation/json_annotation.dart';
 
 part 'api_client.dart';
 part 'api_helper.dart';
