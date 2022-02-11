@@ -24,7 +24,7 @@ import 'property.dart';
 
 final uuid = Uuid();
 
-extension PatientDtoMapper on PatientDto {
+extension PatientDtoMapper on DecryptedPatientDto {
   Patient toPatient() =>
       Patient(
           id: this.id,
@@ -100,8 +100,8 @@ extension PatientDtoPersonalStatusEnumMapper on PatientDtoPersonalStatusEnum {
 }
 
 extension PatientMapper on Patient {
-  PatientDto toPatientDto() =>
-      PatientDto(
+  DecryptedPatientDto toPatientDto() =>
+      DecryptedPatientDto(
         id: this.id?.also((it) {
           if (!Uuid.isValidUUID(fromString: it)) {
             throw FormatException("Invalid id, id must be a valid UUID");
