@@ -34,7 +34,7 @@ class MedTechApiBuilder {
     _password = newPassword;
   }
 
-  void addKeyPair(String keyId, RSAPrivateKey privateKey, RSAPublicKey publicKey){
+  void addKeyPair(String keyId, RSAPrivateKey privateKey){
     var keyPair = RSAKeypair(privateKey);
     rsaKeyPairs[keyId] = keyPair;
   }
