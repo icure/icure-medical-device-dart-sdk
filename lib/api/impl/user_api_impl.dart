@@ -3,6 +3,9 @@ import 'package:icure_medical_device_dart_sdk/mappers/user.dart';
 
 import '../../api.dart';
 import '../../medtech_api.dart';
+import '../../mappers/filter.dart';
+import '../../utils/functional_utils.dart';
+
 import 'package:uuid/uuid.dart';
 import 'package:uuid/uuid_util.dart';
 
