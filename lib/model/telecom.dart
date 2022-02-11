@@ -37,17 +37,16 @@ class Telecom {
   String? telecomDescription;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is Telecom &&
-     other.telecomType == telecomType &&
-     other.telecomNumber == telecomNumber &&
-     other.telecomDescription == telecomDescription;
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Telecom && other.telecomType == telecomType && other.telecomNumber == telecomNumber && other.telecomDescription == telecomDescription;
 
   @override
   int get hashCode =>
-    // ignore: unnecessary_parenthesis
-    (telecomType == null ? 0 : telecomType!.hashCode) +
-    (telecomNumber == null ? 0 : telecomNumber!.hashCode) +
-    (telecomDescription == null ? 0 : telecomDescription!.hashCode);
+      // ignore: unnecessary_parenthesis
+      (telecomType == null ? 0 : telecomType!.hashCode) +
+      (telecomNumber == null ? 0 : telecomNumber!.hashCode) +
+      (telecomDescription == null ? 0 : telecomDescription!.hashCode);
 
   @override
   String toString() => 'Telecom[telecomType=$telecomType, telecomNumber=$telecomNumber, telecomDescription=$telecomDescription]';
@@ -93,7 +92,10 @@ class Telecom {
     return null;
   }
 
-  static List<Telecom>? listFromJson(dynamic json, {bool growable = false,}) {
+  static List<Telecom>? listFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final result = <Telecom>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
@@ -121,12 +123,18 @@ class Telecom {
   }
 
   // maps a json object with a list of Telecom-objects as value to a dart map
-  static Map<String, List<Telecom>> mapListFromJson(dynamic json, {bool growable = false,}) {
+  static Map<String, List<Telecom>> mapListFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final map = <String, List<Telecom>>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
       for (final entry in json.entries) {
-        final value = Telecom.listFromJson(entry.value, growable: growable,);
+        final value = Telecom.listFromJson(
+          entry.value,
+          growable: growable,
+        );
         if (value != null) {
           map[entry.key] = value;
         }
@@ -136,10 +144,8 @@ class Telecom {
   }
 
   /// The list of required keys that must be present in a JSON.
-  static const requiredKeys = <String>{
-  };
+  static const requiredKeys = <String>{};
 }
-
 
 class TelecomTelecomTypeEnum {
   /// Instantiate a new enum with the provided [value].
@@ -188,7 +194,10 @@ class TelecomTelecomTypeEnum {
 
   static TelecomTelecomTypeEnum? fromJson(dynamic value) => TelecomTelecomTypeEnumTypeTransformer().decode(value);
 
-  static List<TelecomTelecomTypeEnum>? listFromJson(dynamic json, {bool growable = false,}) {
+  static List<TelecomTelecomTypeEnum>? listFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final result = <TelecomTelecomTypeEnum>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
@@ -222,20 +231,34 @@ class TelecomTelecomTypeEnumTypeTransformer {
   TelecomTelecomTypeEnum? decode(dynamic data, {bool allowNull = true}) {
     if (data != null) {
       switch (data.toString()) {
-        case r'mobile': return TelecomTelecomTypeEnum.mobile;
-        case r'phone': return TelecomTelecomTypeEnum.phone;
-        case r'email': return TelecomTelecomTypeEnum.email;
-        case r'fax': return TelecomTelecomTypeEnum.fax;
-        case r'skype': return TelecomTelecomTypeEnum.skype;
-        case r'im': return TelecomTelecomTypeEnum.im;
-        case r'medibridge': return TelecomTelecomTypeEnum.medibridge;
-        case r'ehealthbox': return TelecomTelecomTypeEnum.ehealthbox;
-        case r'apicrypt': return TelecomTelecomTypeEnum.apicrypt;
-        case r'web': return TelecomTelecomTypeEnum.web;
-        case r'print': return TelecomTelecomTypeEnum.print;
-        case r'disk': return TelecomTelecomTypeEnum.disk;
-        case r'other': return TelecomTelecomTypeEnum.other;
-        case r'pager': return TelecomTelecomTypeEnum.pager;
+        case r'mobile':
+          return TelecomTelecomTypeEnum.mobile;
+        case r'phone':
+          return TelecomTelecomTypeEnum.phone;
+        case r'email':
+          return TelecomTelecomTypeEnum.email;
+        case r'fax':
+          return TelecomTelecomTypeEnum.fax;
+        case r'skype':
+          return TelecomTelecomTypeEnum.skype;
+        case r'im':
+          return TelecomTelecomTypeEnum.im;
+        case r'medibridge':
+          return TelecomTelecomTypeEnum.medibridge;
+        case r'ehealthbox':
+          return TelecomTelecomTypeEnum.ehealthbox;
+        case r'apicrypt':
+          return TelecomTelecomTypeEnum.apicrypt;
+        case r'web':
+          return TelecomTelecomTypeEnum.web;
+        case r'print':
+          return TelecomTelecomTypeEnum.print;
+        case r'disk':
+          return TelecomTelecomTypeEnum.disk;
+        case r'other':
+          return TelecomTelecomTypeEnum.other;
+        case r'pager':
+          return TelecomTelecomTypeEnum.pager;
         default:
           if (!allowNull) {
             throw ArgumentError('Unknown enum value to decode: $data');
@@ -248,5 +271,3 @@ class TelecomTelecomTypeEnumTypeTransformer {
   /// Singleton [TelecomTelecomTypeEnumTypeTransformer] instance.
   static TelecomTelecomTypeEnumTypeTransformer? _instance;
 }
-
-

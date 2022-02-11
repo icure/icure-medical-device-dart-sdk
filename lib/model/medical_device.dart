@@ -193,56 +193,59 @@ class MedicalDevice {
   SystemMetaDataOwner? systemMetaData;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is MedicalDevice &&
-     other.id == id &&
-     other.rev == rev &&
-     other.deletionDate == deletionDate &&
-     other.identifiers == identifiers &&
-     other.created == created &&
-     other.modified == modified &&
-     other.author == author &&
-     other.responsible == responsible &&
-     other.labels == labels &&
-     other.codes == codes &&
-     other.endOfLife == endOfLife &&
-     other.externalId == externalId &&
-     other.name == name &&
-     other.type == type &&
-     other.brand == brand &&
-     other.model == model &&
-     other.serialNumber == serialNumber &&
-     other.parentId == parentId &&
-     other.picture == picture &&
-     other.properties == properties &&
-     other.systemMetaData == systemMetaData;
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is MedicalDevice &&
+          other.id == id &&
+          other.rev == rev &&
+          other.deletionDate == deletionDate &&
+          other.identifiers == identifiers &&
+          other.created == created &&
+          other.modified == modified &&
+          other.author == author &&
+          other.responsible == responsible &&
+          other.labels == labels &&
+          other.codes == codes &&
+          other.endOfLife == endOfLife &&
+          other.externalId == externalId &&
+          other.name == name &&
+          other.type == type &&
+          other.brand == brand &&
+          other.model == model &&
+          other.serialNumber == serialNumber &&
+          other.parentId == parentId &&
+          other.picture == picture &&
+          other.properties == properties &&
+          other.systemMetaData == systemMetaData;
 
   @override
   int get hashCode =>
-    // ignore: unnecessary_parenthesis
-    (id == null ? 0 : id!.hashCode) +
-    (rev == null ? 0 : rev!.hashCode) +
-    (deletionDate == null ? 0 : deletionDate!.hashCode) +
-    (identifiers.hashCode) +
-    (created == null ? 0 : created!.hashCode) +
-    (modified == null ? 0 : modified!.hashCode) +
-    (author == null ? 0 : author!.hashCode) +
-    (responsible == null ? 0 : responsible!.hashCode) +
-    (labels.hashCode) +
-    (codes.hashCode) +
-    (endOfLife == null ? 0 : endOfLife!.hashCode) +
-    (externalId == null ? 0 : externalId!.hashCode) +
-    (name == null ? 0 : name!.hashCode) +
-    (type == null ? 0 : type!.hashCode) +
-    (brand == null ? 0 : brand!.hashCode) +
-    (model == null ? 0 : model!.hashCode) +
-    (serialNumber == null ? 0 : serialNumber!.hashCode) +
-    (parentId == null ? 0 : parentId!.hashCode) +
-    (picture.hashCode) +
-    (properties.hashCode) +
-    (systemMetaData == null ? 0 : systemMetaData!.hashCode);
+      // ignore: unnecessary_parenthesis
+      (id == null ? 0 : id!.hashCode) +
+      (rev == null ? 0 : rev!.hashCode) +
+      (deletionDate == null ? 0 : deletionDate!.hashCode) +
+      (identifiers.hashCode) +
+      (created == null ? 0 : created!.hashCode) +
+      (modified == null ? 0 : modified!.hashCode) +
+      (author == null ? 0 : author!.hashCode) +
+      (responsible == null ? 0 : responsible!.hashCode) +
+      (labels.hashCode) +
+      (codes.hashCode) +
+      (endOfLife == null ? 0 : endOfLife!.hashCode) +
+      (externalId == null ? 0 : externalId!.hashCode) +
+      (name == null ? 0 : name!.hashCode) +
+      (type == null ? 0 : type!.hashCode) +
+      (brand == null ? 0 : brand!.hashCode) +
+      (model == null ? 0 : model!.hashCode) +
+      (serialNumber == null ? 0 : serialNumber!.hashCode) +
+      (parentId == null ? 0 : parentId!.hashCode) +
+      (picture.hashCode) +
+      (properties.hashCode) +
+      (systemMetaData == null ? 0 : systemMetaData!.hashCode);
 
   @override
-  String toString() => 'MedicalDevice[id=$id, rev=$rev, deletionDate=$deletionDate, identifiers=$identifiers, created=$created, modified=$modified, author=$author, responsible=$responsible, labels=$labels, codes=$codes, endOfLife=$endOfLife, externalId=$externalId, name=$name, type=$type, brand=$brand, model=$model, serialNumber=$serialNumber, parentId=$parentId, picture=$picture, properties=$properties, systemMetaData=$systemMetaData]';
+  String toString() =>
+      'MedicalDevice[id=$id, rev=$rev, deletionDate=$deletionDate, identifiers=$identifiers, created=$created, modified=$modified, author=$author, responsible=$responsible, labels=$labels, codes=$codes, endOfLife=$endOfLife, externalId=$externalId, name=$name, type=$type, brand=$brand, model=$model, serialNumber=$serialNumber, parentId=$parentId, picture=$picture, properties=$properties, systemMetaData=$systemMetaData]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -255,7 +258,7 @@ class MedicalDevice {
     if (deletionDate != null) {
       json[r'deletionDate'] = deletionDate;
     }
-      json[r'identifiers'] = identifiers;
+    json[r'identifiers'] = identifiers;
     if (created != null) {
       json[r'created'] = created;
     }
@@ -268,8 +271,8 @@ class MedicalDevice {
     if (responsible != null) {
       json[r'responsible'] = responsible;
     }
-      json[r'labels'] = labels.toList();
-      json[r'codes'] = codes.toList();
+    json[r'labels'] = labels.toList();
+    json[r'codes'] = codes.toList();
     if (endOfLife != null) {
       json[r'endOfLife'] = endOfLife;
     }
@@ -294,8 +297,8 @@ class MedicalDevice {
     if (parentId != null) {
       json[r'parentId'] = parentId;
     }
-      json[r'picture'] = picture;
-      json[r'properties'] = properties.toList();
+    json[r'picture'] = picture;
+    json[r'properties'] = properties.toList();
     if (systemMetaData != null) {
       json[r'systemMetaData'] = systemMetaData;
     }
@@ -339,9 +342,7 @@ class MedicalDevice {
         model: mapValueOfType<String>(json, r'model'),
         serialNumber: mapValueOfType<String>(json, r'serialNumber'),
         parentId: mapValueOfType<String>(json, r'parentId'),
-        picture: json[r'picture'] is List
-            ? (json[r'picture'] as List).cast<String>()
-            : const [],
+        picture: json[r'picture'] is List ? (json[r'picture'] as List).cast<String>() : const [],
         properties: Property.listFromJson(json[r'properties'])!.toSet(),
         systemMetaData: SystemMetaDataOwner.fromJson(json[r'systemMetaData']),
       );
@@ -349,7 +350,10 @@ class MedicalDevice {
     return null;
   }
 
-  static List<MedicalDevice>? listFromJson(dynamic json, {bool growable = false,}) {
+  static List<MedicalDevice>? listFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final result = <MedicalDevice>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
@@ -377,12 +381,18 @@ class MedicalDevice {
   }
 
   // maps a json object with a list of MedicalDevice-objects as value to a dart map
-  static Map<String, List<MedicalDevice>> mapListFromJson(dynamic json, {bool growable = false,}) {
+  static Map<String, List<MedicalDevice>> mapListFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final map = <String, List<MedicalDevice>>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
       for (final entry in json.entries) {
-        final value = MedicalDevice.listFromJson(entry.value, growable: growable,);
+        final value = MedicalDevice.listFromJson(
+          entry.value,
+          growable: growable,
+        );
         if (value != null) {
           map[entry.key] = value;
         }
@@ -399,4 +409,3 @@ class MedicalDevice {
     'properties',
   };
 }
-

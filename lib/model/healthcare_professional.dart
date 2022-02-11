@@ -178,54 +178,57 @@ class HealthcareProfessional {
   SystemMetaDataOwner? systemMetaData;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is HealthcareProfessional &&
-     other.id == id &&
-     other.rev == rev &&
-     other.created == created &&
-     other.modified == modified &&
-     other.deletionDate == deletionDate &&
-     other.name == name &&
-     other.lastName == lastName &&
-     other.firstName == firstName &&
-     other.names == names &&
-     other.gender == gender &&
-     other.civility == civility &&
-     other.speciality == speciality &&
-     other.parentId == parentId &&
-     other.addresses == addresses &&
-     other.languages == languages &&
-     other.picture == picture &&
-     other.specialityCodes == specialityCodes &&
-     other.notes == notes &&
-     other.properties == properties &&
-     other.systemMetaData == systemMetaData;
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is HealthcareProfessional &&
+          other.id == id &&
+          other.rev == rev &&
+          other.created == created &&
+          other.modified == modified &&
+          other.deletionDate == deletionDate &&
+          other.name == name &&
+          other.lastName == lastName &&
+          other.firstName == firstName &&
+          other.names == names &&
+          other.gender == gender &&
+          other.civility == civility &&
+          other.speciality == speciality &&
+          other.parentId == parentId &&
+          other.addresses == addresses &&
+          other.languages == languages &&
+          other.picture == picture &&
+          other.specialityCodes == specialityCodes &&
+          other.notes == notes &&
+          other.properties == properties &&
+          other.systemMetaData == systemMetaData;
 
   @override
   int get hashCode =>
-    // ignore: unnecessary_parenthesis
-    (id == null ? 0 : id!.hashCode) +
-    (rev == null ? 0 : rev!.hashCode) +
-    (created == null ? 0 : created!.hashCode) +
-    (modified == null ? 0 : modified!.hashCode) +
-    (deletionDate == null ? 0 : deletionDate!.hashCode) +
-    (name == null ? 0 : name!.hashCode) +
-    (lastName == null ? 0 : lastName!.hashCode) +
-    (firstName == null ? 0 : firstName!.hashCode) +
-    (names.hashCode) +
-    (gender == null ? 0 : gender!.hashCode) +
-    (civility == null ? 0 : civility!.hashCode) +
-    (speciality == null ? 0 : speciality!.hashCode) +
-    (parentId == null ? 0 : parentId!.hashCode) +
-    (addresses.hashCode) +
-    (languages.hashCode) +
-    (picture == null ? 0 : picture!.hashCode) +
-    (specialityCodes.hashCode) +
-    (notes == null ? 0 : notes!.hashCode) +
-    (properties.hashCode) +
-    (systemMetaData == null ? 0 : systemMetaData!.hashCode);
+      // ignore: unnecessary_parenthesis
+      (id == null ? 0 : id!.hashCode) +
+      (rev == null ? 0 : rev!.hashCode) +
+      (created == null ? 0 : created!.hashCode) +
+      (modified == null ? 0 : modified!.hashCode) +
+      (deletionDate == null ? 0 : deletionDate!.hashCode) +
+      (name == null ? 0 : name!.hashCode) +
+      (lastName == null ? 0 : lastName!.hashCode) +
+      (firstName == null ? 0 : firstName!.hashCode) +
+      (names.hashCode) +
+      (gender == null ? 0 : gender!.hashCode) +
+      (civility == null ? 0 : civility!.hashCode) +
+      (speciality == null ? 0 : speciality!.hashCode) +
+      (parentId == null ? 0 : parentId!.hashCode) +
+      (addresses.hashCode) +
+      (languages.hashCode) +
+      (picture == null ? 0 : picture!.hashCode) +
+      (specialityCodes.hashCode) +
+      (notes == null ? 0 : notes!.hashCode) +
+      (properties.hashCode) +
+      (systemMetaData == null ? 0 : systemMetaData!.hashCode);
 
   @override
-  String toString() => 'HealthcareProfessional[id=$id, rev=$rev, created=$created, modified=$modified, deletionDate=$deletionDate, name=$name, lastName=$lastName, firstName=$firstName, names=$names, gender=$gender, civility=$civility, speciality=$speciality, parentId=$parentId, addresses=$addresses, languages=$languages, picture=$picture, specialityCodes=$specialityCodes, notes=$notes, properties=$properties, systemMetaData=$systemMetaData]';
+  String toString() =>
+      'HealthcareProfessional[id=$id, rev=$rev, created=$created, modified=$modified, deletionDate=$deletionDate, name=$name, lastName=$lastName, firstName=$firstName, names=$names, gender=$gender, civility=$civility, speciality=$speciality, parentId=$parentId, addresses=$addresses, languages=$languages, picture=$picture, specialityCodes=$specialityCodes, notes=$notes, properties=$properties, systemMetaData=$systemMetaData]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -253,7 +256,7 @@ class HealthcareProfessional {
     if (firstName != null) {
       json[r'firstName'] = firstName;
     }
-      json[r'names'] = names;
+    json[r'names'] = names;
     if (gender != null) {
       json[r'gender'] = gender;
     }
@@ -266,16 +269,16 @@ class HealthcareProfessional {
     if (parentId != null) {
       json[r'parentId'] = parentId;
     }
-      json[r'addresses'] = addresses;
-      json[r'languages'] = languages;
+    json[r'addresses'] = addresses;
+    json[r'languages'] = languages;
     if (picture != null) {
       json[r'picture'] = picture;
     }
-      json[r'specialityCodes'] = specialityCodes.toList();
+    json[r'specialityCodes'] = specialityCodes.toList();
     if (notes != null) {
       json[r'notes'] = notes;
     }
-      json[r'properties'] = properties.toList();
+    json[r'properties'] = properties.toList();
     if (systemMetaData != null) {
       json[r'systemMetaData'] = systemMetaData;
     }
@@ -315,9 +318,7 @@ class HealthcareProfessional {
         speciality: mapValueOfType<String>(json, r'speciality'),
         parentId: mapValueOfType<String>(json, r'parentId'),
         addresses: Address.listFromJson(json[r'addresses'])!,
-        languages: json[r'languages'] is List
-            ? (json[r'languages'] as List).cast<String>()
-            : const [],
+        languages: json[r'languages'] is List ? (json[r'languages'] as List).cast<String>() : const [],
         picture: mapValueOfType<String>(json, r'picture'),
         specialityCodes: CodingReference.listFromJson(json[r'specialityCodes'])!.toSet(),
         notes: mapValueOfType<String>(json, r'notes'),
@@ -328,7 +329,10 @@ class HealthcareProfessional {
     return null;
   }
 
-  static List<HealthcareProfessional>? listFromJson(dynamic json, {bool growable = false,}) {
+  static List<HealthcareProfessional>? listFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final result = <HealthcareProfessional>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
@@ -356,12 +360,18 @@ class HealthcareProfessional {
   }
 
   // maps a json object with a list of HealthcareProfessional-objects as value to a dart map
-  static Map<String, List<HealthcareProfessional>> mapListFromJson(dynamic json, {bool growable = false,}) {
+  static Map<String, List<HealthcareProfessional>> mapListFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final map = <String, List<HealthcareProfessional>>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
       for (final entry in json.entries) {
-        final value = HealthcareProfessional.listFromJson(entry.value, growable: growable,);
+        final value = HealthcareProfessional.listFromJson(
+          entry.value,
+          growable: growable,
+        );
         if (value != null) {
           map[entry.key] = value;
         }
@@ -414,7 +424,10 @@ class HealthcareProfessionalGenderEnum {
 
   static HealthcareProfessionalGenderEnum? fromJson(dynamic value) => HealthcareProfessionalGenderEnumTypeTransformer().decode(value);
 
-  static List<HealthcareProfessionalGenderEnum>? listFromJson(dynamic json, {bool growable = false,}) {
+  static List<HealthcareProfessionalGenderEnum>? listFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final result = <HealthcareProfessionalGenderEnum>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
@@ -448,13 +461,20 @@ class HealthcareProfessionalGenderEnumTypeTransformer {
   HealthcareProfessionalGenderEnum? decode(dynamic data, {bool allowNull = true}) {
     if (data != null) {
       switch (data.toString()) {
-        case r'male': return HealthcareProfessionalGenderEnum.male;
-        case r'female': return HealthcareProfessionalGenderEnum.female;
-        case r'indeterminate': return HealthcareProfessionalGenderEnum.indeterminate;
-        case r'changed': return HealthcareProfessionalGenderEnum.changed;
-        case r'changedToMale': return HealthcareProfessionalGenderEnum.changedToMale;
-        case r'changedToFemale': return HealthcareProfessionalGenderEnum.changedToFemale;
-        case r'unknown': return HealthcareProfessionalGenderEnum.unknown;
+        case r'male':
+          return HealthcareProfessionalGenderEnum.male;
+        case r'female':
+          return HealthcareProfessionalGenderEnum.female;
+        case r'indeterminate':
+          return HealthcareProfessionalGenderEnum.indeterminate;
+        case r'changed':
+          return HealthcareProfessionalGenderEnum.changed;
+        case r'changedToMale':
+          return HealthcareProfessionalGenderEnum.changedToMale;
+        case r'changedToFemale':
+          return HealthcareProfessionalGenderEnum.changedToFemale;
+        case r'unknown':
+          return HealthcareProfessionalGenderEnum.unknown;
         default:
           if (!allowNull) {
             throw ArgumentError('Unknown enum value to decode: $data');
@@ -467,5 +487,3 @@ class HealthcareProfessionalGenderEnumTypeTransformer {
   /// Singleton [HealthcareProfessionalGenderEnumTypeTransformer] instance.
   static HealthcareProfessionalGenderEnumTypeTransformer? _instance;
 }
-
-

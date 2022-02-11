@@ -52,19 +52,16 @@ class CodingReference {
   String? version;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is CodingReference &&
-     other.id == id &&
-     other.type == type &&
-     other.code == code &&
-     other.version == version;
+  bool operator ==(Object other) =>
+      identical(this, other) || other is CodingReference && other.id == id && other.type == type && other.code == code && other.version == version;
 
   @override
   int get hashCode =>
-    // ignore: unnecessary_parenthesis
-    (id == null ? 0 : id!.hashCode) +
-    (type == null ? 0 : type!.hashCode) +
-    (code == null ? 0 : code!.hashCode) +
-    (version == null ? 0 : version!.hashCode);
+      // ignore: unnecessary_parenthesis
+      (id == null ? 0 : id!.hashCode) +
+      (type == null ? 0 : type!.hashCode) +
+      (code == null ? 0 : code!.hashCode) +
+      (version == null ? 0 : version!.hashCode);
 
   @override
   String toString() => 'CodingReference[id=$id, type=$type, code=$code, version=$version]';
@@ -114,7 +111,10 @@ class CodingReference {
     return null;
   }
 
-  static List<CodingReference>? listFromJson(dynamic json, {bool growable = false,}) {
+  static List<CodingReference>? listFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final result = <CodingReference>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
@@ -142,12 +142,18 @@ class CodingReference {
   }
 
   // maps a json object with a list of CodingReference-objects as value to a dart map
-  static Map<String, List<CodingReference>> mapListFromJson(dynamic json, {bool growable = false,}) {
+  static Map<String, List<CodingReference>> mapListFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final map = <String, List<CodingReference>>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
       for (final entry in json.entries) {
-        final value = CodingReference.listFromJson(entry.value, growable: growable,);
+        final value = CodingReference.listFromJson(
+          entry.value,
+          growable: growable,
+        );
         if (value != null) {
           map[entry.key] = value;
         }
@@ -157,7 +163,5 @@ class CodingReference {
   }
 
   /// The list of required keys that must be present in a JSON.
-  static const requiredKeys = <String>{
-  };
+  static const requiredKeys = <String>{};
 }
-

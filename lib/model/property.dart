@@ -52,19 +52,17 @@ class Property {
   int? deleted;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is Property &&
-     other.id == id &&
-     other.type == type &&
-     other.typedValue == typedValue &&
-     other.deleted == deleted;
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Property && other.id == id && other.type == type && other.typedValue == typedValue && other.deleted == deleted;
 
   @override
   int get hashCode =>
-    // ignore: unnecessary_parenthesis
-    (id == null ? 0 : id!.hashCode) +
-    (type == null ? 0 : type!.hashCode) +
-    (typedValue == null ? 0 : typedValue!.hashCode) +
-    (deleted == null ? 0 : deleted!.hashCode);
+      // ignore: unnecessary_parenthesis
+      (id == null ? 0 : id!.hashCode) +
+      (type == null ? 0 : type!.hashCode) +
+      (typedValue == null ? 0 : typedValue!.hashCode) +
+      (deleted == null ? 0 : deleted!.hashCode);
 
   @override
   String toString() => 'Property[id=$id, type=$type, typedValue=$typedValue, deleted=$deleted]';
@@ -114,7 +112,10 @@ class Property {
     return null;
   }
 
-  static List<Property>? listFromJson(dynamic json, {bool growable = false,}) {
+  static List<Property>? listFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final result = <Property>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
@@ -142,12 +143,18 @@ class Property {
   }
 
   // maps a json object with a list of Property-objects as value to a dart map
-  static Map<String, List<Property>> mapListFromJson(dynamic json, {bool growable = false,}) {
+  static Map<String, List<Property>> mapListFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final map = <String, List<Property>>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
       for (final entry in json.entries) {
-        final value = Property.listFromJson(entry.value, growable: growable,);
+        final value = Property.listFromJson(
+          entry.value,
+          growable: growable,
+        );
         if (value != null) {
           map[entry.key] = value;
         }
@@ -157,7 +164,5 @@ class Property {
   }
 
   /// The list of required keys that must be present in a JSON.
-  static const requiredKeys = <String>{
-  };
+  static const requiredKeys = <String>{};
 }
-

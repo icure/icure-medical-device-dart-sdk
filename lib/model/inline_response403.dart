@@ -88,30 +88,33 @@ class InlineResponse403 {
   bool? readOnly;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is InlineResponse403 &&
-     other.short == short &&
-     other.char == char &&
-     other.int_ == int_ &&
-     other.long == long &&
-     other.float == float &&
-     other.double_ == double_ &&
-     other.direct == direct &&
-     other.readOnly == readOnly;
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is InlineResponse403 &&
+          other.short == short &&
+          other.char == char &&
+          other.int_ == int_ &&
+          other.long == long &&
+          other.float == float &&
+          other.double_ == double_ &&
+          other.direct == direct &&
+          other.readOnly == readOnly;
 
   @override
   int get hashCode =>
-    // ignore: unnecessary_parenthesis
-    (short == null ? 0 : short!.hashCode) +
-    (char == null ? 0 : char!.hashCode) +
-    (int_ == null ? 0 : int_!.hashCode) +
-    (long == null ? 0 : long!.hashCode) +
-    (float == null ? 0 : float!.hashCode) +
-    (double_ == null ? 0 : double_!.hashCode) +
-    (direct == null ? 0 : direct!.hashCode) +
-    (readOnly == null ? 0 : readOnly!.hashCode);
+      // ignore: unnecessary_parenthesis
+      (short == null ? 0 : short!.hashCode) +
+      (char == null ? 0 : char!.hashCode) +
+      (int_ == null ? 0 : int_!.hashCode) +
+      (long == null ? 0 : long!.hashCode) +
+      (float == null ? 0 : float!.hashCode) +
+      (double_ == null ? 0 : double_!.hashCode) +
+      (direct == null ? 0 : direct!.hashCode) +
+      (readOnly == null ? 0 : readOnly!.hashCode);
 
   @override
-  String toString() => 'InlineResponse403[short=$short, char=$char, int_=$int_, long=$long, float=$float, double_=$double_, direct=$direct, readOnly=$readOnly]';
+  String toString() =>
+      'InlineResponse403[short=$short, char=$char, int_=$int_, long=$long, float=$float, double_=$double_, direct=$direct, readOnly=$readOnly]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -174,7 +177,10 @@ class InlineResponse403 {
     return null;
   }
 
-  static List<InlineResponse403>? listFromJson(dynamic json, {bool growable = false,}) {
+  static List<InlineResponse403>? listFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final result = <InlineResponse403>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
@@ -202,12 +208,18 @@ class InlineResponse403 {
   }
 
   // maps a json object with a list of InlineResponse403-objects as value to a dart map
-  static Map<String, List<InlineResponse403>> mapListFromJson(dynamic json, {bool growable = false,}) {
+  static Map<String, List<InlineResponse403>> mapListFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final map = <String, List<InlineResponse403>>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
       for (final entry in json.entries) {
-        final value = InlineResponse403.listFromJson(entry.value, growable: growable,);
+        final value = InlineResponse403.listFromJson(
+          entry.value,
+          growable: growable,
+        );
         if (value != null) {
           map[entry.key] = value;
         }
@@ -217,7 +229,5 @@ class InlineResponse403 {
   }
 
   /// The list of required keys that must be present in a JSON.
-  static const requiredKeys = <String>{
-  };
+  static const requiredKeys = <String>{};
 }
-

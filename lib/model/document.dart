@@ -174,48 +174,51 @@ class Document {
   String? attachmentId;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is Document &&
-     other.id == id &&
-     other.rev == rev &&
-     other.created == created &&
-     other.modified == modified &&
-     other.author == author &&
-     other.responsible == responsible &&
-     other.medicalLocationId == medicalLocationId &&
-     other.deletionDate == deletionDate &&
-     other.objectStoreReference == objectStoreReference &&
-     other.mainUti == mainUti &&
-     other.name == name &&
-     other.version == version &&
-     other.otherUtis == otherUtis &&
-     other.externalUuid == externalUuid &&
-     other.size == size &&
-     other.hash == hash &&
-     other.attachmentId == attachmentId;
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Document &&
+          other.id == id &&
+          other.rev == rev &&
+          other.created == created &&
+          other.modified == modified &&
+          other.author == author &&
+          other.responsible == responsible &&
+          other.medicalLocationId == medicalLocationId &&
+          other.deletionDate == deletionDate &&
+          other.objectStoreReference == objectStoreReference &&
+          other.mainUti == mainUti &&
+          other.name == name &&
+          other.version == version &&
+          other.otherUtis == otherUtis &&
+          other.externalUuid == externalUuid &&
+          other.size == size &&
+          other.hash == hash &&
+          other.attachmentId == attachmentId;
 
   @override
   int get hashCode =>
-    // ignore: unnecessary_parenthesis
-    (id == null ? 0 : id!.hashCode) +
-    (rev == null ? 0 : rev!.hashCode) +
-    (created == null ? 0 : created!.hashCode) +
-    (modified == null ? 0 : modified!.hashCode) +
-    (author == null ? 0 : author!.hashCode) +
-    (responsible == null ? 0 : responsible!.hashCode) +
-    (medicalLocationId == null ? 0 : medicalLocationId!.hashCode) +
-    (deletionDate == null ? 0 : deletionDate!.hashCode) +
-    (objectStoreReference == null ? 0 : objectStoreReference!.hashCode) +
-    (mainUti == null ? 0 : mainUti!.hashCode) +
-    (name == null ? 0 : name!.hashCode) +
-    (version == null ? 0 : version!.hashCode) +
-    (otherUtis.hashCode) +
-    (externalUuid == null ? 0 : externalUuid!.hashCode) +
-    (size == null ? 0 : size!.hashCode) +
-    (hash == null ? 0 : hash!.hashCode) +
-    (attachmentId == null ? 0 : attachmentId!.hashCode);
+      // ignore: unnecessary_parenthesis
+      (id == null ? 0 : id!.hashCode) +
+      (rev == null ? 0 : rev!.hashCode) +
+      (created == null ? 0 : created!.hashCode) +
+      (modified == null ? 0 : modified!.hashCode) +
+      (author == null ? 0 : author!.hashCode) +
+      (responsible == null ? 0 : responsible!.hashCode) +
+      (medicalLocationId == null ? 0 : medicalLocationId!.hashCode) +
+      (deletionDate == null ? 0 : deletionDate!.hashCode) +
+      (objectStoreReference == null ? 0 : objectStoreReference!.hashCode) +
+      (mainUti == null ? 0 : mainUti!.hashCode) +
+      (name == null ? 0 : name!.hashCode) +
+      (version == null ? 0 : version!.hashCode) +
+      (otherUtis.hashCode) +
+      (externalUuid == null ? 0 : externalUuid!.hashCode) +
+      (size == null ? 0 : size!.hashCode) +
+      (hash == null ? 0 : hash!.hashCode) +
+      (attachmentId == null ? 0 : attachmentId!.hashCode);
 
   @override
-  String toString() => 'Document[id=$id, rev=$rev, created=$created, modified=$modified, author=$author, responsible=$responsible, medicalLocationId=$medicalLocationId, deletionDate=$deletionDate, objectStoreReference=$objectStoreReference, mainUti=$mainUti, name=$name, version=$version, otherUtis=$otherUtis, externalUuid=$externalUuid, size=$size, hash=$hash, attachmentId=$attachmentId]';
+  String toString() =>
+      'Document[id=$id, rev=$rev, created=$created, modified=$modified, author=$author, responsible=$responsible, medicalLocationId=$medicalLocationId, deletionDate=$deletionDate, objectStoreReference=$objectStoreReference, mainUti=$mainUti, name=$name, version=$version, otherUtis=$otherUtis, externalUuid=$externalUuid, size=$size, hash=$hash, attachmentId=$attachmentId]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -255,7 +258,7 @@ class Document {
     if (version != null) {
       json[r'version'] = version;
     }
-      json[r'otherUtis'] = otherUtis.toList();
+    json[r'otherUtis'] = otherUtis.toList();
     if (externalUuid != null) {
       json[r'externalUuid'] = externalUuid;
     }
@@ -304,7 +307,9 @@ class Document {
         version: mapValueOfType<String>(json, r'version'),
         otherUtis: json[r'otherUtis'] is Set
             ? (json[r'otherUtis'] as Set).cast<String>()
-            : const {},
+            : json[r'otherUtis'] is List
+                ? ((json[r'otherUtis'] as List).toSet()).cast<String>()
+                : const {},
         externalUuid: mapValueOfType<String>(json, r'externalUuid'),
         size: mapValueOfType<int>(json, r'size'),
         hash: mapValueOfType<String>(json, r'hash'),
@@ -314,7 +319,10 @@ class Document {
     return null;
   }
 
-  static List<Document>? listFromJson(dynamic json, {bool growable = false,}) {
+  static List<Document>? listFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final result = <Document>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
@@ -342,12 +350,18 @@ class Document {
   }
 
   // maps a json object with a list of Document-objects as value to a dart map
-  static Map<String, List<Document>> mapListFromJson(dynamic json, {bool growable = false,}) {
+  static Map<String, List<Document>> mapListFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final map = <String, List<Document>>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
       for (final entry in json.entries) {
-        final value = Document.listFromJson(entry.value, growable: growable,);
+        final value = Document.listFromJson(
+          entry.value,
+          growable: growable,
+        );
         if (value != null) {
           map[entry.key] = value;
         }
@@ -361,4 +375,3 @@ class Document {
     'otherUtis',
   };
 }
-

@@ -76,30 +76,33 @@ class Coding {
   Map<String, Set<String>> searchTerms;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is Coding &&
-     other.id == id &&
-     other.rev == rev &&
-     other.type == type &&
-     other.code == code &&
-     other.version == version &&
-     other.description == description &&
-     other.qualifiedLinks == qualifiedLinks &&
-     other.searchTerms == searchTerms;
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Coding &&
+          other.id == id &&
+          other.rev == rev &&
+          other.type == type &&
+          other.code == code &&
+          other.version == version &&
+          other.description == description &&
+          other.qualifiedLinks == qualifiedLinks &&
+          other.searchTerms == searchTerms;
 
   @override
   int get hashCode =>
-    // ignore: unnecessary_parenthesis
-    (id == null ? 0 : id!.hashCode) +
-    (rev == null ? 0 : rev!.hashCode) +
-    (type == null ? 0 : type!.hashCode) +
-    (code == null ? 0 : code!.hashCode) +
-    (version == null ? 0 : version!.hashCode) +
-    (description.hashCode) +
-    (qualifiedLinks.hashCode) +
-    (searchTerms.hashCode);
+      // ignore: unnecessary_parenthesis
+      (id == null ? 0 : id!.hashCode) +
+      (rev == null ? 0 : rev!.hashCode) +
+      (type == null ? 0 : type!.hashCode) +
+      (code == null ? 0 : code!.hashCode) +
+      (version == null ? 0 : version!.hashCode) +
+      (description.hashCode) +
+      (qualifiedLinks.hashCode) +
+      (searchTerms.hashCode);
 
   @override
-  String toString() => 'Coding[id=$id, rev=$rev, type=$type, code=$code, version=$version, description=$description, qualifiedLinks=$qualifiedLinks, searchTerms=$searchTerms]';
+  String toString() =>
+      'Coding[id=$id, rev=$rev, type=$type, code=$code, version=$version, description=$description, qualifiedLinks=$qualifiedLinks, searchTerms=$searchTerms]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -118,9 +121,9 @@ class Coding {
     if (version != null) {
       json[r'version'] = version;
     }
-      json[r'description'] = description;
-      json[r'qualifiedLinks'] = qualifiedLinks;
-      json[r'searchTerms'] = searchTerms.map((k,v) => MapEntry(k, v.toList()));
+    json[r'description'] = description;
+    json[r'qualifiedLinks'] = qualifiedLinks;
+    json[r'searchTerms'] = searchTerms.map((k, v) => MapEntry(k, v.toList()));
     return json;
   }
 
@@ -156,7 +159,10 @@ class Coding {
     return null;
   }
 
-  static List<Coding>? listFromJson(dynamic json, {bool growable = false,}) {
+  static List<Coding>? listFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final result = <Coding>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
@@ -184,12 +190,18 @@ class Coding {
   }
 
   // maps a json object with a list of Coding-objects as value to a dart map
-  static Map<String, List<Coding>> mapListFromJson(dynamic json, {bool growable = false,}) {
+  static Map<String, List<Coding>> mapListFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final map = <String, List<Coding>>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
       for (final entry in json.entries) {
-        final value = Coding.listFromJson(entry.value, growable: growable,);
+        final value = Coding.listFromJson(
+          entry.value,
+          growable: growable,
+        );
         if (value != null) {
           map[entry.key] = value;
         }
@@ -204,4 +216,3 @@ class Coding {
     'searchTerms',
   };
 }
-

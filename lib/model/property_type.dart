@@ -28,15 +28,12 @@ class PropertyType {
   PropertyTypeTypeEnum? type;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is PropertyType &&
-     other.identifier == identifier &&
-     other.type == type;
+  bool operator ==(Object other) => identical(this, other) || other is PropertyType && other.identifier == identifier && other.type == type;
 
   @override
   int get hashCode =>
-    // ignore: unnecessary_parenthesis
-    (identifier == null ? 0 : identifier!.hashCode) +
-    (type == null ? 0 : type!.hashCode);
+      // ignore: unnecessary_parenthesis
+      (identifier == null ? 0 : identifier!.hashCode) + (type == null ? 0 : type!.hashCode);
 
   @override
   String toString() => 'PropertyType[identifier=$identifier, type=$type]';
@@ -78,7 +75,10 @@ class PropertyType {
     return null;
   }
 
-  static List<PropertyType>? listFromJson(dynamic json, {bool growable = false,}) {
+  static List<PropertyType>? listFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final result = <PropertyType>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
@@ -106,12 +106,18 @@ class PropertyType {
   }
 
   // maps a json object with a list of PropertyType-objects as value to a dart map
-  static Map<String, List<PropertyType>> mapListFromJson(dynamic json, {bool growable = false,}) {
+  static Map<String, List<PropertyType>> mapListFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final map = <String, List<PropertyType>>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
       for (final entry in json.entries) {
-        final value = PropertyType.listFromJson(entry.value, growable: growable,);
+        final value = PropertyType.listFromJson(
+          entry.value,
+          growable: growable,
+        );
         if (value != null) {
           map[entry.key] = value;
         }
@@ -121,10 +127,8 @@ class PropertyType {
   }
 
   /// The list of required keys that must be present in a JSON.
-  static const requiredKeys = <String>{
-  };
+  static const requiredKeys = <String>{};
 }
-
 
 class PropertyTypeTypeEnum {
   /// Instantiate a new enum with the provided [value].
@@ -159,7 +163,10 @@ class PropertyTypeTypeEnum {
 
   static PropertyTypeTypeEnum? fromJson(dynamic value) => PropertyTypeTypeEnumTypeTransformer().decode(value);
 
-  static List<PropertyTypeTypeEnum>? listFromJson(dynamic json, {bool growable = false,}) {
+  static List<PropertyTypeTypeEnum>? listFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final result = <PropertyTypeTypeEnum>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
@@ -193,13 +200,20 @@ class PropertyTypeTypeEnumTypeTransformer {
   PropertyTypeTypeEnum? decode(dynamic data, {bool allowNull = true}) {
     if (data != null) {
       switch (data.toString()) {
-        case r'BOOLEAN': return PropertyTypeTypeEnum.BOOLEAN;
-        case r'INTEGER': return PropertyTypeTypeEnum.INTEGER;
-        case r'DOUBLE': return PropertyTypeTypeEnum.DOUBLE;
-        case r'STRING': return PropertyTypeTypeEnum.STRING;
-        case r'DATE': return PropertyTypeTypeEnum.DATE;
-        case r'CLOB': return PropertyTypeTypeEnum.CLOB;
-        case r'JSON': return PropertyTypeTypeEnum.JSON;
+        case r'BOOLEAN':
+          return PropertyTypeTypeEnum.BOOLEAN;
+        case r'INTEGER':
+          return PropertyTypeTypeEnum.INTEGER;
+        case r'DOUBLE':
+          return PropertyTypeTypeEnum.DOUBLE;
+        case r'STRING':
+          return PropertyTypeTypeEnum.STRING;
+        case r'DATE':
+          return PropertyTypeTypeEnum.DATE;
+        case r'CLOB':
+          return PropertyTypeTypeEnum.CLOB;
+        case r'JSON':
+          return PropertyTypeTypeEnum.JSON;
         default:
           if (!allowNull) {
             throw ArgumentError('Unknown enum value to decode: $data');
@@ -212,5 +226,3 @@ class PropertyTypeTypeEnumTypeTransformer {
   /// Singleton [PropertyTypeTypeEnumTypeTransformer] instance.
   static PropertyTypeTypeEnumTypeTransformer? _instance;
 }
-
-

@@ -177,59 +177,62 @@ class HealthcareElement {
   SystemMetaDataEncrypted? systemMetaData;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is HealthcareElement &&
-     other.id == id &&
-     other.identifiers == identifiers &&
-     other.rev == rev &&
-     other.created == created &&
-     other.modified == modified &&
-     other.author == author &&
-     other.responsible == responsible &&
-     other.medicalLocationId == medicalLocationId &&
-     other.labels == labels &&
-     other.codes == codes &&
-     other.endOfLife == endOfLife &&
-     other.deletionDate == deletionDate &&
-     other.healthElementId == healthElementId &&
-     other.valueDate == valueDate &&
-     other.openingDate == openingDate &&
-     other.closingDate == closingDate &&
-     other.description == description &&
-     other.note == note &&
-     other.systemMetaData == systemMetaData;
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is HealthcareElement &&
+          other.id == id &&
+          other.identifiers == identifiers &&
+          other.rev == rev &&
+          other.created == created &&
+          other.modified == modified &&
+          other.author == author &&
+          other.responsible == responsible &&
+          other.medicalLocationId == medicalLocationId &&
+          other.labels == labels &&
+          other.codes == codes &&
+          other.endOfLife == endOfLife &&
+          other.deletionDate == deletionDate &&
+          other.healthElementId == healthElementId &&
+          other.valueDate == valueDate &&
+          other.openingDate == openingDate &&
+          other.closingDate == closingDate &&
+          other.description == description &&
+          other.note == note &&
+          other.systemMetaData == systemMetaData;
 
   @override
   int get hashCode =>
-    // ignore: unnecessary_parenthesis
-    (id == null ? 0 : id!.hashCode) +
-    (identifiers.hashCode) +
-    (rev == null ? 0 : rev!.hashCode) +
-    (created == null ? 0 : created!.hashCode) +
-    (modified == null ? 0 : modified!.hashCode) +
-    (author == null ? 0 : author!.hashCode) +
-    (responsible == null ? 0 : responsible!.hashCode) +
-    (medicalLocationId == null ? 0 : medicalLocationId!.hashCode) +
-    (labels.hashCode) +
-    (codes.hashCode) +
-    (endOfLife == null ? 0 : endOfLife!.hashCode) +
-    (deletionDate == null ? 0 : deletionDate!.hashCode) +
-    (healthElementId == null ? 0 : healthElementId!.hashCode) +
-    (valueDate == null ? 0 : valueDate!.hashCode) +
-    (openingDate == null ? 0 : openingDate!.hashCode) +
-    (closingDate == null ? 0 : closingDate!.hashCode) +
-    (description == null ? 0 : description!.hashCode) +
-    (note == null ? 0 : note!.hashCode) +
-    (systemMetaData == null ? 0 : systemMetaData!.hashCode);
+      // ignore: unnecessary_parenthesis
+      (id == null ? 0 : id!.hashCode) +
+      (identifiers.hashCode) +
+      (rev == null ? 0 : rev!.hashCode) +
+      (created == null ? 0 : created!.hashCode) +
+      (modified == null ? 0 : modified!.hashCode) +
+      (author == null ? 0 : author!.hashCode) +
+      (responsible == null ? 0 : responsible!.hashCode) +
+      (medicalLocationId == null ? 0 : medicalLocationId!.hashCode) +
+      (labels.hashCode) +
+      (codes.hashCode) +
+      (endOfLife == null ? 0 : endOfLife!.hashCode) +
+      (deletionDate == null ? 0 : deletionDate!.hashCode) +
+      (healthElementId == null ? 0 : healthElementId!.hashCode) +
+      (valueDate == null ? 0 : valueDate!.hashCode) +
+      (openingDate == null ? 0 : openingDate!.hashCode) +
+      (closingDate == null ? 0 : closingDate!.hashCode) +
+      (description == null ? 0 : description!.hashCode) +
+      (note == null ? 0 : note!.hashCode) +
+      (systemMetaData == null ? 0 : systemMetaData!.hashCode);
 
   @override
-  String toString() => 'HealthcareElement[id=$id, identifiers=$identifiers, rev=$rev, created=$created, modified=$modified, author=$author, responsible=$responsible, medicalLocationId=$medicalLocationId, labels=$labels, codes=$codes, endOfLife=$endOfLife, deletionDate=$deletionDate, healthElementId=$healthElementId, valueDate=$valueDate, openingDate=$openingDate, closingDate=$closingDate, description=$description, note=$note, systemMetaData=$systemMetaData]';
+  String toString() =>
+      'HealthcareElement[id=$id, identifiers=$identifiers, rev=$rev, created=$created, modified=$modified, author=$author, responsible=$responsible, medicalLocationId=$medicalLocationId, labels=$labels, codes=$codes, endOfLife=$endOfLife, deletionDate=$deletionDate, healthElementId=$healthElementId, valueDate=$valueDate, openingDate=$openingDate, closingDate=$closingDate, description=$description, note=$note, systemMetaData=$systemMetaData]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
     if (id != null) {
       json[r'id'] = id;
     }
-      json[r'identifiers'] = identifiers;
+    json[r'identifiers'] = identifiers;
     if (rev != null) {
       json[r'rev'] = rev;
     }
@@ -248,8 +251,8 @@ class HealthcareElement {
     if (medicalLocationId != null) {
       json[r'medicalLocationId'] = medicalLocationId;
     }
-      json[r'labels'] = labels.toList();
-      json[r'codes'] = codes.toList();
+    json[r'labels'] = labels.toList();
+    json[r'codes'] = codes.toList();
     if (endOfLife != null) {
       json[r'endOfLife'] = endOfLife;
     }
@@ -323,7 +326,10 @@ class HealthcareElement {
     return null;
   }
 
-  static List<HealthcareElement>? listFromJson(dynamic json, {bool growable = false,}) {
+  static List<HealthcareElement>? listFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final result = <HealthcareElement>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
@@ -351,12 +357,18 @@ class HealthcareElement {
   }
 
   // maps a json object with a list of HealthcareElement-objects as value to a dart map
-  static Map<String, List<HealthcareElement>> mapListFromJson(dynamic json, {bool growable = false,}) {
+  static Map<String, List<HealthcareElement>> mapListFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final map = <String, List<HealthcareElement>>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
       for (final entry in json.entries) {
-        final value = HealthcareElement.listFromJson(entry.value, growable: growable,);
+        final value = HealthcareElement.listFromJson(
+          entry.value,
+          growable: growable,
+        );
         if (value != null) {
           map[entry.key] = value;
         }
@@ -372,4 +384,3 @@ class HealthcareElement {
     'codes',
   };
 }
-

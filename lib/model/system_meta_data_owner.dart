@@ -22,23 +22,22 @@ class SystemMetaDataOwner {
   Map<String, String> privateKeyShamirPartitions;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is SystemMetaDataOwner &&
-     other.hcPartyKeys == hcPartyKeys &&
-     other.privateKeyShamirPartitions == privateKeyShamirPartitions;
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is SystemMetaDataOwner && other.hcPartyKeys == hcPartyKeys && other.privateKeyShamirPartitions == privateKeyShamirPartitions;
 
   @override
   int get hashCode =>
-    // ignore: unnecessary_parenthesis
-    (hcPartyKeys.hashCode) +
-    (privateKeyShamirPartitions.hashCode);
+      // ignore: unnecessary_parenthesis
+      (hcPartyKeys.hashCode) + (privateKeyShamirPartitions.hashCode);
 
   @override
   String toString() => 'SystemMetaDataOwner[hcPartyKeys=$hcPartyKeys, privateKeyShamirPartitions=$privateKeyShamirPartitions]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
-      json[r'hcPartyKeys'] = hcPartyKeys;
-      json[r'privateKeyShamirPartitions'] = privateKeyShamirPartitions;
+    json[r'hcPartyKeys'] = hcPartyKeys;
+    json[r'privateKeyShamirPartitions'] = privateKeyShamirPartitions;
     return json;
   }
 
@@ -61,16 +60,17 @@ class SystemMetaDataOwner {
       }());
 
       return SystemMetaDataOwner(
-        hcPartyKeys: json[r'hcPartyKeys'] == null
-          ? const {}
-              : mapWithListOfStringsFromJson(json[r'hcPartyKeys']),
+        hcPartyKeys: json[r'hcPartyKeys'] == null ? const {} : mapWithListOfStringsFromJson(json[r'hcPartyKeys']),
         privateKeyShamirPartitions: mapCastOfType<String, String>(json, r'privateKeyShamirPartitions')!,
       );
     }
     return null;
   }
 
-  static List<SystemMetaDataOwner>? listFromJson(dynamic json, {bool growable = false,}) {
+  static List<SystemMetaDataOwner>? listFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final result = <SystemMetaDataOwner>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
@@ -98,12 +98,18 @@ class SystemMetaDataOwner {
   }
 
   // maps a json object with a list of SystemMetaDataOwner-objects as value to a dart map
-  static Map<String, List<SystemMetaDataOwner>> mapListFromJson(dynamic json, {bool growable = false,}) {
+  static Map<String, List<SystemMetaDataOwner>> mapListFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final map = <String, List<SystemMetaDataOwner>>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
       for (final entry in json.entries) {
-        final value = SystemMetaDataOwner.listFromJson(entry.value, growable: growable,);
+        final value = SystemMetaDataOwner.listFromJson(
+          entry.value,
+          growable: growable,
+        );
         if (value != null) {
           map[entry.key] = value;
         }
@@ -118,4 +124,3 @@ class SystemMetaDataOwner {
     'privateKeyShamirPartitions',
   };
 }
-

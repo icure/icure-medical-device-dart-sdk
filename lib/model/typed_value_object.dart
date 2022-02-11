@@ -64,26 +64,29 @@ class TypedValueObject {
   DateTime? dateValue;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is TypedValueObject &&
-     other.type == type &&
-     other.booleanValue == booleanValue &&
-     other.integerValue == integerValue &&
-     other.doubleValue == doubleValue &&
-     other.stringValue == stringValue &&
-     other.dateValue == dateValue;
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is TypedValueObject &&
+          other.type == type &&
+          other.booleanValue == booleanValue &&
+          other.integerValue == integerValue &&
+          other.doubleValue == doubleValue &&
+          other.stringValue == stringValue &&
+          other.dateValue == dateValue;
 
   @override
   int get hashCode =>
-    // ignore: unnecessary_parenthesis
-    (type == null ? 0 : type!.hashCode) +
-    (booleanValue == null ? 0 : booleanValue!.hashCode) +
-    (integerValue == null ? 0 : integerValue!.hashCode) +
-    (doubleValue == null ? 0 : doubleValue!.hashCode) +
-    (stringValue == null ? 0 : stringValue!.hashCode) +
-    (dateValue == null ? 0 : dateValue!.hashCode);
+      // ignore: unnecessary_parenthesis
+      (type == null ? 0 : type!.hashCode) +
+      (booleanValue == null ? 0 : booleanValue!.hashCode) +
+      (integerValue == null ? 0 : integerValue!.hashCode) +
+      (doubleValue == null ? 0 : doubleValue!.hashCode) +
+      (stringValue == null ? 0 : stringValue!.hashCode) +
+      (dateValue == null ? 0 : dateValue!.hashCode);
 
   @override
-  String toString() => 'TypedValueObject[type=$type, booleanValue=$booleanValue, integerValue=$integerValue, doubleValue=$doubleValue, stringValue=$stringValue, dateValue=$dateValue]';
+  String toString() =>
+      'TypedValueObject[type=$type, booleanValue=$booleanValue, integerValue=$integerValue, doubleValue=$doubleValue, stringValue=$stringValue, dateValue=$dateValue]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -138,7 +141,10 @@ class TypedValueObject {
     return null;
   }
 
-  static List<TypedValueObject>? listFromJson(dynamic json, {bool growable = false,}) {
+  static List<TypedValueObject>? listFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final result = <TypedValueObject>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
@@ -166,12 +172,18 @@ class TypedValueObject {
   }
 
   // maps a json object with a list of TypedValueObject-objects as value to a dart map
-  static Map<String, List<TypedValueObject>> mapListFromJson(dynamic json, {bool growable = false,}) {
+  static Map<String, List<TypedValueObject>> mapListFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final map = <String, List<TypedValueObject>>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
       for (final entry in json.entries) {
-        final value = TypedValueObject.listFromJson(entry.value, growable: growable,);
+        final value = TypedValueObject.listFromJson(
+          entry.value,
+          growable: growable,
+        );
         if (value != null) {
           map[entry.key] = value;
         }
@@ -181,10 +193,8 @@ class TypedValueObject {
   }
 
   /// The list of required keys that must be present in a JSON.
-  static const requiredKeys = <String>{
-  };
+  static const requiredKeys = <String>{};
 }
-
 
 class TypedValueObjectTypeEnum {
   /// Instantiate a new enum with the provided [value].
@@ -219,7 +229,10 @@ class TypedValueObjectTypeEnum {
 
   static TypedValueObjectTypeEnum? fromJson(dynamic value) => TypedValueObjectTypeEnumTypeTransformer().decode(value);
 
-  static List<TypedValueObjectTypeEnum>? listFromJson(dynamic json, {bool growable = false,}) {
+  static List<TypedValueObjectTypeEnum>? listFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final result = <TypedValueObjectTypeEnum>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
@@ -253,13 +266,20 @@ class TypedValueObjectTypeEnumTypeTransformer {
   TypedValueObjectTypeEnum? decode(dynamic data, {bool allowNull = true}) {
     if (data != null) {
       switch (data.toString()) {
-        case r'BOOLEAN': return TypedValueObjectTypeEnum.BOOLEAN;
-        case r'INTEGER': return TypedValueObjectTypeEnum.INTEGER;
-        case r'DOUBLE': return TypedValueObjectTypeEnum.DOUBLE;
-        case r'STRING': return TypedValueObjectTypeEnum.STRING;
-        case r'DATE': return TypedValueObjectTypeEnum.DATE;
-        case r'CLOB': return TypedValueObjectTypeEnum.CLOB;
-        case r'JSON': return TypedValueObjectTypeEnum.JSON;
+        case r'BOOLEAN':
+          return TypedValueObjectTypeEnum.BOOLEAN;
+        case r'INTEGER':
+          return TypedValueObjectTypeEnum.INTEGER;
+        case r'DOUBLE':
+          return TypedValueObjectTypeEnum.DOUBLE;
+        case r'STRING':
+          return TypedValueObjectTypeEnum.STRING;
+        case r'DATE':
+          return TypedValueObjectTypeEnum.DATE;
+        case r'CLOB':
+          return TypedValueObjectTypeEnum.CLOB;
+        case r'JSON':
+          return TypedValueObjectTypeEnum.JSON;
         default:
           if (!allowNull) {
             throw ArgumentError('Unknown enum value to decode: $data');
@@ -272,5 +292,3 @@ class TypedValueObjectTypeEnumTypeTransformer {
   /// Singleton [TypedValueObjectTypeEnumTypeTransformer] instance.
   static TypedValueObjectTypeEnumTypeTransformer? _instance;
 }
-
-

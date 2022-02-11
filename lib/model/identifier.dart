@@ -88,27 +88,29 @@ class Identifier {
   String? value;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is Identifier &&
-     other.id == id &&
-     other.assigner == assigner &&
-     other.start == start &&
-     other.end == end &&
-     other.system == system &&
-     other.type == type &&
-     other.use == use &&
-     other.value == value;
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Identifier &&
+          other.id == id &&
+          other.assigner == assigner &&
+          other.start == start &&
+          other.end == end &&
+          other.system == system &&
+          other.type == type &&
+          other.use == use &&
+          other.value == value;
 
   @override
   int get hashCode =>
-    // ignore: unnecessary_parenthesis
-    (id == null ? 0 : id!.hashCode) +
-    (assigner == null ? 0 : assigner!.hashCode) +
-    (start == null ? 0 : start!.hashCode) +
-    (end == null ? 0 : end!.hashCode) +
-    (system == null ? 0 : system!.hashCode) +
-    (type == null ? 0 : type!.hashCode) +
-    (use == null ? 0 : use!.hashCode) +
-    (value == null ? 0 : value!.hashCode);
+      // ignore: unnecessary_parenthesis
+      (id == null ? 0 : id!.hashCode) +
+      (assigner == null ? 0 : assigner!.hashCode) +
+      (start == null ? 0 : start!.hashCode) +
+      (end == null ? 0 : end!.hashCode) +
+      (system == null ? 0 : system!.hashCode) +
+      (type == null ? 0 : type!.hashCode) +
+      (use == null ? 0 : use!.hashCode) +
+      (value == null ? 0 : value!.hashCode);
 
   @override
   String toString() => 'Identifier[id=$id, assigner=$assigner, start=$start, end=$end, system=$system, type=$type, use=$use, value=$value]';
@@ -174,7 +176,10 @@ class Identifier {
     return null;
   }
 
-  static List<Identifier>? listFromJson(dynamic json, {bool growable = false,}) {
+  static List<Identifier>? listFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final result = <Identifier>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
@@ -202,12 +207,18 @@ class Identifier {
   }
 
   // maps a json object with a list of Identifier-objects as value to a dart map
-  static Map<String, List<Identifier>> mapListFromJson(dynamic json, {bool growable = false,}) {
+  static Map<String, List<Identifier>> mapListFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final map = <String, List<Identifier>>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
       for (final entry in json.entries) {
-        final value = Identifier.listFromJson(entry.value, growable: growable,);
+        final value = Identifier.listFromJson(
+          entry.value,
+          growable: growable,
+        );
         if (value != null) {
           map[entry.key] = value;
         }
@@ -217,7 +228,5 @@ class Identifier {
   }
 
   /// The list of required keys that must be present in a JSON.
-  static const requiredKeys = <String>{
-  };
+  static const requiredKeys = <String>{};
 }
-

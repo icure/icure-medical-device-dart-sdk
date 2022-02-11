@@ -34,35 +34,38 @@ class SystemMetaDataOwnerEncrypted {
   Map<String, List<Delegation>> encryptionKeys;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is SystemMetaDataOwnerEncrypted &&
-     other.hcPartyKeys == hcPartyKeys &&
-     other.privateKeyShamirPartitions == privateKeyShamirPartitions &&
-     other.secretForeignKeys == secretForeignKeys &&
-     other.cryptedForeignKeys == cryptedForeignKeys &&
-     other.delegations == delegations &&
-     other.encryptionKeys == encryptionKeys;
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is SystemMetaDataOwnerEncrypted &&
+          other.hcPartyKeys == hcPartyKeys &&
+          other.privateKeyShamirPartitions == privateKeyShamirPartitions &&
+          other.secretForeignKeys == secretForeignKeys &&
+          other.cryptedForeignKeys == cryptedForeignKeys &&
+          other.delegations == delegations &&
+          other.encryptionKeys == encryptionKeys;
 
   @override
   int get hashCode =>
-    // ignore: unnecessary_parenthesis
-    (hcPartyKeys.hashCode) +
-    (privateKeyShamirPartitions.hashCode) +
-    (secretForeignKeys.hashCode) +
-    (cryptedForeignKeys.hashCode) +
-    (delegations.hashCode) +
-    (encryptionKeys.hashCode);
+      // ignore: unnecessary_parenthesis
+      (hcPartyKeys.hashCode) +
+      (privateKeyShamirPartitions.hashCode) +
+      (secretForeignKeys.hashCode) +
+      (cryptedForeignKeys.hashCode) +
+      (delegations.hashCode) +
+      (encryptionKeys.hashCode);
 
   @override
-  String toString() => 'SystemMetaDataOwnerEncrypted[hcPartyKeys=$hcPartyKeys, privateKeyShamirPartitions=$privateKeyShamirPartitions, secretForeignKeys=$secretForeignKeys, cryptedForeignKeys=$cryptedForeignKeys, delegations=$delegations, encryptionKeys=$encryptionKeys]';
+  String toString() =>
+      'SystemMetaDataOwnerEncrypted[hcPartyKeys=$hcPartyKeys, privateKeyShamirPartitions=$privateKeyShamirPartitions, secretForeignKeys=$secretForeignKeys, cryptedForeignKeys=$cryptedForeignKeys, delegations=$delegations, encryptionKeys=$encryptionKeys]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
-      json[r'hcPartyKeys'] = hcPartyKeys;
-      json[r'privateKeyShamirPartitions'] = privateKeyShamirPartitions;
-      json[r'secretForeignKeys'] = secretForeignKeys;
-      json[r'cryptedForeignKeys'] = cryptedForeignKeys;
-      json[r'delegations'] = delegations;
-      json[r'encryptionKeys'] = encryptionKeys;
+    json[r'hcPartyKeys'] = hcPartyKeys;
+    json[r'privateKeyShamirPartitions'] = privateKeyShamirPartitions;
+    json[r'secretForeignKeys'] = secretForeignKeys;
+    json[r'cryptedForeignKeys'] = cryptedForeignKeys;
+    json[r'delegations'] = delegations;
+    json[r'encryptionKeys'] = encryptionKeys;
     return json;
   }
 
@@ -85,27 +88,21 @@ class SystemMetaDataOwnerEncrypted {
       }());
 
       return SystemMetaDataOwnerEncrypted(
-        hcPartyKeys: json[r'hcPartyKeys'] == null
-          ? const {}
-            : mapWithListOfStringsFromJson(json[r'hcPartyKeys']),
+        hcPartyKeys: json[r'hcPartyKeys'] == null ? const {} : mapWithListOfStringsFromJson(json[r'hcPartyKeys']),
         privateKeyShamirPartitions: mapCastOfType<String, String>(json, r'privateKeyShamirPartitions')!,
-        secretForeignKeys: json[r'secretForeignKeys'] == null
-            ? const [] : (json[r'secretForeignKeys'] as List).cast<String>(),
-        cryptedForeignKeys: json[r'cryptedForeignKeys'] == null
-            ? const {}
-            : Delegation.mapListFromJson(json[r'cryptedForeignKeys']),
-        delegations: json[r'delegations'] == null
-            ? const {}
-            : Delegation.mapListFromJson(json[r'delegations']),
-        encryptionKeys: json[r'encryptionKeys'] == null
-            ? const {}
-            : Delegation.mapListFromJson(json[r'encryptionKeys']),
+        secretForeignKeys: json[r'secretForeignKeys'] == null ? const [] : (json[r'secretForeignKeys'] as List).cast<String>(),
+        cryptedForeignKeys: json[r'cryptedForeignKeys'] == null ? const {} : Delegation.mapListFromJson(json[r'cryptedForeignKeys']),
+        delegations: json[r'delegations'] == null ? const {} : Delegation.mapListFromJson(json[r'delegations']),
+        encryptionKeys: json[r'encryptionKeys'] == null ? const {} : Delegation.mapListFromJson(json[r'encryptionKeys']),
       );
     }
     return null;
   }
 
-  static List<SystemMetaDataOwnerEncrypted>? listFromJson(dynamic json, {bool growable = false,}) {
+  static List<SystemMetaDataOwnerEncrypted>? listFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final result = <SystemMetaDataOwnerEncrypted>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
@@ -133,12 +130,18 @@ class SystemMetaDataOwnerEncrypted {
   }
 
   // maps a json object with a list of SystemMetaDataOwnerEncrypted-objects as value to a dart map
-  static Map<String, List<SystemMetaDataOwnerEncrypted>> mapListFromJson(dynamic json, {bool growable = false,}) {
+  static Map<String, List<SystemMetaDataOwnerEncrypted>> mapListFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final map = <String, List<SystemMetaDataOwnerEncrypted>>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
       for (final entry in json.entries) {
-        final value = SystemMetaDataOwnerEncrypted.listFromJson(entry.value, growable: growable,);
+        final value = SystemMetaDataOwnerEncrypted.listFromJson(
+          entry.value,
+          growable: growable,
+        );
         if (value != null) {
           map[entry.key] = value;
         }
@@ -157,4 +160,3 @@ class SystemMetaDataOwnerEncrypted {
     'encryptionKeys',
   };
 }
-

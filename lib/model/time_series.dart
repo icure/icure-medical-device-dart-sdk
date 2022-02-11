@@ -37,38 +37,34 @@ class TimeSeries {
   List<double> variance;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is TimeSeries &&
-     other.fields == fields &&
-     other.samples == samples &&
-     other.min == min &&
-     other.max == max &&
-     other.mean == mean &&
-     other.median == median &&
-     other.variance == variance;
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is TimeSeries &&
+          other.fields == fields &&
+          other.samples == samples &&
+          other.min == min &&
+          other.max == max &&
+          other.mean == mean &&
+          other.median == median &&
+          other.variance == variance;
 
   @override
   int get hashCode =>
-    // ignore: unnecessary_parenthesis
-    (fields.hashCode) +
-    (samples.hashCode) +
-    (min.hashCode) +
-    (max.hashCode) +
-    (mean.hashCode) +
-    (median.hashCode) +
-    (variance.hashCode);
+      // ignore: unnecessary_parenthesis
+      (fields.hashCode) + (samples.hashCode) + (min.hashCode) + (max.hashCode) + (mean.hashCode) + (median.hashCode) + (variance.hashCode);
 
   @override
   String toString() => 'TimeSeries[fields=$fields, samples=$samples, min=$min, max=$max, mean=$mean, median=$median, variance=$variance]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
-      json[r'fields'] = fields;
-      json[r'samples'] = samples;
-      json[r'min'] = min;
-      json[r'max'] = max;
-      json[r'mean'] = mean;
-      json[r'median'] = median;
-      json[r'variance'] = variance;
+    json[r'fields'] = fields;
+    json[r'samples'] = samples;
+    json[r'min'] = min;
+    json[r'max'] = max;
+    json[r'mean'] = mean;
+    json[r'median'] = median;
+    json[r'variance'] = variance;
     return json;
   }
 
@@ -91,35 +87,24 @@ class TimeSeries {
       }());
 
       return TimeSeries(
-        fields: json[r'fields'] is List
-            ? (json[r'fields'] as List).cast<String>()
-            : const [],
+        fields: json[r'fields'] is List ? (json[r'fields'] as List).cast<String>() : const [],
         samples: json[r'samples'] is List
-          ? (json[r'samples'] as List).map(
-              (e) => e == null ? const <double>[] : (e as List).cast<double>()
-            ).toList()
-          : const <List<double>>[],
-        min: json[r'min'] is List
-            ? (json[r'min'] as List).cast<double>()
-            : const [],
-        max: json[r'max'] is List
-            ? (json[r'max'] as List).cast<double>()
-            : const [],
-        mean: json[r'mean'] is List
-            ? (json[r'mean'] as List).cast<double>()
-            : const [],
-        median: json[r'median'] is List
-            ? (json[r'median'] as List).cast<double>()
-            : const [],
-        variance: json[r'variance'] is List
-            ? (json[r'variance'] as List).cast<double>()
-            : const [],
+            ? (json[r'samples'] as List).map((e) => e == null ? const <double>[] : (e as List).cast<double>()).toList()
+            : const <List<double>>[],
+        min: json[r'min'] is List ? (json[r'min'] as List).cast<double>() : const [],
+        max: json[r'max'] is List ? (json[r'max'] as List).cast<double>() : const [],
+        mean: json[r'mean'] is List ? (json[r'mean'] as List).cast<double>() : const [],
+        median: json[r'median'] is List ? (json[r'median'] as List).cast<double>() : const [],
+        variance: json[r'variance'] is List ? (json[r'variance'] as List).cast<double>() : const [],
       );
     }
     return null;
   }
 
-  static List<TimeSeries>? listFromJson(dynamic json, {bool growable = false,}) {
+  static List<TimeSeries>? listFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final result = <TimeSeries>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
@@ -147,12 +132,18 @@ class TimeSeries {
   }
 
   // maps a json object with a list of TimeSeries-objects as value to a dart map
-  static Map<String, List<TimeSeries>> mapListFromJson(dynamic json, {bool growable = false,}) {
+  static Map<String, List<TimeSeries>> mapListFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final map = <String, List<TimeSeries>>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
       for (final entry in json.entries) {
-        final value = TimeSeries.listFromJson(entry.value, growable: growable,);
+        final value = TimeSeries.listFromJson(
+          entry.value,
+          growable: growable,
+        );
         if (value != null) {
           map[entry.key] = value;
         }
@@ -172,4 +163,3 @@ class TimeSeries {
     'variance',
   };
 }
-

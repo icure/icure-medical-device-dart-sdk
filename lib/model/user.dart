@@ -182,52 +182,55 @@ class User {
   Map<String, AuthenticationToken> authenticationTokens;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is User &&
-     other.id == id &&
-     other.rev == rev &&
-     other.deletionDate == deletionDate &&
-     other.created == created &&
-     other.name == name &&
-     other.properties == properties &&
-     other.roles == roles &&
-     other.login == login &&
-     other.passwordHash == passwordHash &&
-     other.secret == secret &&
-     other.use2fa == use2fa &&
-     other.groupId == groupId &&
-     other.healthcarePartyId == healthcarePartyId &&
-     other.patientId == patientId &&
-     other.deviceId == deviceId &&
-     other.autoDelegations == autoDelegations &&
-     other.email == email &&
-     other.mobilePhone == mobilePhone &&
-     other.authenticationTokens == authenticationTokens;
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is User &&
+          other.id == id &&
+          other.rev == rev &&
+          other.deletionDate == deletionDate &&
+          other.created == created &&
+          other.name == name &&
+          other.properties == properties &&
+          other.roles == roles &&
+          other.login == login &&
+          other.passwordHash == passwordHash &&
+          other.secret == secret &&
+          other.use2fa == use2fa &&
+          other.groupId == groupId &&
+          other.healthcarePartyId == healthcarePartyId &&
+          other.patientId == patientId &&
+          other.deviceId == deviceId &&
+          other.autoDelegations == autoDelegations &&
+          other.email == email &&
+          other.mobilePhone == mobilePhone &&
+          other.authenticationTokens == authenticationTokens;
 
   @override
   int get hashCode =>
-    // ignore: unnecessary_parenthesis
-    (id == null ? 0 : id!.hashCode) +
-    (rev == null ? 0 : rev!.hashCode) +
-    (deletionDate == null ? 0 : deletionDate!.hashCode) +
-    (created == null ? 0 : created!.hashCode) +
-    (name == null ? 0 : name!.hashCode) +
-    (properties.hashCode) +
-    (roles.hashCode) +
-    (login == null ? 0 : login!.hashCode) +
-    (passwordHash == null ? 0 : passwordHash!.hashCode) +
-    (secret == null ? 0 : secret!.hashCode) +
-    (use2fa == null ? 0 : use2fa!.hashCode) +
-    (groupId == null ? 0 : groupId!.hashCode) +
-    (healthcarePartyId == null ? 0 : healthcarePartyId!.hashCode) +
-    (patientId == null ? 0 : patientId!.hashCode) +
-    (deviceId == null ? 0 : deviceId!.hashCode) +
-    (autoDelegations.hashCode) +
-    (email == null ? 0 : email!.hashCode) +
-    (mobilePhone == null ? 0 : mobilePhone!.hashCode) +
-    (authenticationTokens.hashCode);
+      // ignore: unnecessary_parenthesis
+      (id == null ? 0 : id!.hashCode) +
+      (rev == null ? 0 : rev!.hashCode) +
+      (deletionDate == null ? 0 : deletionDate!.hashCode) +
+      (created == null ? 0 : created!.hashCode) +
+      (name == null ? 0 : name!.hashCode) +
+      (properties.hashCode) +
+      (roles.hashCode) +
+      (login == null ? 0 : login!.hashCode) +
+      (passwordHash == null ? 0 : passwordHash!.hashCode) +
+      (secret == null ? 0 : secret!.hashCode) +
+      (use2fa == null ? 0 : use2fa!.hashCode) +
+      (groupId == null ? 0 : groupId!.hashCode) +
+      (healthcarePartyId == null ? 0 : healthcarePartyId!.hashCode) +
+      (patientId == null ? 0 : patientId!.hashCode) +
+      (deviceId == null ? 0 : deviceId!.hashCode) +
+      (autoDelegations.hashCode) +
+      (email == null ? 0 : email!.hashCode) +
+      (mobilePhone == null ? 0 : mobilePhone!.hashCode) +
+      (authenticationTokens.hashCode);
 
   @override
-  String toString() => 'User[id=$id, rev=$rev, deletionDate=$deletionDate, created=$created, name=$name, properties=$properties, roles=$roles, login=$login, passwordHash=$passwordHash, secret=$secret, use2fa=$use2fa, groupId=$groupId, healthcarePartyId=$healthcarePartyId, patientId=$patientId, deviceId=$deviceId, autoDelegations=$autoDelegations, email=$email, mobilePhone=$mobilePhone, authenticationTokens=$authenticationTokens]';
+  String toString() =>
+      'User[id=$id, rev=$rev, deletionDate=$deletionDate, created=$created, name=$name, properties=$properties, roles=$roles, login=$login, passwordHash=$passwordHash, secret=$secret, use2fa=$use2fa, groupId=$groupId, healthcarePartyId=$healthcarePartyId, patientId=$patientId, deviceId=$deviceId, autoDelegations=$autoDelegations, email=$email, mobilePhone=$mobilePhone, authenticationTokens=$authenticationTokens]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -246,8 +249,8 @@ class User {
     if (name != null) {
       json[r'name'] = name;
     }
-      json[r'properties'] = properties.toList();
-      json[r'roles'] = roles.toList();
+    json[r'properties'] = properties.toList();
+    json[r'roles'] = roles.toList();
     if (login != null) {
       json[r'login'] = login;
     }
@@ -272,14 +275,14 @@ class User {
     if (deviceId != null) {
       json[r'deviceId'] = deviceId;
     }
-      json[r'autoDelegations'] = autoDelegations.map((k,v) => MapEntry(k, v.toList()));
+    json[r'autoDelegations'] = autoDelegations.map((k, v) => MapEntry(k, v.toList()));
     if (email != null) {
       json[r'email'] = email;
     }
     if (mobilePhone != null) {
       json[r'mobilePhone'] = mobilePhone;
     }
-      json[r'authenticationTokens'] = authenticationTokens;
+    json[r'authenticationTokens'] = authenticationTokens;
     return json;
   }
 
@@ -310,7 +313,9 @@ class User {
         properties: Property.listFromJson(json[r'properties'])!.toSet(),
         roles: json[r'roles'] is Set
             ? (json[r'roles'] as Set).cast<String>()
-            : const {},
+            : json[r'roles'] is List
+                ? ((json[r'roles'] as List).toSet()).cast<String>()
+                : const {},
         login: mapValueOfType<String>(json, r'login'),
         passwordHash: mapValueOfType<String>(json, r'passwordHash'),
         secret: mapValueOfType<String>(json, r'secret'),
@@ -319,9 +324,7 @@ class User {
         healthcarePartyId: mapValueOfType<String>(json, r'healthcarePartyId'),
         patientId: mapValueOfType<String>(json, r'patientId'),
         deviceId: mapValueOfType<String>(json, r'deviceId'),
-        autoDelegations: json[r'autoDelegations'] == null
-          ? const {}
-            : mapWithSetOfStringsFromJson(json[r'autoDelegations']),
+        autoDelegations: json[r'autoDelegations'] == null ? const {} : mapWithSetOfStringsFromJson(json[r'autoDelegations']),
         email: mapValueOfType<String>(json, r'email'),
         mobilePhone: mapValueOfType<String>(json, r'mobilePhone'),
         authenticationTokens: mapValueOfType<Map<String, AuthenticationToken>>(json, r'authenticationTokens')!,
@@ -330,7 +333,10 @@ class User {
     return null;
   }
 
-  static List<User>? listFromJson(dynamic json, {bool growable = false,}) {
+  static List<User>? listFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final result = <User>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
@@ -358,12 +364,18 @@ class User {
   }
 
   // maps a json object with a list of User-objects as value to a dart map
-  static Map<String, List<User>> mapListFromJson(dynamic json, {bool growable = false,}) {
+  static Map<String, List<User>> mapListFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final map = <String, List<User>>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
       for (final entry in json.entries) {
-        final value = User.listFromJson(entry.value, growable: growable,);
+        final value = User.listFromJson(
+          entry.value,
+          growable: growable,
+        );
         if (value != null) {
           map[entry.key] = value;
         }
@@ -380,4 +392,3 @@ class User {
     'authenticationTokens',
   };
 }
-

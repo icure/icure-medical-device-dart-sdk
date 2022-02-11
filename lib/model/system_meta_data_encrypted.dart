@@ -28,29 +28,29 @@ class SystemMetaDataEncrypted {
   Map<String, List<Delegation>> encryptionKeys;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is SystemMetaDataEncrypted &&
-     other.secretForeignKeys == secretForeignKeys &&
-     other.cryptedForeignKeys == cryptedForeignKeys &&
-     other.delegations == delegations &&
-     other.encryptionKeys == encryptionKeys;
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is SystemMetaDataEncrypted &&
+          other.secretForeignKeys == secretForeignKeys &&
+          other.cryptedForeignKeys == cryptedForeignKeys &&
+          other.delegations == delegations &&
+          other.encryptionKeys == encryptionKeys;
 
   @override
   int get hashCode =>
-    // ignore: unnecessary_parenthesis
-    (secretForeignKeys.hashCode) +
-    (cryptedForeignKeys.hashCode) +
-    (delegations.hashCode) +
-    (encryptionKeys.hashCode);
+      // ignore: unnecessary_parenthesis
+      (secretForeignKeys.hashCode) + (cryptedForeignKeys.hashCode) + (delegations.hashCode) + (encryptionKeys.hashCode);
 
   @override
-  String toString() => 'SystemMetaDataEncrypted[secretForeignKeys=$secretForeignKeys, cryptedForeignKeys=$cryptedForeignKeys, delegations=$delegations, encryptionKeys=$encryptionKeys]';
+  String toString() =>
+      'SystemMetaDataEncrypted[secretForeignKeys=$secretForeignKeys, cryptedForeignKeys=$cryptedForeignKeys, delegations=$delegations, encryptionKeys=$encryptionKeys]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
-      json[r'secretForeignKeys'] = secretForeignKeys;
-      json[r'cryptedForeignKeys'] = cryptedForeignKeys;
-      json[r'delegations'] = delegations;
-      json[r'encryptionKeys'] = encryptionKeys;
+    json[r'secretForeignKeys'] = secretForeignKeys;
+    json[r'cryptedForeignKeys'] = cryptedForeignKeys;
+    json[r'delegations'] = delegations;
+    json[r'encryptionKeys'] = encryptionKeys;
     return json;
   }
 
@@ -73,23 +73,19 @@ class SystemMetaDataEncrypted {
       }());
 
       return SystemMetaDataEncrypted(
-        secretForeignKeys: json[r'secretForeignKeys'] == null
-            ? const [] : (json[r'secretForeignKeys'] as List).cast<String>(),
-        cryptedForeignKeys: json[r'cryptedForeignKeys'] == null
-            ? const {}
-            : Delegation.mapListFromJson(json[r'cryptedForeignKeys']),
-        delegations: json[r'delegations'] == null
-            ? const {}
-            : Delegation.mapListFromJson(json[r'delegations']),
-        encryptionKeys: json[r'encryptionKeys'] == null
-            ? const {}
-            : Delegation.mapListFromJson(json[r'encryptionKeys']),
+        secretForeignKeys: json[r'secretForeignKeys'] == null ? const [] : (json[r'secretForeignKeys'] as List).cast<String>(),
+        cryptedForeignKeys: json[r'cryptedForeignKeys'] == null ? const {} : Delegation.mapListFromJson(json[r'cryptedForeignKeys']),
+        delegations: json[r'delegations'] == null ? const {} : Delegation.mapListFromJson(json[r'delegations']),
+        encryptionKeys: json[r'encryptionKeys'] == null ? const {} : Delegation.mapListFromJson(json[r'encryptionKeys']),
       );
     }
     return null;
   }
 
-  static List<SystemMetaDataEncrypted>? listFromJson(dynamic json, {bool growable = false,}) {
+  static List<SystemMetaDataEncrypted>? listFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final result = <SystemMetaDataEncrypted>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
@@ -117,12 +113,18 @@ class SystemMetaDataEncrypted {
   }
 
   // maps a json object with a list of SystemMetaDataEncrypted-objects as value to a dart map
-  static Map<String, List<SystemMetaDataEncrypted>> mapListFromJson(dynamic json, {bool growable = false,}) {
+  static Map<String, List<SystemMetaDataEncrypted>> mapListFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final map = <String, List<SystemMetaDataEncrypted>>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
       for (final entry in json.entries) {
-        final value = SystemMetaDataEncrypted.listFromJson(entry.value, growable: growable,);
+        final value = SystemMetaDataEncrypted.listFromJson(
+          entry.value,
+          growable: growable,
+        );
         if (value != null) {
           map[entry.key] = value;
         }
@@ -139,4 +141,3 @@ class SystemMetaDataEncrypted {
     'encryptionKeys',
   };
 }
-

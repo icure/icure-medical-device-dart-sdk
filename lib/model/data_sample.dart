@@ -174,54 +174,57 @@ class DataSample {
   Set<CodingReference> labels;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is DataSample &&
-     other.id == id &&
-     other.transactionId == transactionId &&
-     other.identifier == identifier &&
-     other.batchId == batchId &&
-     other.healthElementsIds == healthElementsIds &&
-     other.canvasesIds == canvasesIds &&
-     other.index == index &&
-     other.content == content &&
-     other.valueDate == valueDate &&
-     other.openingDate == openingDate &&
-     other.closingDate == closingDate &&
-     other.created == created &&
-     other.modified == modified &&
-     other.endOfLife == endOfLife &&
-     other.author == author &&
-     other.responsible == responsible &&
-     other.comment == comment &&
-     other.qualifiedLinks == qualifiedLinks &&
-     other.codes == codes &&
-     other.labels == labels;
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DataSample &&
+          other.id == id &&
+          other.transactionId == transactionId &&
+          other.identifier == identifier &&
+          other.batchId == batchId &&
+          other.healthElementsIds == healthElementsIds &&
+          other.canvasesIds == canvasesIds &&
+          other.index == index &&
+          other.content == content &&
+          other.valueDate == valueDate &&
+          other.openingDate == openingDate &&
+          other.closingDate == closingDate &&
+          other.created == created &&
+          other.modified == modified &&
+          other.endOfLife == endOfLife &&
+          other.author == author &&
+          other.responsible == responsible &&
+          other.comment == comment &&
+          other.qualifiedLinks == qualifiedLinks &&
+          other.codes == codes &&
+          other.labels == labels;
 
   @override
   int get hashCode =>
-    // ignore: unnecessary_parenthesis
-    (id == null ? 0 : id!.hashCode) +
-    (transactionId == null ? 0 : transactionId!.hashCode) +
-    (identifier.hashCode) +
-    (batchId == null ? 0 : batchId!.hashCode) +
-    (healthElementsIds.hashCode) +
-    (canvasesIds.hashCode) +
-    (index == null ? 0 : index!.hashCode) +
-    (content.hashCode) +
-    (valueDate == null ? 0 : valueDate!.hashCode) +
-    (openingDate == null ? 0 : openingDate!.hashCode) +
-    (closingDate == null ? 0 : closingDate!.hashCode) +
-    (created == null ? 0 : created!.hashCode) +
-    (modified == null ? 0 : modified!.hashCode) +
-    (endOfLife == null ? 0 : endOfLife!.hashCode) +
-    (author == null ? 0 : author!.hashCode) +
-    (responsible == null ? 0 : responsible!.hashCode) +
-    (comment == null ? 0 : comment!.hashCode) +
-    (qualifiedLinks.hashCode) +
-    (codes.hashCode) +
-    (labels.hashCode);
+      // ignore: unnecessary_parenthesis
+      (id == null ? 0 : id!.hashCode) +
+      (transactionId == null ? 0 : transactionId!.hashCode) +
+      (identifier.hashCode) +
+      (batchId == null ? 0 : batchId!.hashCode) +
+      (healthElementsIds.hashCode) +
+      (canvasesIds.hashCode) +
+      (index == null ? 0 : index!.hashCode) +
+      (content.hashCode) +
+      (valueDate == null ? 0 : valueDate!.hashCode) +
+      (openingDate == null ? 0 : openingDate!.hashCode) +
+      (closingDate == null ? 0 : closingDate!.hashCode) +
+      (created == null ? 0 : created!.hashCode) +
+      (modified == null ? 0 : modified!.hashCode) +
+      (endOfLife == null ? 0 : endOfLife!.hashCode) +
+      (author == null ? 0 : author!.hashCode) +
+      (responsible == null ? 0 : responsible!.hashCode) +
+      (comment == null ? 0 : comment!.hashCode) +
+      (qualifiedLinks.hashCode) +
+      (codes.hashCode) +
+      (labels.hashCode);
 
   @override
-  String toString() => 'DataSample[id=$id, transactionId=$transactionId, identifier=$identifier, batchId=$batchId, healthElementsIds=$healthElementsIds, canvasesIds=$canvasesIds, index=$index, content=$content, valueDate=$valueDate, openingDate=$openingDate, closingDate=$closingDate, created=$created, modified=$modified, endOfLife=$endOfLife, author=$author, responsible=$responsible, comment=$comment, qualifiedLinks=$qualifiedLinks, codes=$codes, labels=$labels]';
+  String toString() =>
+      'DataSample[id=$id, transactionId=$transactionId, identifier=$identifier, batchId=$batchId, healthElementsIds=$healthElementsIds, canvasesIds=$canvasesIds, index=$index, content=$content, valueDate=$valueDate, openingDate=$openingDate, closingDate=$closingDate, created=$created, modified=$modified, endOfLife=$endOfLife, author=$author, responsible=$responsible, comment=$comment, qualifiedLinks=$qualifiedLinks, codes=$codes, labels=$labels]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -231,16 +234,16 @@ class DataSample {
     if (transactionId != null) {
       json[r'transactionId'] = transactionId;
     }
-      json[r'identifier'] = identifier;
+    json[r'identifier'] = identifier;
     if (batchId != null) {
       json[r'batchId'] = batchId;
     }
-      json[r'healthElementsIds'] = healthElementsIds.toList();
-      json[r'canvasesIds'] = canvasesIds.toList();
+    json[r'healthElementsIds'] = healthElementsIds.toList();
+    json[r'canvasesIds'] = canvasesIds.toList();
     if (index != null) {
       json[r'index'] = index;
     }
-      json[r'content'] = content;
+    json[r'content'] = content;
     if (valueDate != null) {
       json[r'valueDate'] = valueDate;
     }
@@ -268,9 +271,9 @@ class DataSample {
     if (comment != null) {
       json[r'comment'] = comment;
     }
-      json[r'qualifiedLinks'] = qualifiedLinks;
-      json[r'codes'] = codes.toList();
-      json[r'labels'] = labels.toList();
+    json[r'qualifiedLinks'] = qualifiedLinks;
+    json[r'codes'] = codes.toList();
+    json[r'labels'] = labels.toList();
     return json;
   }
 
@@ -299,10 +302,14 @@ class DataSample {
         batchId: mapValueOfType<String>(json, r'batchId'),
         healthElementsIds: json[r'healthElementsIds'] is Set
             ? (json[r'healthElementsIds'] as Set).cast<String>()
-            : const {},
+            : json[r'healthElementsIds'] is List
+                ? ((json[r'healthElementsIds'] as List).toSet()).cast<String>()
+                : const {},
         canvasesIds: json[r'canvasesIds'] is Set
             ? (json[r'canvasesIds'] as Set).cast<String>()
-            : const {},
+            : json[r'canvasesIds'] is List
+                ? ((json[r'canvasesIds'] as List).toSet()).cast<String>()
+                : const {},
         index: mapValueOfType<int>(json, r'index'),
         content: mapValueOfType<Map<String, Content>>(json, r'content')!,
         valueDate: mapValueOfType<int>(json, r'valueDate'),
@@ -322,7 +329,10 @@ class DataSample {
     return null;
   }
 
-  static List<DataSample>? listFromJson(dynamic json, {bool growable = false,}) {
+  static List<DataSample>? listFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final result = <DataSample>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
@@ -350,12 +360,18 @@ class DataSample {
   }
 
   // maps a json object with a list of DataSample-objects as value to a dart map
-  static Map<String, List<DataSample>> mapListFromJson(dynamic json, {bool growable = false,}) {
+  static Map<String, List<DataSample>> mapListFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final map = <String, List<DataSample>>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
       for (final entry in json.entries) {
-        final value = DataSample.listFromJson(entry.value, growable: growable,);
+        final value = DataSample.listFromJson(
+          entry.value,
+          growable: growable,
+        );
         if (value != null) {
           map[entry.key] = value;
         }
@@ -373,4 +389,3 @@ class DataSample {
     'labels',
   };
 }
-

@@ -34,15 +34,13 @@ class PaginatedDocumentKeyAndIdPairObject {
   String? startKeyDocId;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is PaginatedDocumentKeyAndIdPairObject &&
-     other.startKey == startKey &&
-     other.startKeyDocId == startKeyDocId;
+  bool operator ==(Object other) =>
+      identical(this, other) || other is PaginatedDocumentKeyAndIdPairObject && other.startKey == startKey && other.startKeyDocId == startKeyDocId;
 
   @override
   int get hashCode =>
-    // ignore: unnecessary_parenthesis
-    (startKey == null ? 0 : startKey!.hashCode) +
-    (startKeyDocId == null ? 0 : startKeyDocId!.hashCode);
+      // ignore: unnecessary_parenthesis
+      (startKey == null ? 0 : startKey!.hashCode) + (startKeyDocId == null ? 0 : startKeyDocId!.hashCode);
 
   @override
   String toString() => 'PaginatedDocumentKeyAndIdPairObject[startKey=$startKey, startKeyDocId=$startKeyDocId]';
@@ -84,7 +82,10 @@ class PaginatedDocumentKeyAndIdPairObject {
     return null;
   }
 
-  static List<PaginatedDocumentKeyAndIdPairObject>? listFromJson(dynamic json, {bool growable = false,}) {
+  static List<PaginatedDocumentKeyAndIdPairObject>? listFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final result = <PaginatedDocumentKeyAndIdPairObject>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
@@ -112,12 +113,18 @@ class PaginatedDocumentKeyAndIdPairObject {
   }
 
   // maps a json object with a list of PaginatedDocumentKeyAndIdPairObject-objects as value to a dart map
-  static Map<String, List<PaginatedDocumentKeyAndIdPairObject>> mapListFromJson(dynamic json, {bool growable = false,}) {
+  static Map<String, List<PaginatedDocumentKeyAndIdPairObject>> mapListFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final map = <String, List<PaginatedDocumentKeyAndIdPairObject>>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
       for (final entry in json.entries) {
-        final value = PaginatedDocumentKeyAndIdPairObject.listFromJson(entry.value, growable: growable,);
+        final value = PaginatedDocumentKeyAndIdPairObject.listFromJson(
+          entry.value,
+          growable: growable,
+        );
         if (value != null) {
           map[entry.key] = value;
         }
@@ -127,7 +134,5 @@ class PaginatedDocumentKeyAndIdPairObject {
   }
 
   /// The list of required keys that must be present in a JSON.
-  static const requiredKeys = <String>{
-  };
+  static const requiredKeys = <String>{};
 }
-

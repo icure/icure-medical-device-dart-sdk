@@ -28,26 +28,23 @@ class AuthenticationToken {
   int validity;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is AuthenticationToken &&
-     other.token == token &&
-     other.creationTime == creationTime &&
-     other.validity == validity;
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AuthenticationToken && other.token == token && other.creationTime == creationTime && other.validity == validity;
 
   @override
   int get hashCode =>
-    // ignore: unnecessary_parenthesis
-    (token.hashCode) +
-    (creationTime.hashCode) +
-    (validity.hashCode);
+      // ignore: unnecessary_parenthesis
+      (token.hashCode) + (creationTime.hashCode) + (validity.hashCode);
 
   @override
   String toString() => 'AuthenticationToken[token=$token, creationTime=$creationTime, validity=$validity]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
-      json[r'token'] = token;
-      json[r'creationTime'] = creationTime;
-      json[r'validity'] = validity;
+    json[r'token'] = token;
+    json[r'creationTime'] = creationTime;
+    json[r'validity'] = validity;
     return json;
   }
 
@@ -78,7 +75,10 @@ class AuthenticationToken {
     return null;
   }
 
-  static List<AuthenticationToken>? listFromJson(dynamic json, {bool growable = false,}) {
+  static List<AuthenticationToken>? listFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final result = <AuthenticationToken>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
@@ -106,12 +106,18 @@ class AuthenticationToken {
   }
 
   // maps a json object with a list of AuthenticationToken-objects as value to a dart map
-  static Map<String, List<AuthenticationToken>> mapListFromJson(dynamic json, {bool growable = false,}) {
+  static Map<String, List<AuthenticationToken>> mapListFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final map = <String, List<AuthenticationToken>>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
       for (final entry in json.entries) {
-        final value = AuthenticationToken.listFromJson(entry.value, growable: growable,);
+        final value = AuthenticationToken.listFromJson(
+          entry.value,
+          growable: growable,
+        );
         if (value != null) {
           map[entry.key] = value;
         }
@@ -127,4 +133,3 @@ class AuthenticationToken {
     'validity',
   };
 }
-

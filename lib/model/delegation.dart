@@ -46,26 +46,21 @@ class Delegation {
   String? key;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is Delegation &&
-     other.tags == tags &&
-     other.owner == owner &&
-     other.delegatedTo == delegatedTo &&
-     other.key == key;
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Delegation && other.tags == tags && other.owner == owner && other.delegatedTo == delegatedTo && other.key == key;
 
   @override
   int get hashCode =>
-    // ignore: unnecessary_parenthesis
-    (tags.hashCode) +
-    (owner == null ? 0 : owner!.hashCode) +
-    (delegatedTo == null ? 0 : delegatedTo!.hashCode) +
-    (key == null ? 0 : key!.hashCode);
+      // ignore: unnecessary_parenthesis
+      (tags.hashCode) + (owner == null ? 0 : owner!.hashCode) + (delegatedTo == null ? 0 : delegatedTo!.hashCode) + (key == null ? 0 : key!.hashCode);
 
   @override
   String toString() => 'Delegation[tags=$tags, owner=$owner, delegatedTo=$delegatedTo, key=$key]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
-      json[r'tags'] = tags;
+    json[r'tags'] = tags;
     if (owner != null) {
       json[r'owner'] = owner;
     }
@@ -97,9 +92,7 @@ class Delegation {
       }());
 
       return Delegation(
-        tags: json[r'tags'] is List
-            ? (json[r'tags'] as List).cast<String>()
-            : const [],
+        tags: json[r'tags'] is List ? (json[r'tags'] as List).cast<String>() : const [],
         owner: mapValueOfType<String>(json, r'owner'),
         delegatedTo: mapValueOfType<String>(json, r'delegatedTo'),
         key: mapValueOfType<String>(json, r'key'),
@@ -108,7 +101,10 @@ class Delegation {
     return null;
   }
 
-  static List<Delegation>? listFromJson(dynamic json, {bool growable = false,}) {
+  static List<Delegation>? listFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final result = <Delegation>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
@@ -136,12 +132,18 @@ class Delegation {
   }
 
   // maps a json object with a list of Delegation-objects as value to a dart map
-  static Map<String, List<Delegation>> mapListFromJson(dynamic json, {bool growable = false,}) {
+  static Map<String, List<Delegation>> mapListFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final map = <String, List<Delegation>>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
       for (final entry in json.entries) {
-        final value = Delegation.listFromJson(entry.value, growable: growable,);
+        final value = Delegation.listFromJson(
+          entry.value,
+          growable: growable,
+        );
         if (value != null) {
           map[entry.key] = value;
         }
@@ -150,10 +152,8 @@ class Delegation {
     return map;
   }
 
-
   /// The list of required keys that must be present in a JSON.
   static const requiredKeys = <String>{
     'tags',
   };
 }
-

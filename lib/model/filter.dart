@@ -19,20 +19,19 @@ class Filter {
   String description;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is Filter &&
-     other.description == description;
+  bool operator ==(Object other) => identical(this, other) || other is Filter && other.description == description;
 
   @override
   int get hashCode =>
-    // ignore: unnecessary_parenthesis
-    (description.hashCode);
+      // ignore: unnecessary_parenthesis
+      (description.hashCode);
 
   @override
   String toString() => 'Filter[description=$description]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
-      json[r'description'] = description;
+    json[r'description'] = description;
     return json;
   }
 
@@ -61,7 +60,10 @@ class Filter {
     return null;
   }
 
-  static List<Filter>? listFromJson(dynamic json, {bool growable = false,}) {
+  static List<Filter>? listFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final result = <Filter>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
@@ -89,12 +91,18 @@ class Filter {
   }
 
   // maps a json object with a list of Filter-objects as value to a dart map
-  static Map<String, List<Filter>> mapListFromJson(dynamic json, {bool growable = false,}) {
+  static Map<String, List<Filter>> mapListFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final map = <String, List<Filter>>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
       for (final entry in json.entries) {
-        final value = Filter.listFromJson(entry.value, growable: growable,);
+        final value = Filter.listFromJson(
+          entry.value,
+          growable: growable,
+        );
         if (value != null) {
           map[entry.key] = value;
         }
@@ -108,4 +116,3 @@ class Filter {
     'description',
   };
 }
-

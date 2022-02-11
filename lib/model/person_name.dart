@@ -64,45 +64,48 @@ class PersonName {
   PersonNameUseEnum? use;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is PersonName &&
-     other.lastName == lastName &&
-     other.firstNames == firstNames &&
-     other.start == start &&
-     other.end == end &&
-     other.prefix == prefix &&
-     other.suffix == suffix &&
-     other.text == text &&
-     other.use == use;
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PersonName &&
+          other.lastName == lastName &&
+          other.firstNames == firstNames &&
+          other.start == start &&
+          other.end == end &&
+          other.prefix == prefix &&
+          other.suffix == suffix &&
+          other.text == text &&
+          other.use == use;
 
   @override
   int get hashCode =>
-    // ignore: unnecessary_parenthesis
-    (lastName == null ? 0 : lastName!.hashCode) +
-    (firstNames.hashCode) +
-    (start == null ? 0 : start!.hashCode) +
-    (end == null ? 0 : end!.hashCode) +
-    (prefix.hashCode) +
-    (suffix.hashCode) +
-    (text == null ? 0 : text!.hashCode) +
-    (use == null ? 0 : use!.hashCode);
+      // ignore: unnecessary_parenthesis
+      (lastName == null ? 0 : lastName!.hashCode) +
+      (firstNames.hashCode) +
+      (start == null ? 0 : start!.hashCode) +
+      (end == null ? 0 : end!.hashCode) +
+      (prefix.hashCode) +
+      (suffix.hashCode) +
+      (text == null ? 0 : text!.hashCode) +
+      (use == null ? 0 : use!.hashCode);
 
   @override
-  String toString() => 'PersonName[lastName=$lastName, firstNames=$firstNames, start=$start, end=$end, prefix=$prefix, suffix=$suffix, text=$text, use=$use]';
+  String toString() =>
+      'PersonName[lastName=$lastName, firstNames=$firstNames, start=$start, end=$end, prefix=$prefix, suffix=$suffix, text=$text, use=$use]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
     if (lastName != null) {
       json[r'lastName'] = lastName;
     }
-      json[r'firstNames'] = firstNames;
+    json[r'firstNames'] = firstNames;
     if (start != null) {
       json[r'start'] = start;
     }
     if (end != null) {
       json[r'end'] = end;
     }
-      json[r'prefix'] = prefix;
-      json[r'suffix'] = suffix;
+    json[r'prefix'] = prefix;
+    json[r'suffix'] = suffix;
     if (text != null) {
       json[r'text'] = text;
     }
@@ -132,17 +135,11 @@ class PersonName {
 
       return PersonName(
         lastName: mapValueOfType<String>(json, r'lastName'),
-        firstNames: json[r'firstNames'] is List
-            ? (json[r'firstNames'] as List).cast<String>()
-            : const [],
+        firstNames: json[r'firstNames'] is List ? (json[r'firstNames'] as List).cast<String>() : const [],
         start: mapValueOfType<int>(json, r'start'),
         end: mapValueOfType<int>(json, r'end'),
-        prefix: json[r'prefix'] is List
-            ? (json[r'prefix'] as List).cast<String>()
-            : const [],
-        suffix: json[r'suffix'] is List
-            ? (json[r'suffix'] as List).cast<String>()
-            : const [],
+        prefix: json[r'prefix'] is List ? (json[r'prefix'] as List).cast<String>() : const [],
+        suffix: json[r'suffix'] is List ? (json[r'suffix'] as List).cast<String>() : const [],
         text: mapValueOfType<String>(json, r'text'),
         use: PersonNameUseEnum.fromJson(json[r'use']),
       );
@@ -150,7 +147,10 @@ class PersonName {
     return null;
   }
 
-  static List<PersonName>? listFromJson(dynamic json, {bool growable = false,}) {
+  static List<PersonName>? listFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final result = <PersonName>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
@@ -178,12 +178,18 @@ class PersonName {
   }
 
   // maps a json object with a list of PersonName-objects as value to a dart map
-  static Map<String, List<PersonName>> mapListFromJson(dynamic json, {bool growable = false,}) {
+  static Map<String, List<PersonName>> mapListFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final map = <String, List<PersonName>>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
       for (final entry in json.entries) {
-        final value = PersonName.listFromJson(entry.value, growable: growable,);
+        final value = PersonName.listFromJson(
+          entry.value,
+          growable: growable,
+        );
         if (value != null) {
           map[entry.key] = value;
         }
@@ -199,7 +205,6 @@ class PersonName {
     'suffix',
   };
 }
-
 
 class PersonNameUseEnum {
   /// Instantiate a new enum with the provided [value].
@@ -236,7 +241,10 @@ class PersonNameUseEnum {
 
   static PersonNameUseEnum? fromJson(dynamic value) => PersonNameUseEnumTypeTransformer().decode(value);
 
-  static List<PersonNameUseEnum>? listFromJson(dynamic json, {bool growable = false,}) {
+  static List<PersonNameUseEnum>? listFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final result = <PersonNameUseEnum>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
@@ -270,14 +278,22 @@ class PersonNameUseEnumTypeTransformer {
   PersonNameUseEnum? decode(dynamic data, {bool allowNull = true}) {
     if (data != null) {
       switch (data.toString()) {
-        case r'usual': return PersonNameUseEnum.usual;
-        case r'official': return PersonNameUseEnum.official;
-        case r'temp': return PersonNameUseEnum.temp;
-        case r'nickname': return PersonNameUseEnum.nickname;
-        case r'anonymous': return PersonNameUseEnum.anonymous;
-        case r'maiden': return PersonNameUseEnum.maiden;
-        case r'old': return PersonNameUseEnum.old;
-        case r'other': return PersonNameUseEnum.other;
+        case r'usual':
+          return PersonNameUseEnum.usual;
+        case r'official':
+          return PersonNameUseEnum.official;
+        case r'temp':
+          return PersonNameUseEnum.temp;
+        case r'nickname':
+          return PersonNameUseEnum.nickname;
+        case r'anonymous':
+          return PersonNameUseEnum.anonymous;
+        case r'maiden':
+          return PersonNameUseEnum.maiden;
+        case r'old':
+          return PersonNameUseEnum.old;
+        case r'other':
+          return PersonNameUseEnum.other;
         default:
           if (!allowNull) {
             throw ArgumentError('Unknown enum value to decode: $data');
@@ -290,5 +306,3 @@ class PersonNameUseEnumTypeTransformer {
   /// Singleton [PersonNameUseEnumTypeTransformer] instance.
   static PersonNameUseEnumTypeTransformer? _instance;
 }
-
-

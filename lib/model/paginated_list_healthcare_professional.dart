@@ -34,28 +34,27 @@ class PaginatedListHealthcareProfessional {
   PaginatedDocumentKeyAndIdPairObject? nextKeyPair;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is PaginatedListHealthcareProfessional &&
-     other.pageSize == pageSize &&
-     other.totalSize == totalSize &&
-     other.rows == rows &&
-     other.nextKeyPair == nextKeyPair;
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PaginatedListHealthcareProfessional &&
+          other.pageSize == pageSize &&
+          other.totalSize == totalSize &&
+          other.rows == rows &&
+          other.nextKeyPair == nextKeyPair;
 
   @override
   int get hashCode =>
-    // ignore: unnecessary_parenthesis
-    (pageSize.hashCode) +
-    (totalSize.hashCode) +
-    (rows.hashCode) +
-    (nextKeyPair == null ? 0 : nextKeyPair!.hashCode);
+      // ignore: unnecessary_parenthesis
+      (pageSize.hashCode) + (totalSize.hashCode) + (rows.hashCode) + (nextKeyPair == null ? 0 : nextKeyPair!.hashCode);
 
   @override
   String toString() => 'PaginatedListHealthcareProfessional[pageSize=$pageSize, totalSize=$totalSize, rows=$rows, nextKeyPair=$nextKeyPair]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
-      json[r'pageSize'] = pageSize;
-      json[r'totalSize'] = totalSize;
-      json[r'rows'] = rows;
+    json[r'pageSize'] = pageSize;
+    json[r'totalSize'] = totalSize;
+    json[r'rows'] = rows;
     if (nextKeyPair != null) {
       json[r'nextKeyPair'] = nextKeyPair;
     }
@@ -90,7 +89,10 @@ class PaginatedListHealthcareProfessional {
     return null;
   }
 
-  static List<PaginatedListHealthcareProfessional>? listFromJson(dynamic json, {bool growable = false,}) {
+  static List<PaginatedListHealthcareProfessional>? listFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final result = <PaginatedListHealthcareProfessional>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
@@ -118,12 +120,18 @@ class PaginatedListHealthcareProfessional {
   }
 
   // maps a json object with a list of PaginatedListHealthcareProfessional-objects as value to a dart map
-  static Map<String, List<PaginatedListHealthcareProfessional>> mapListFromJson(dynamic json, {bool growable = false,}) {
+  static Map<String, List<PaginatedListHealthcareProfessional>> mapListFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final map = <String, List<PaginatedListHealthcareProfessional>>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
       for (final entry in json.entries) {
-        final value = PaginatedListHealthcareProfessional.listFromJson(entry.value, growable: growable,);
+        final value = PaginatedListHealthcareProfessional.listFromJson(
+          entry.value,
+          growable: growable,
+        );
         if (value != null) {
           map[entry.key] = value;
         }
@@ -139,4 +147,3 @@ class PaginatedListHealthcareProfessional {
     'rows',
   };
 }
-

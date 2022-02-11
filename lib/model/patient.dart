@@ -413,114 +413,117 @@ class Patient {
   SystemMetaDataOwnerEncrypted? systemMetaData;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is Patient &&
-     other.id == id &&
-     other.rev == rev &&
-     other.identifiers == identifiers &&
-     other.created == created &&
-     other.modified == modified &&
-     other.author == author &&
-     other.responsible == responsible &&
-     other.labels == labels &&
-     other.codes == codes &&
-     other.endOfLife == endOfLife &&
-     other.deletionDate == deletionDate &&
-     other.firstName == firstName &&
-     other.lastName == lastName &&
-     other.names == names &&
-     other.companyName == companyName &&
-     other.languages == languages &&
-     other.addresses == addresses &&
-     other.civility == civility &&
-     other.gender == gender &&
-     other.birthSex == birthSex &&
-     other.mergeToPatientId == mergeToPatientId &&
-     other.mergedIds == mergedIds &&
-     other.alias == alias &&
-     other.active == active &&
-     other.deactivationReason == deactivationReason &&
-     other.ssin == ssin &&
-     other.maidenName == maidenName &&
-     other.spouseName == spouseName &&
-     other.partnerName == partnerName &&
-     other.personalStatus == personalStatus &&
-     other.dateOfBirth == dateOfBirth &&
-     other.dateOfDeath == dateOfDeath &&
-     other.placeOfBirth == placeOfBirth &&
-     other.placeOfDeath == placeOfDeath &&
-     other.deceased == deceased &&
-     other.education == education &&
-     other.profession == profession &&
-     other.note == note &&
-     other.administrativeNote == administrativeNote &&
-     other.nationality == nationality &&
-     other.race == race &&
-     other.ethnicity == ethnicity &&
-     other.picture == picture &&
-     other.externalId == externalId &&
-     other.partnerships == partnerships &&
-     other.patientHealthCareParties == patientHealthCareParties &&
-     other.patientProfessions == patientProfessions &&
-     other.parameters == parameters &&
-     other.properties == properties &&
-     other.systemMetaData == systemMetaData;
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Patient &&
+          other.id == id &&
+          other.rev == rev &&
+          other.identifiers == identifiers &&
+          other.created == created &&
+          other.modified == modified &&
+          other.author == author &&
+          other.responsible == responsible &&
+          other.labels == labels &&
+          other.codes == codes &&
+          other.endOfLife == endOfLife &&
+          other.deletionDate == deletionDate &&
+          other.firstName == firstName &&
+          other.lastName == lastName &&
+          other.names == names &&
+          other.companyName == companyName &&
+          other.languages == languages &&
+          other.addresses == addresses &&
+          other.civility == civility &&
+          other.gender == gender &&
+          other.birthSex == birthSex &&
+          other.mergeToPatientId == mergeToPatientId &&
+          other.mergedIds == mergedIds &&
+          other.alias == alias &&
+          other.active == active &&
+          other.deactivationReason == deactivationReason &&
+          other.ssin == ssin &&
+          other.maidenName == maidenName &&
+          other.spouseName == spouseName &&
+          other.partnerName == partnerName &&
+          other.personalStatus == personalStatus &&
+          other.dateOfBirth == dateOfBirth &&
+          other.dateOfDeath == dateOfDeath &&
+          other.placeOfBirth == placeOfBirth &&
+          other.placeOfDeath == placeOfDeath &&
+          other.deceased == deceased &&
+          other.education == education &&
+          other.profession == profession &&
+          other.note == note &&
+          other.administrativeNote == administrativeNote &&
+          other.nationality == nationality &&
+          other.race == race &&
+          other.ethnicity == ethnicity &&
+          other.picture == picture &&
+          other.externalId == externalId &&
+          other.partnerships == partnerships &&
+          other.patientHealthCareParties == patientHealthCareParties &&
+          other.patientProfessions == patientProfessions &&
+          other.parameters == parameters &&
+          other.properties == properties &&
+          other.systemMetaData == systemMetaData;
 
   @override
   int get hashCode =>
-    // ignore: unnecessary_parenthesis
-    (id == null ? 0 : id!.hashCode) +
-    (rev == null ? 0 : rev!.hashCode) +
-    (identifiers.hashCode) +
-    (created == null ? 0 : created!.hashCode) +
-    (modified == null ? 0 : modified!.hashCode) +
-    (author == null ? 0 : author!.hashCode) +
-    (responsible == null ? 0 : responsible!.hashCode) +
-    (labels.hashCode) +
-    (codes.hashCode) +
-    (endOfLife == null ? 0 : endOfLife!.hashCode) +
-    (deletionDate == null ? 0 : deletionDate!.hashCode) +
-    (firstName == null ? 0 : firstName!.hashCode) +
-    (lastName == null ? 0 : lastName!.hashCode) +
-    (names.hashCode) +
-    (companyName == null ? 0 : companyName!.hashCode) +
-    (languages.hashCode) +
-    (addresses.hashCode) +
-    (civility == null ? 0 : civility!.hashCode) +
-    (gender == null ? 0 : gender!.hashCode) +
-    (birthSex == null ? 0 : birthSex!.hashCode) +
-    (mergeToPatientId == null ? 0 : mergeToPatientId!.hashCode) +
-    (mergedIds.hashCode) +
-    (alias == null ? 0 : alias!.hashCode) +
-    (active.hashCode) +
-    (deactivationReason.hashCode) +
-    (ssin == null ? 0 : ssin!.hashCode) +
-    (maidenName == null ? 0 : maidenName!.hashCode) +
-    (spouseName == null ? 0 : spouseName!.hashCode) +
-    (partnerName == null ? 0 : partnerName!.hashCode) +
-    (personalStatus == null ? 0 : personalStatus!.hashCode) +
-    (dateOfBirth == null ? 0 : dateOfBirth!.hashCode) +
-    (dateOfDeath == null ? 0 : dateOfDeath!.hashCode) +
-    (placeOfBirth == null ? 0 : placeOfBirth!.hashCode) +
-    (placeOfDeath == null ? 0 : placeOfDeath!.hashCode) +
-    (deceased == null ? 0 : deceased!.hashCode) +
-    (education == null ? 0 : education!.hashCode) +
-    (profession == null ? 0 : profession!.hashCode) +
-    (note == null ? 0 : note!.hashCode) +
-    (administrativeNote == null ? 0 : administrativeNote!.hashCode) +
-    (nationality == null ? 0 : nationality!.hashCode) +
-    (race == null ? 0 : race!.hashCode) +
-    (ethnicity == null ? 0 : ethnicity!.hashCode) +
-    (picture == null ? 0 : picture!.hashCode) +
-    (externalId == null ? 0 : externalId!.hashCode) +
-    (partnerships.hashCode) +
-    (patientHealthCareParties.hashCode) +
-    (patientProfessions.hashCode) +
-    (parameters.hashCode) +
-    (properties.hashCode) +
-    (systemMetaData == null ? 0 : systemMetaData!.hashCode);
+      // ignore: unnecessary_parenthesis
+      (id == null ? 0 : id!.hashCode) +
+      (rev == null ? 0 : rev!.hashCode) +
+      (identifiers.hashCode) +
+      (created == null ? 0 : created!.hashCode) +
+      (modified == null ? 0 : modified!.hashCode) +
+      (author == null ? 0 : author!.hashCode) +
+      (responsible == null ? 0 : responsible!.hashCode) +
+      (labels.hashCode) +
+      (codes.hashCode) +
+      (endOfLife == null ? 0 : endOfLife!.hashCode) +
+      (deletionDate == null ? 0 : deletionDate!.hashCode) +
+      (firstName == null ? 0 : firstName!.hashCode) +
+      (lastName == null ? 0 : lastName!.hashCode) +
+      (names.hashCode) +
+      (companyName == null ? 0 : companyName!.hashCode) +
+      (languages.hashCode) +
+      (addresses.hashCode) +
+      (civility == null ? 0 : civility!.hashCode) +
+      (gender == null ? 0 : gender!.hashCode) +
+      (birthSex == null ? 0 : birthSex!.hashCode) +
+      (mergeToPatientId == null ? 0 : mergeToPatientId!.hashCode) +
+      (mergedIds.hashCode) +
+      (alias == null ? 0 : alias!.hashCode) +
+      (active.hashCode) +
+      (deactivationReason.hashCode) +
+      (ssin == null ? 0 : ssin!.hashCode) +
+      (maidenName == null ? 0 : maidenName!.hashCode) +
+      (spouseName == null ? 0 : spouseName!.hashCode) +
+      (partnerName == null ? 0 : partnerName!.hashCode) +
+      (personalStatus == null ? 0 : personalStatus!.hashCode) +
+      (dateOfBirth == null ? 0 : dateOfBirth!.hashCode) +
+      (dateOfDeath == null ? 0 : dateOfDeath!.hashCode) +
+      (placeOfBirth == null ? 0 : placeOfBirth!.hashCode) +
+      (placeOfDeath == null ? 0 : placeOfDeath!.hashCode) +
+      (deceased == null ? 0 : deceased!.hashCode) +
+      (education == null ? 0 : education!.hashCode) +
+      (profession == null ? 0 : profession!.hashCode) +
+      (note == null ? 0 : note!.hashCode) +
+      (administrativeNote == null ? 0 : administrativeNote!.hashCode) +
+      (nationality == null ? 0 : nationality!.hashCode) +
+      (race == null ? 0 : race!.hashCode) +
+      (ethnicity == null ? 0 : ethnicity!.hashCode) +
+      (picture == null ? 0 : picture!.hashCode) +
+      (externalId == null ? 0 : externalId!.hashCode) +
+      (partnerships.hashCode) +
+      (patientHealthCareParties.hashCode) +
+      (patientProfessions.hashCode) +
+      (parameters.hashCode) +
+      (properties.hashCode) +
+      (systemMetaData == null ? 0 : systemMetaData!.hashCode);
 
   @override
-  String toString() => 'Patient[id=$id, rev=$rev, identifiers=$identifiers, created=$created, modified=$modified, author=$author, responsible=$responsible, labels=$labels, codes=$codes, endOfLife=$endOfLife, deletionDate=$deletionDate, firstName=$firstName, lastName=$lastName, names=$names, companyName=$companyName, languages=$languages, addresses=$addresses, civility=$civility, gender=$gender, birthSex=$birthSex, mergeToPatientId=$mergeToPatientId, mergedIds=$mergedIds, alias=$alias, active=$active, deactivationReason=$deactivationReason, ssin=$ssin, maidenName=$maidenName, spouseName=$spouseName, partnerName=$partnerName, personalStatus=$personalStatus, dateOfBirth=$dateOfBirth, dateOfDeath=$dateOfDeath, placeOfBirth=$placeOfBirth, placeOfDeath=$placeOfDeath, deceased=$deceased, education=$education, profession=$profession, note=$note, administrativeNote=$administrativeNote, nationality=$nationality, race=$race, ethnicity=$ethnicity, picture=$picture, externalId=$externalId, partnerships=$partnerships, patientHealthCareParties=$patientHealthCareParties, patientProfessions=$patientProfessions, parameters=$parameters, properties=$properties, systemMetaData=$systemMetaData]';
+  String toString() =>
+      'Patient[id=$id, rev=$rev, identifiers=$identifiers, created=$created, modified=$modified, author=$author, responsible=$responsible, labels=$labels, codes=$codes, endOfLife=$endOfLife, deletionDate=$deletionDate, firstName=$firstName, lastName=$lastName, names=$names, companyName=$companyName, languages=$languages, addresses=$addresses, civility=$civility, gender=$gender, birthSex=$birthSex, mergeToPatientId=$mergeToPatientId, mergedIds=$mergedIds, alias=$alias, active=$active, deactivationReason=$deactivationReason, ssin=$ssin, maidenName=$maidenName, spouseName=$spouseName, partnerName=$partnerName, personalStatus=$personalStatus, dateOfBirth=$dateOfBirth, dateOfDeath=$dateOfDeath, placeOfBirth=$placeOfBirth, placeOfDeath=$placeOfDeath, deceased=$deceased, education=$education, profession=$profession, note=$note, administrativeNote=$administrativeNote, nationality=$nationality, race=$race, ethnicity=$ethnicity, picture=$picture, externalId=$externalId, partnerships=$partnerships, patientHealthCareParties=$patientHealthCareParties, patientProfessions=$patientProfessions, parameters=$parameters, properties=$properties, systemMetaData=$systemMetaData]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -530,7 +533,7 @@ class Patient {
     if (rev != null) {
       json[r'rev'] = rev;
     }
-      json[r'identifiers'] = identifiers;
+    json[r'identifiers'] = identifiers;
     if (created != null) {
       json[r'created'] = created;
     }
@@ -543,8 +546,8 @@ class Patient {
     if (responsible != null) {
       json[r'responsible'] = responsible;
     }
-      json[r'labels'] = labels.toList();
-      json[r'codes'] = codes.toList();
+    json[r'labels'] = labels.toList();
+    json[r'codes'] = codes.toList();
     if (endOfLife != null) {
       json[r'endOfLife'] = endOfLife;
     }
@@ -557,12 +560,12 @@ class Patient {
     if (lastName != null) {
       json[r'lastName'] = lastName;
     }
-      json[r'names'] = names;
+    json[r'names'] = names;
     if (companyName != null) {
       json[r'companyName'] = companyName;
     }
-      json[r'languages'] = languages;
-      json[r'addresses'] = addresses;
+    json[r'languages'] = languages;
+    json[r'addresses'] = addresses;
     if (civility != null) {
       json[r'civility'] = civility;
     }
@@ -575,12 +578,12 @@ class Patient {
     if (mergeToPatientId != null) {
       json[r'mergeToPatientId'] = mergeToPatientId;
     }
-      json[r'mergedIds'] = mergedIds.toList();
+    json[r'mergedIds'] = mergedIds.toList();
     if (alias != null) {
       json[r'alias'] = alias;
     }
-      json[r'active'] = active;
-      json[r'deactivationReason'] = deactivationReason;
+    json[r'active'] = active;
+    json[r'deactivationReason'] = deactivationReason;
     if (ssin != null) {
       json[r'ssin'] = ssin;
     }
@@ -638,11 +641,11 @@ class Patient {
     if (externalId != null) {
       json[r'externalId'] = externalId;
     }
-      json[r'partnerships'] = partnerships;
-      json[r'patientHealthCareParties'] = patientHealthCareParties;
-      json[r'patientProfessions'] = patientProfessions;
-      json[r'parameters'] = parameters;
-      json[r'properties'] = properties.toList();
+    json[r'partnerships'] = partnerships;
+    json[r'patientHealthCareParties'] = patientHealthCareParties;
+    json[r'patientProfessions'] = patientProfessions;
+    json[r'parameters'] = parameters;
+    json[r'properties'] = properties.toList();
     if (systemMetaData != null) {
       json[r'systemMetaData'] = systemMetaData;
     }
@@ -683,9 +686,7 @@ class Patient {
         lastName: mapValueOfType<String>(json, r'lastName'),
         names: PersonName.listFromJson(json[r'names'])!,
         companyName: mapValueOfType<String>(json, r'companyName'),
-        languages: json[r'languages'] is List
-            ? (json[r'languages'] as List).cast<String>()
-            : const [],
+        languages: json[r'languages'] is List ? (json[r'languages'] as List).cast<String>() : const [],
         addresses: Address.listFromJson(json[r'addresses'])!,
         civility: mapValueOfType<String>(json, r'civility'),
         gender: PatientGenderEnum.fromJson(json[r'gender']),
@@ -693,7 +694,9 @@ class Patient {
         mergeToPatientId: mapValueOfType<String>(json, r'mergeToPatientId'),
         mergedIds: json[r'mergedIds'] is Set
             ? (json[r'mergedIds'] as Set).cast<String>()
-            : const {},
+            : json[r'mergedIds'] is List
+                ? ((json[r'mergedIds'] as List).toSet()).cast<String>()
+                : const {},
         alias: mapValueOfType<String>(json, r'alias'),
         active: mapValueOfType<bool>(json, r'active')!,
         deactivationReason: PatientDeactivationReasonEnum.fromJson(json[r'deactivationReason'])!,
@@ -727,7 +730,10 @@ class Patient {
     return null;
   }
 
-  static List<Patient>? listFromJson(dynamic json, {bool growable = false,}) {
+  static List<Patient>? listFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final result = <Patient>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
@@ -755,12 +761,18 @@ class Patient {
   }
 
   // maps a json object with a list of Patient-objects as value to a dart map
-  static Map<String, List<Patient>> mapListFromJson(dynamic json, {bool growable = false,}) {
+  static Map<String, List<Patient>> mapListFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final map = <String, List<Patient>>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
       for (final entry in json.entries) {
-        final value = Patient.listFromJson(entry.value, growable: growable,);
+        final value = Patient.listFromJson(
+          entry.value,
+          growable: growable,
+        );
         if (value != null) {
           map[entry.key] = value;
         }
@@ -822,7 +834,10 @@ class PatientGenderEnum {
 
   static PatientGenderEnum? fromJson(dynamic value) => PatientGenderEnumTypeTransformer().decode(value);
 
-  static List<PatientGenderEnum>? listFromJson(dynamic json, {bool growable = false,}) {
+  static List<PatientGenderEnum>? listFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final result = <PatientGenderEnum>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
@@ -856,13 +871,20 @@ class PatientGenderEnumTypeTransformer {
   PatientGenderEnum? decode(dynamic data, {bool allowNull = true}) {
     if (data != null) {
       switch (data.toString()) {
-        case r'male': return PatientGenderEnum.male;
-        case r'female': return PatientGenderEnum.female;
-        case r'indeterminate': return PatientGenderEnum.indeterminate;
-        case r'changed': return PatientGenderEnum.changed;
-        case r'changedToMale': return PatientGenderEnum.changedToMale;
-        case r'changedToFemale': return PatientGenderEnum.changedToFemale;
-        case r'unknown': return PatientGenderEnum.unknown;
+        case r'male':
+          return PatientGenderEnum.male;
+        case r'female':
+          return PatientGenderEnum.female;
+        case r'indeterminate':
+          return PatientGenderEnum.indeterminate;
+        case r'changed':
+          return PatientGenderEnum.changed;
+        case r'changedToMale':
+          return PatientGenderEnum.changedToMale;
+        case r'changedToFemale':
+          return PatientGenderEnum.changedToFemale;
+        case r'unknown':
+          return PatientGenderEnum.unknown;
         default:
           if (!allowNull) {
             throw ArgumentError('Unknown enum value to decode: $data');
@@ -875,7 +897,6 @@ class PatientGenderEnumTypeTransformer {
   /// Singleton [PatientGenderEnumTypeTransformer] instance.
   static PatientGenderEnumTypeTransformer? _instance;
 }
-
 
 /// the birth sex of the patient: male, female, indeterminate, unknown
 class PatientBirthSexEnum {
@@ -911,7 +932,10 @@ class PatientBirthSexEnum {
 
   static PatientBirthSexEnum? fromJson(dynamic value) => PatientBirthSexEnumTypeTransformer().decode(value);
 
-  static List<PatientBirthSexEnum>? listFromJson(dynamic json, {bool growable = false,}) {
+  static List<PatientBirthSexEnum>? listFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final result = <PatientBirthSexEnum>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
@@ -945,13 +969,20 @@ class PatientBirthSexEnumTypeTransformer {
   PatientBirthSexEnum? decode(dynamic data, {bool allowNull = true}) {
     if (data != null) {
       switch (data.toString()) {
-        case r'male': return PatientBirthSexEnum.male;
-        case r'female': return PatientBirthSexEnum.female;
-        case r'indeterminate': return PatientBirthSexEnum.indeterminate;
-        case r'changed': return PatientBirthSexEnum.changed;
-        case r'changedToMale': return PatientBirthSexEnum.changedToMale;
-        case r'changedToFemale': return PatientBirthSexEnum.changedToFemale;
-        case r'unknown': return PatientBirthSexEnum.unknown;
+        case r'male':
+          return PatientBirthSexEnum.male;
+        case r'female':
+          return PatientBirthSexEnum.female;
+        case r'indeterminate':
+          return PatientBirthSexEnum.indeterminate;
+        case r'changed':
+          return PatientBirthSexEnum.changed;
+        case r'changedToMale':
+          return PatientBirthSexEnum.changedToMale;
+        case r'changedToFemale':
+          return PatientBirthSexEnum.changedToFemale;
+        case r'unknown':
+          return PatientBirthSexEnum.unknown;
         default:
           if (!allowNull) {
             throw ArgumentError('Unknown enum value to decode: $data');
@@ -964,7 +995,6 @@ class PatientBirthSexEnumTypeTransformer {
   /// Singleton [PatientBirthSexEnumTypeTransformer] instance.
   static PatientBirthSexEnumTypeTransformer? _instance;
 }
-
 
 /// When not active, the reason for deactivation.
 class PatientDeactivationReasonEnum {
@@ -1000,7 +1030,10 @@ class PatientDeactivationReasonEnum {
 
   static PatientDeactivationReasonEnum? fromJson(dynamic value) => PatientDeactivationReasonEnumTypeTransformer().decode(value);
 
-  static List<PatientDeactivationReasonEnum>? listFromJson(dynamic json, {bool growable = false,}) {
+  static List<PatientDeactivationReasonEnum>? listFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final result = <PatientDeactivationReasonEnum>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
@@ -1034,13 +1067,20 @@ class PatientDeactivationReasonEnumTypeTransformer {
   PatientDeactivationReasonEnum? decode(dynamic data, {bool allowNull = true}) {
     if (data != null) {
       switch (data.toString()) {
-        case r'deceased': return PatientDeactivationReasonEnum.deceased;
-        case r'moved': return PatientDeactivationReasonEnum.moved;
-        case r'other_doctor': return PatientDeactivationReasonEnum.otherDoctor;
-        case r'retired': return PatientDeactivationReasonEnum.retired;
-        case r'no_contact': return PatientDeactivationReasonEnum.noContact;
-        case r'unknown': return PatientDeactivationReasonEnum.unknown;
-        case r'none': return PatientDeactivationReasonEnum.none;
+        case r'deceased':
+          return PatientDeactivationReasonEnum.deceased;
+        case r'moved':
+          return PatientDeactivationReasonEnum.moved;
+        case r'other_doctor':
+          return PatientDeactivationReasonEnum.otherDoctor;
+        case r'retired':
+          return PatientDeactivationReasonEnum.retired;
+        case r'no_contact':
+          return PatientDeactivationReasonEnum.noContact;
+        case r'unknown':
+          return PatientDeactivationReasonEnum.unknown;
+        case r'none':
+          return PatientDeactivationReasonEnum.none;
         default:
           if (!allowNull) {
             throw ArgumentError('Unknown enum value to decode: $data');
@@ -1053,7 +1093,6 @@ class PatientDeactivationReasonEnumTypeTransformer {
   /// Singleton [PatientDeactivationReasonEnumTypeTransformer] instance.
   static PatientDeactivationReasonEnumTypeTransformer? _instance;
 }
-
 
 /// any of `single`, `in_couple`, `married`, `separated`, `divorced`, `divorcing`, `widowed`, `widower`, `complicated`, `unknown`, `contract`, `other`.
 class PatientPersonalStatusEnum {
@@ -1103,7 +1142,10 @@ class PatientPersonalStatusEnum {
 
   static PatientPersonalStatusEnum? fromJson(dynamic value) => PatientPersonalStatusEnumTypeTransformer().decode(value);
 
-  static List<PatientPersonalStatusEnum>? listFromJson(dynamic json, {bool growable = false,}) {
+  static List<PatientPersonalStatusEnum>? listFromJson(
+    dynamic json, {
+    bool growable = false,
+  }) {
     final result = <PatientPersonalStatusEnum>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
@@ -1137,20 +1179,34 @@ class PatientPersonalStatusEnumTypeTransformer {
   PatientPersonalStatusEnum? decode(dynamic data, {bool allowNull = true}) {
     if (data != null) {
       switch (data.toString()) {
-        case r'single': return PatientPersonalStatusEnum.single;
-        case r'in_couple': return PatientPersonalStatusEnum.inCouple;
-        case r'married': return PatientPersonalStatusEnum.married;
-        case r'separated': return PatientPersonalStatusEnum.separated;
-        case r'divorced': return PatientPersonalStatusEnum.divorced;
-        case r'divorcing': return PatientPersonalStatusEnum.divorcing;
-        case r'widowed': return PatientPersonalStatusEnum.widowed;
-        case r'widower': return PatientPersonalStatusEnum.widower;
-        case r'complicated': return PatientPersonalStatusEnum.complicated;
-        case r'unknown': return PatientPersonalStatusEnum.unknown;
-        case r'contract': return PatientPersonalStatusEnum.contract;
-        case r'other': return PatientPersonalStatusEnum.other;
-        case r'annulled': return PatientPersonalStatusEnum.annulled;
-        case r'polygamous': return PatientPersonalStatusEnum.polygamous;
+        case r'single':
+          return PatientPersonalStatusEnum.single;
+        case r'in_couple':
+          return PatientPersonalStatusEnum.inCouple;
+        case r'married':
+          return PatientPersonalStatusEnum.married;
+        case r'separated':
+          return PatientPersonalStatusEnum.separated;
+        case r'divorced':
+          return PatientPersonalStatusEnum.divorced;
+        case r'divorcing':
+          return PatientPersonalStatusEnum.divorcing;
+        case r'widowed':
+          return PatientPersonalStatusEnum.widowed;
+        case r'widower':
+          return PatientPersonalStatusEnum.widower;
+        case r'complicated':
+          return PatientPersonalStatusEnum.complicated;
+        case r'unknown':
+          return PatientPersonalStatusEnum.unknown;
+        case r'contract':
+          return PatientPersonalStatusEnum.contract;
+        case r'other':
+          return PatientPersonalStatusEnum.other;
+        case r'annulled':
+          return PatientPersonalStatusEnum.annulled;
+        case r'polygamous':
+          return PatientPersonalStatusEnum.polygamous;
         default:
           if (!allowNull) {
             throw ArgumentError('Unknown enum value to decode: $data');
@@ -1163,5 +1219,3 @@ class PatientPersonalStatusEnumTypeTransformer {
   /// Singleton [PatientPersonalStatusEnumTypeTransformer] instance.
   static PatientPersonalStatusEnumTypeTransformer? _instance;
 }
-
-
