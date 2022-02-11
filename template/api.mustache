@@ -1,0 +1,44 @@
+{{>header}}
+{{>part_of}}
+{{#operations}}
+
+abstract class {{{classname}}} {
+  {{{classname}}}([ApiClient? apiClient]) : apiClient = apiClient ?? defaultApiClient;
+
+  final ApiClient apiClient;
+  {{#operation}}
+
+  {{#summary}}
+  /// {{{.}}}
+  {{/summary}}
+  {{#notes}}
+  {{#summary}}
+  ///
+  {{/summary}}
+  /// {{{notes}}}
+  {{/notes}}
+  {{#hasParams}}
+    {{#summary}}
+  ///
+    {{/summary}}
+    {{^summary}}
+      {{#notes}}
+  ///
+      {{/notes}}
+    {{/summary}}
+  /// Parameters:
+  ///
+  {{/hasParams}}
+  {{#allParams}}
+  /// * [{{{dataType}}}] {{{paramName}}}{{#required}} (required){{/required}}{{#optional}} (optional){{/optional}}:
+    {{#description}}
+  ///   {{{.}}}
+    {{/description}}
+    {{^-last}}
+  ///
+    {{/-last}}
+  {{/allParams}}
+  Future<{{#returnType}}{{{.}}}?{{/returnType}}{{^returnType}}void{{/returnType}}> {{{nickname}}}({{#allParams}}{{#required}}{{{dataType}}} {{{paramName}}},{{^-last}} {{/-last}}{{/required}}{{/allParams}}{{#hasOptionalParams}}{ {{#allParams}}{{^required}}{{{dataType}}}? {{{paramName}}},{{^-last}} {{/-last}}{{/required}}{{/allParams}} }{{/hasOptionalParams}});
+  {{/operation}}
+}
+{{/operations}}
