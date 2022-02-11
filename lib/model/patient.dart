@@ -543,8 +543,8 @@ class Patient {
     if (responsible != null) {
       json[r'responsible'] = responsible;
     }
-      json[r'labels'] = labels;
-      json[r'codes'] = codes;
+      json[r'labels'] = labels.toList();
+      json[r'codes'] = codes.toList();
     if (endOfLife != null) {
       json[r'endOfLife'] = endOfLife;
     }
@@ -575,7 +575,7 @@ class Patient {
     if (mergeToPatientId != null) {
       json[r'mergeToPatientId'] = mergeToPatientId;
     }
-      json[r'mergedIds'] = mergedIds;
+      json[r'mergedIds'] = mergedIds.toList();
     if (alias != null) {
       json[r'alias'] = alias;
     }
@@ -642,7 +642,7 @@ class Patient {
       json[r'patientHealthCareParties'] = patientHealthCareParties;
       json[r'patientProfessions'] = patientProfessions;
       json[r'parameters'] = parameters;
-      json[r'properties'] = properties;
+      json[r'properties'] = properties.toList();
     if (systemMetaData != null) {
       json[r'systemMetaData'] = systemMetaData;
     }

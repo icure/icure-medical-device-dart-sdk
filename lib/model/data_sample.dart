@@ -235,8 +235,8 @@ class DataSample {
     if (batchId != null) {
       json[r'batchId'] = batchId;
     }
-      json[r'healthElementsIds'] = healthElementsIds;
-      json[r'canvasesIds'] = canvasesIds;
+      json[r'healthElementsIds'] = healthElementsIds.toList();
+      json[r'canvasesIds'] = canvasesIds.toList();
     if (index != null) {
       json[r'index'] = index;
     }
@@ -269,8 +269,8 @@ class DataSample {
       json[r'comment'] = comment;
     }
       json[r'qualifiedLinks'] = qualifiedLinks;
-      json[r'codes'] = codes;
-      json[r'labels'] = labels;
+      json[r'codes'] = codes.toList();
+      json[r'labels'] = labels.toList();
     return json;
   }
 

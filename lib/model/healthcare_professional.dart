@@ -271,11 +271,11 @@ class HealthcareProfessional {
     if (picture != null) {
       json[r'picture'] = picture;
     }
-      json[r'specialityCodes'] = specialityCodes;
+      json[r'specialityCodes'] = specialityCodes.toList();
     if (notes != null) {
       json[r'notes'] = notes;
     }
-      json[r'properties'] = properties;
+      json[r'properties'] = properties.toList();
     if (systemMetaData != null) {
       json[r'systemMetaData'] = systemMetaData;
     }

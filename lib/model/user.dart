@@ -246,8 +246,8 @@ class User {
     if (name != null) {
       json[r'name'] = name;
     }
-      json[r'properties'] = properties;
-      json[r'roles'] = roles;
+      json[r'properties'] = properties.toList();
+      json[r'roles'] = roles.toList();
     if (login != null) {
       json[r'login'] = login;
     }
@@ -272,7 +272,7 @@ class User {
     if (deviceId != null) {
       json[r'deviceId'] = deviceId;
     }
-      json[r'autoDelegations'] = autoDelegations;
+      json[r'autoDelegations'] = autoDelegations.map((k,v) => MapEntry(k, v.toList()));
     if (email != null) {
       json[r'email'] = email;
     }

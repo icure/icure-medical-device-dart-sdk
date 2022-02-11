@@ -120,7 +120,7 @@ class Coding {
     }
       json[r'description'] = description;
       json[r'qualifiedLinks'] = qualifiedLinks;
-      json[r'searchTerms'] = searchTerms;
+      json[r'searchTerms'] = searchTerms.map((k,v) => MapEntry(k, v.toList()));
     return json;
   }
 

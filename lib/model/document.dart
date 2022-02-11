@@ -255,7 +255,7 @@ class Document {
     if (version != null) {
       json[r'version'] = version;
     }
-      json[r'otherUtis'] = otherUtis;
+      json[r'otherUtis'] = otherUtis.toList();
     if (externalUuid != null) {
       json[r'externalUuid'] = externalUuid;
     }

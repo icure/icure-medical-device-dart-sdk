@@ -166,7 +166,7 @@ class Measure {
     if (unit != null) {
       json[r'unit'] = unit;
     }
-      json[r'unitCodes'] = unitCodes;
+      json[r'unitCodes'] = unitCodes.toList();
     if (comment != null) {
       json[r'comment'] = comment;
     }

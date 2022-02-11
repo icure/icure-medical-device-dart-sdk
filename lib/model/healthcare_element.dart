@@ -21,7 +21,7 @@ class HealthcareElement {
     this.author,
     this.responsible,
     this.medicalLocationId,
-    this.tags = const {},
+    this.labels = const {},
     this.codes = const {},
     this.endOfLife,
     this.deletionDate,
@@ -94,7 +94,7 @@ class HealthcareElement {
   ///
   String? medicalLocationId;
 
-  Set<CodingReference> tags;
+  Set<CodingReference> labels;
 
   Set<CodingReference> codes;
 
@@ -186,7 +186,7 @@ class HealthcareElement {
      other.author == author &&
      other.responsible == responsible &&
      other.medicalLocationId == medicalLocationId &&
-     other.tags == tags &&
+     other.labels == labels &&
      other.codes == codes &&
      other.endOfLife == endOfLife &&
      other.deletionDate == deletionDate &&
@@ -209,7 +209,7 @@ class HealthcareElement {
     (author == null ? 0 : author!.hashCode) +
     (responsible == null ? 0 : responsible!.hashCode) +
     (medicalLocationId == null ? 0 : medicalLocationId!.hashCode) +
-    (tags.hashCode) +
+    (labels.hashCode) +
     (codes.hashCode) +
     (endOfLife == null ? 0 : endOfLife!.hashCode) +
     (deletionDate == null ? 0 : deletionDate!.hashCode) +
@@ -222,7 +222,7 @@ class HealthcareElement {
     (systemMetaData == null ? 0 : systemMetaData!.hashCode);
 
   @override
-  String toString() => 'HealthcareElement[id=$id, identifiers=$identifiers, rev=$rev, created=$created, modified=$modified, author=$author, responsible=$responsible, medicalLocationId=$medicalLocationId, tags=$tags, codes=$codes, endOfLife=$endOfLife, deletionDate=$deletionDate, healthElementId=$healthElementId, valueDate=$valueDate, openingDate=$openingDate, closingDate=$closingDate, description=$description, note=$note, systemMetaData=$systemMetaData]';
+  String toString() => 'HealthcareElement[id=$id, identifiers=$identifiers, rev=$rev, created=$created, modified=$modified, author=$author, responsible=$responsible, medicalLocationId=$medicalLocationId, labels=$labels, codes=$codes, endOfLife=$endOfLife, deletionDate=$deletionDate, healthElementId=$healthElementId, valueDate=$valueDate, openingDate=$openingDate, closingDate=$closingDate, description=$description, note=$note, systemMetaData=$systemMetaData]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -248,8 +248,8 @@ class HealthcareElement {
     if (medicalLocationId != null) {
       json[r'medicalLocationId'] = medicalLocationId;
     }
-      json[r'tags'] = tags;
-      json[r'codes'] = codes;
+      json[r'labels'] = labels.toList();
+      json[r'codes'] = codes.toList();
     if (endOfLife != null) {
       json[r'endOfLife'] = endOfLife;
     }
@@ -307,7 +307,7 @@ class HealthcareElement {
         author: mapValueOfType<String>(json, r'author'),
         responsible: mapValueOfType<String>(json, r'responsible'),
         medicalLocationId: mapValueOfType<String>(json, r'medicalLocationId'),
-        tags: CodingReference.listFromJson(json[r'tags'])!.toSet(),
+        labels: CodingReference.listFromJson(json[r'labels'])!.toSet(),
         codes: CodingReference.listFromJson(json[r'codes'])!.toSet(),
         endOfLife: mapValueOfType<int>(json, r'endOfLife'),
         deletionDate: mapValueOfType<int>(json, r'deletionDate'),
@@ -368,7 +368,7 @@ class HealthcareElement {
   /// The list of required keys that must be present in a JSON.
   static const requiredKeys = <String>{
     'identifiers',
-    'tags',
+    'labels',
     'codes',
   };
 }

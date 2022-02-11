@@ -268,8 +268,8 @@ class MedicalDevice {
     if (responsible != null) {
       json[r'responsible'] = responsible;
     }
-      json[r'labels'] = labels;
-      json[r'codes'] = codes;
+      json[r'labels'] = labels.toList();
+      json[r'codes'] = codes.toList();
     if (endOfLife != null) {
       json[r'endOfLife'] = endOfLife;
     }
@@ -295,7 +295,7 @@ class MedicalDevice {
       json[r'parentId'] = parentId;
     }
       json[r'picture'] = picture;
-      json[r'properties'] = properties;
+      json[r'properties'] = properties.toList();
     if (systemMetaData != null) {
       json[r'systemMetaData'] = systemMetaData;
     }

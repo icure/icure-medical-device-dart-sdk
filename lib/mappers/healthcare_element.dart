@@ -24,7 +24,7 @@ extension HealthElementDtoMapper on HealthElementDto {
       HealthcareElement(
           id: this.id,
           identifiers: this.identifiers.map((it) => it.toIdentifier()).toList(),
-          tags: this.tags.map((it) => it.toCodingReference()).toSet(),
+          labels: this.tags.map((it) => it.toCodingReference()).toSet(),
           codes: this.codes.map((it) => it.toCodingReference()).toSet(),
           rev: this.rev,
           created: this.created,
@@ -58,7 +58,7 @@ extension HealthcareElementMapper on HealthcareElement {
           }
         }) ?? uuid.v4(options: { 'rng': UuidUtil.cryptoRNG}),
         identifiers: this.identifiers.map((it) => it.toIdentifierDto()).toList(),
-        tags: this.tags.map((it) => it.toCodeStubDto()).toSet(),
+        tags: this.labels.map((it) => it.toCodeStubDto()).toSet(),
         codes: this.codes.map((it) => it.toCodeStubDto()).toSet(),
         rev: this.rev,
         created: this.created,
