@@ -15,7 +15,7 @@ dependencies:
   icure_dart_sdk:
     git:
       url: https://github.com/icure-io/icure-dart-sdk.git
-      ref: master
+      ref: 73c80bde7bb4a1627db5eba44ebae873dc11c59b
   pointycastle: ^3.5.1
 
 dev_dependencies:

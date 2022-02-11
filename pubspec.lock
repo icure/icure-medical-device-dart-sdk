@@ -152,8 +152,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: master
-      resolved-ref: "80e41ae88b92342ef34dadc9c10cf3d82fe855e2"
+      ref: "73c80bde7bb4a1627db5eba44ebae873dc11c59b"
+      resolved-ref: "73c80bde7bb4a1627db5eba44ebae873dc11c59b"
       url: "https://github.com/icure-io/icure-dart-sdk.git"
     source: git
     version: "1.0.0"

@@ -36,10 +36,7 @@ import io.icure.md.client.models.Patient
 import io.icure.md.client.models.User
 import kotlin.reflect.KClass
 
-inline fun <reified F : Any, reified T : Any> Filter<F>.toAbstractFilterDto() =
-    this.toAbstractFilterDto(F::class, T::class)
-
-fun <F : Any, T : Any> Filter<F>.toAbstractFilterDto(from: KClass<F>, to: KClass<T>): AbstractFilterDto<T> = when {
+AbstractFilterDto<T> toAbstractFilterDto<F, T>() => when {
     from == Coding::class && to == CodeDto::class -> (this as Filter<Coding>).codingFilterToAbstractCodeFilterDto() as AbstractFilterDto<T>
     from == DataSample::class && to == ServiceDto::class -> (this as Filter<DataSample>).dataSampleFilterToAbstractServiceFilterDto() as AbstractFilterDto<T>
     from == MedicalDevice::class && to == DeviceDto::class -> (this as Filter<MedicalDevice>).medicalDeviceFilterToAbstractDeviceFilterDto() as AbstractFilterDto<T>
