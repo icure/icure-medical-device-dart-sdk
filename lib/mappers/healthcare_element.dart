@@ -19,7 +19,7 @@ import 'delegation.dart';
 
 final uuid = Uuid();
 
-extension HealthElementDtoMapper on HealthElementDto {
+extension HealthElementDtoMapper on DecryptedHealthElementDto {
   HealthcareElement toHealthcareElement() =>
       HealthcareElement(
           id: this.id,
@@ -50,8 +50,8 @@ extension HealthElementDtoMapper on HealthElementDto {
 }
 
 extension HealthcareElementMapper on HealthcareElement {
-  HealthElementDto toHealthElementDto() =>
-      HealthElementDto(
+  DecryptedHealthElementDto toHealthElementDto() =>
+      DecryptedHealthElementDto(
         id: this.id?.also((it) {
           if (!Uuid.isValidUUID(fromString: it)) {
             throw FormatException("Invalid id, id must be a valid UUID");
