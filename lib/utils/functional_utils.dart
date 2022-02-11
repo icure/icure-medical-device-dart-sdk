@@ -7,3 +7,7 @@ extension ObjectExt<T> on T {
     return this;
   }
 }
+
+extension StringExt on String {
+  bool get isUuid => RegExp(r'^[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}$').hasMatch(this);
+}
