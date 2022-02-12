@@ -4,6 +4,7 @@ import 'package:icure_dart_sdk/crypto/crypto.dart';
 import 'package:crypton/crypton.dart';
 
 class MedTechApi {
+  final CodeApi codeApi;
   final UserApi userApi;
   final PatientApi patientApi;
   final HealthElementApi healthElementApi;
@@ -11,7 +12,7 @@ class MedTechApi {
   final HealthcarePartyApi healthcarePartyApi;
   final LocalCrypto localCrypto;
 
-  MedTechApi(this.userApi, this.patientApi, this.healthElementApi, this.deviceApi, this.healthcarePartyApi, this.localCrypto);
+  MedTechApi(this.codeApi, this.userApi, this.patientApi, this.healthElementApi, this.deviceApi, this.healthcarePartyApi, this.localCrypto);
 }
 
 class MedTechApiBuilder {
@@ -29,7 +30,7 @@ class MedTechApiBuilder {
   set userName(String newUserName) {
     _userName = newUserName;
   }
-  
+
   String get password => _password;
   set password(String newPassword) {
     _password = newPassword;
@@ -39,12 +40,13 @@ class MedTechApiBuilder {
     var keyPair = RSAKeypair(privateKey);
     rsaKeyPairs[keyId] = keyPair;
   }
-  
+
   MedTechApi build(){
     final ApiClient client = ApiClient.basic(iCureBasePath, userName, password);
     final hcpApi = HealthcarePartyApi(client);
 
     return MedTechApi(
+      CodeApi(client),
       UserApi(client),
       PatientApi(client),
       HealthElementApi(client),
