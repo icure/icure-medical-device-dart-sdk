@@ -5,7 +5,7 @@
 
 // ignore_for_file: unused_element, unused_import
 // ignore_for_file: always_put_required_named_parameters_first
-// ignore_for_file: constant_identifier_names
+// ignore_for_file: constant_identifiers_names
 // ignore_for_file: lines_longer_than_80_chars
 
 part of icure_medical_device_dart_sdk.api;
@@ -15,7 +15,7 @@ class DataSample {
   DataSample({
     this.id,
     this.transactionId,
-    this.identifier = const [],
+    this.identifiers = const [],
     this.batchId,
     this.healthElementsIds = const {},
     this.canvasesIds = const {},
@@ -53,8 +53,8 @@ class DataSample {
   ///
   String? transactionId;
 
-  /// Typically used for business / client identifiers. An identifier should identify a data sample uniquely and unambiguously. However, iCure can't guarantee the uniqueness of those identifiers : This is something you need to take care of.
-  List<Identifier> identifier;
+  /// Typically used for business / client identifierss. An identifiers should identify a data sample uniquely and unambiguously. However, iCure can't guarantee the uniqueness of those identifierss : This is something you need to take care of.
+  List<Identifier> identifiers;
 
   /// Id of the batch that embeds this data sample
   ///
@@ -179,7 +179,7 @@ class DataSample {
       other is DataSample &&
           other.id == id &&
           other.transactionId == transactionId &&
-          other.identifier == identifier &&
+          other.identifiers == identifiers &&
           other.batchId == batchId &&
           other.healthElementsIds == healthElementsIds &&
           other.canvasesIds == canvasesIds &&
@@ -203,7 +203,7 @@ class DataSample {
       // ignore: unnecessary_parenthesis
       (id == null ? 0 : id!.hashCode) +
       (transactionId == null ? 0 : transactionId!.hashCode) +
-      (identifier.hashCode) +
+      (identifiers.hashCode) +
       (batchId == null ? 0 : batchId!.hashCode) +
       (healthElementsIds.hashCode) +
       (canvasesIds.hashCode) +
@@ -224,7 +224,7 @@ class DataSample {
 
   @override
   String toString() =>
-      'DataSample[id=$id, transactionId=$transactionId, identifier=$identifier, batchId=$batchId, healthElementsIds=$healthElementsIds, canvasesIds=$canvasesIds, index=$index, content=$content, valueDate=$valueDate, openingDate=$openingDate, closingDate=$closingDate, created=$created, modified=$modified, endOfLife=$endOfLife, author=$author, responsible=$responsible, comment=$comment, qualifiedLinks=$qualifiedLinks, codes=$codes, labels=$labels]';
+      'DataSample[id=$id, transactionId=$transactionId, identifiers=$identifiers, batchId=$batchId, healthElementsIds=$healthElementsIds, canvasesIds=$canvasesIds, index=$index, content=$content, valueDate=$valueDate, openingDate=$openingDate, closingDate=$closingDate, created=$created, modified=$modified, endOfLife=$endOfLife, author=$author, responsible=$responsible, comment=$comment, qualifiedLinks=$qualifiedLinks, codes=$codes, labels=$labels]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -234,7 +234,7 @@ class DataSample {
     if (transactionId != null) {
       json[r'transactionId'] = transactionId;
     }
-    json[r'identifier'] = identifier;
+    json[r'identifiers'] = identifiers;
     if (batchId != null) {
       json[r'batchId'] = batchId;
     }
@@ -298,7 +298,7 @@ class DataSample {
       return DataSample(
         id: mapValueOfType<String>(json, r'id'),
         transactionId: mapValueOfType<String>(json, r'transactionId'),
-        identifier: Identifier.listFromJson(json[r'identifier'])!,
+        identifiers: Identifier.listFromJson(json[r'identifiers'])!,
         batchId: mapValueOfType<String>(json, r'batchId'),
         healthElementsIds: json[r'healthElementsIds'] is Set
             ? (json[r'healthElementsIds'] as Set).cast<String>()
@@ -382,7 +382,7 @@ class DataSample {
 
   /// The list of required keys that must be present in a JSON.
   static const requiredKeys = <String>{
-    'identifier',
+    'identifiers',
     'content',
     'qualifiedLinks',
     'codes',

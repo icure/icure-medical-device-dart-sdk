@@ -223,8 +223,6 @@ class ApiClient {
           return Delegation.fromJson(value);
         case 'Document':
           return Document.fromJson(value);
-        case 'Filter':
-          return Filter.fromJson(value);
         case 'HealthcareElement':
           return HealthcareElement.fromJson(value);
         case 'HealthcareProfessional':
