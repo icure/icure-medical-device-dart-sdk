@@ -50,7 +50,7 @@ abstract class HealthcareProfessionalApi {
   ///
   /// * [int] limit:
   ///   The number of healthcare professionals to return in the queried page
-  Future<PaginatedListHealthcareProfessional?> filterHealthcareProfessionalBy(Filter filter, { String? nextHcpId, int? limit, });
+  Future<PaginatedListHealthcareProfessional?> filterHealthcareProfessionalsBy(Filter<HealthcareProfessional> filter, { String? nextHcpId, int? limit, });
 
   /// Get a Healthcare professional by id.
   ///
@@ -70,5 +70,5 @@ abstract class HealthcareProfessionalApi {
   ///
   /// * [Filter] filter (required):
   ///   The Filter object that describes which condition(s) the elements whose the ids should be returned must fulfill
-  Future<List<String>?> matchHealthcareProfessionalBy(Filter filter,);
+  Future<List<String>?> matchHealthcareProfessionalsBy(Filter<HealthcareProfessional> filter,);
 }

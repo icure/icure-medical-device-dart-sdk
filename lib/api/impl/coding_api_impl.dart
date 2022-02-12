@@ -17,7 +17,7 @@ class CodingApiImpl extends CodingApi {
 
   @override
   Future<List<Coding>?> createOrModifyCodings(List<Coding> codings) async => (await Future.wait(codings.map((coding) async =>
-      (await (coding.rev?.let((it) => api.codeApi.modifyCode(coding.toCodeDto())) ?? api.codeApi.createCode(coding.toCodeDto())))?.toCoding()
+      this.createOrModifyCoding(coding)
   ))).whereType<Coding>().toList();
 
   @override

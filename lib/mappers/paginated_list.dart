@@ -37,7 +37,7 @@ extension PaginatedListCodeDtoMapper on PaginatedListCodeDto {
     );
 }
 
-extension PaginatedListHealthElementDtoMapper on PaginatedListHealthElementDto {
+extension PaginatedListHealthElementDtoMapper on DecryptedPaginatedListHealthElementDto {
     PaginatedListHealthcareElement toPaginatedListHealthcareElement() => PaginatedListHealthcareElement(
         pageSize: this.pageSize,
         totalSize: this.totalSize,
@@ -101,7 +101,7 @@ extension PaginatedListCodingMapper on PaginatedListCoding {
 }
 
 extension PaginatedListHealthcareElementMapper on PaginatedListHealthcareElement {
-    PaginatedListHealthElementDto toPaginatedListHealthElementDto() => PaginatedListHealthElementDto(
+    DecryptedPaginatedListHealthElementDto toPaginatedListHealthElementDto() => DecryptedPaginatedListHealthElementDto(
         pageSize: this.pageSize,
         totalSize: this.totalSize,
         rows: this.rows.map((e) => e.toHealthElementDto()).toList(),
