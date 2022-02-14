@@ -3,6 +3,8 @@
 part of icure_medical_device_dart_sdk.api;
 
 class HealthcareElementByHcPartyTagCodeFilter extends Filter<HealthcareElement> {
+  HealthcareElementByHcPartyTagCodeFilter({this.description, this.healthCarePartyId, this.codeType, this.codeNumber, this.tagType, this.tagCode, this.status});
+
   @override
   String? description;
   String? healthCarePartyId;

@@ -2,7 +2,7 @@ name: 'icure_medical_device_dart_sdk'
 description: 'icure high level sdk for medical devices'
 version: '1.0.0'
 
-#homepage: 'homepage'
+homepage: 'https://icure.dev'
 
 environment:
   sdk: '>=2.12.0 <3.0.0'
@@ -12,11 +12,9 @@ dependencies:
   intl: '^0.17.0'
   meta: '^1.7.0'
   uuid: ^3.0.5
-  icure_dart_sdk:
-    git:
-      url: https://github.com/icure-io/icure-dart-sdk.git
-      ref: 19370740fb82c072de6011f4b4bb6b58cb59a5fc
+  icure_dart_sdk: ^1.0.0
   pointycastle: ^3.5.1
+  crypton: ^2.0.3
 
 dev_dependencies:
   lints: ^1.0.0
