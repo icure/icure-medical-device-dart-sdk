@@ -28,7 +28,7 @@ abstract class HealthcareElementApi {
   /// Parameters:
   ///
   /// * [List<HealthcareElement>] healthcareElement (required):
-  Future<List<HealthcareElement>?> createOrModifyHealthcareElements(List<HealthcareElement> healthcareElement,);
+  Future<List<HealthcareElement>?> createOrModifyHealthcareElements(String patientId, List<HealthcareElement> healthcareElement,);
 
   /// Delete a Healthcare Element
   ///
@@ -42,7 +42,7 @@ abstract class HealthcareElementApi {
   /// Parameters:
   ///
   /// * [Filter] filter (required):
-  Future<PaginatedListHealthcareElement?> filterHealthcareElement(Filter filter,);
+  Future<PaginatedListHealthcareElement?> filterHealthcareElement(Filter filter, { String? nextHealthElementId, int? limit, });
 
   /// Get a Healthcare Element
   ///
