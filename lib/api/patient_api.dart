@@ -48,7 +48,7 @@ abstract class PatientApi {
   ///
   /// * [int] limit:
   ///   The number of patients to return in the queried page
-  Future<PaginatedListPatient?> filterPatients(Filter filter, { String? nextPatientId, int? limit, });
+  Future<PaginatedListPatient?> filterPatients(Filter filter, { String? nextPatientId, int? limit, String? startKey});
 
   /// Get a [Patient]
   ///
