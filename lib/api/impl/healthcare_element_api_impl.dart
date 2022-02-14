@@ -1,6 +1,5 @@
 import 'package:icure_dart_sdk/api.dart';
 import 'package:icure_dart_sdk/crypto/crypto.dart';
-import 'package:icure_dart_sdk/extended_api/health_element_api.dart';
 import 'package:icure_medical_device_dart_sdk/api.dart';
 import 'package:icure_medical_device_dart_sdk/mappers/filter.dart';
 import 'package:icure_medical_device_dart_sdk/mappers/healthcare_element.dart';
@@ -29,11 +28,11 @@ class HealthcareElementApiImpl extends HealthcareElementApi {
       if (healthcareElement.id == null || !Uuid.isValidUUID(fromString: healthcareElement.id!)) {
         throw ArgumentError("Update id should be provided as an UUID");
       }
-      final modifiedHealthElementDto = await HealthElementApiCrypto(api.healthElementApi)
+      final modifiedHealthElementDto = await api.healthElementApi
           .modifyHealthElement(currentUser, HealthcareElementMapper(healthcareElement).toHealthElementDto(), ccHealthElement);
       return modifiedHealthElementDto != null ? HealthElementDtoMapper(modifiedHealthElementDto).toHealthcareElement() : null;
     }
-    final createdHealthElementDto = await HealthElementApiCrypto(api.healthElementApi)
+    final createdHealthElementDto = await api.healthElementApi
         .createHealthElement(currentUser, HealthcareElementMapper(healthcareElement).toHealthElementDto(), ccHealthElement);
     return createdHealthElementDto != null ? HealthElementDtoMapper(createdHealthElementDto).toHealthcareElement() : null;
   }

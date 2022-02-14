@@ -1,7 +1,8 @@
 
+import 'package:crypton/crypton.dart';
 import 'package:icure_dart_sdk/api.dart';
 import 'package:icure_dart_sdk/crypto/crypto.dart';
-import 'package:crypton/crypton.dart';
+import 'package:icure_dart_sdk/extended_api/data_owner_api.dart';
 
 class MedTechApi {
   final CodeApi codeApi;
@@ -10,9 +11,10 @@ class MedTechApi {
   final HealthElementApi healthElementApi;
   final DeviceApi deviceApi;
   final HealthcarePartyApi healthcarePartyApi;
+  final ContactApi contactApi;
   final LocalCrypto localCrypto;
 
-  MedTechApi(this.codeApi, this.userApi, this.patientApi, this.healthElementApi, this.deviceApi, this.healthcarePartyApi, this.localCrypto);
+  MedTechApi(this.codeApi, this.userApi, this.patientApi, this.healthElementApi, this.deviceApi, this.healthcarePartyApi, this.contactApi, this.localCrypto);
 }
 
 class MedTechApiBuilder {
@@ -44,15 +46,18 @@ class MedTechApiBuilder {
   MedTechApi build(){
     final ApiClient client = ApiClient.basic(iCureBasePath, userName, password);
     final hcpApi = HealthcarePartyApi(client);
+    final patientApi = PatientApi(client);
+    final deviceApi = DeviceApi(client);
 
     return MedTechApi(
       CodeApi(client),
       UserApi(client),
-      PatientApi(client),
+      patientApi,
       HealthElementApi(client),
-      DeviceApi(client),
+      deviceApi,
       hcpApi,
-      LocalCrypto(hcpApi, rsaKeyPairs)
+      ContactApi(client),
+      LocalCrypto(DataOwnerResolver(hcpApi, patientApi, deviceApi), rsaKeyPairs)
     );
   }
 }
