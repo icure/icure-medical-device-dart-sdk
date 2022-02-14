@@ -34,12 +34,6 @@ class HealthcareProfessionalApiImpl extends HealthcareProfessionalApi {
   }
 
   @override
-  Future<PaginatedListHealthcareProfessional?> filterHealthcareProfessionals(Filter filter, {String? nextHealthcarePartyId, int? limit}) async {
-    //return (await api.healthcarePartyApi.filterHealthcarePartysBy(FilterChainHealthcareParty(filter: filter), startDocumentId: nextHealthcarePartyId, limit: limit))?.toPaginatedListHealthcareProfessional()
-    throw UnimplementedError();
-  }
-
-  @override
   Future<HealthcareProfessional?> getHealthcareProfessional(String healthcareProfessionalId) async {
     return HealthcarePartyDtoMapper(
             await api.healthcarePartyApi.getHealthcareParty(healthcareProfessionalId) ?? (throw ArgumentError("HealthcareProfessional not found")))

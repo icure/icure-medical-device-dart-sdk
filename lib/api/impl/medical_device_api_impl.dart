@@ -1,6 +1,8 @@
 import 'package:icure_dart_sdk/api.dart';
 import 'package:icure_medical_device_dart_sdk/api.dart';
+import 'package:icure_medical_device_dart_sdk/mappers/filter.dart';
 import 'package:icure_medical_device_dart_sdk/mappers/medical_device.dart';
+import 'package:icure_medical_device_dart_sdk/mappers/paginated_list.dart';
 import 'package:icure_medical_device_dart_sdk/medtech_api.dart';
 import 'package:uuid/uuid.dart';
 
@@ -19,7 +21,7 @@ class MedicalDeviceApiImpl extends MedicalDeviceApi {
     final medicalDevicesToCreate = medicalDevice.where((device) => device.rev == null).toSet();
     final medicalDevicesToUpdate = medicalDevice.toSet().difference(medicalDevicesToCreate);
 
-    if(medicalDevicesToUpdate.any((element) => element.id == null ||!Uuid.isValidUUID(fromString: element.id!))){
+    if (medicalDevicesToUpdate.any((element) => element.id == null || !Uuid.isValidUUID(fromString: element.id!))) {
       throw FormatException("Update id should be provided as an UUID");
     }
 
@@ -45,8 +47,8 @@ class MedicalDeviceApiImpl extends MedicalDeviceApi {
 
   @override
   Future<PaginatedListMedicalDevice?> filterMedicalDevices(Filter filter, {String? nextDeviceId, int? limit}) async {
-    //return (await api.deviceApi.filterDevicesBy(FilterChainDevice(filter: filter), startDocumentId: nextDeviceId, limit: limit))?.toPaginatedListMedicalDevice()
-    throw UnimplementedError();
+    return (await api.deviceApi.filterDevicesBy(FilterChain<DeviceDto>(filter.toAbstractFilterDto()), startDocumentId: nextDeviceId, limit: limit))
+        ?.toPaginatedListMedicalDevice();
   }
 
   @override
@@ -56,7 +58,6 @@ class MedicalDeviceApiImpl extends MedicalDeviceApi {
 
   @override
   Future<List<String>?> matchMedicalDevices(Filter filter) {
-    // TODO: implement matchMedicalDevices
-    throw UnimplementedError();
+    return api.deviceApi.matchDevicesBy(filter.toAbstractFilterDto());
   }
 }
