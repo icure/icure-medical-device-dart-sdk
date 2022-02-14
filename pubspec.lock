@@ -93,7 +93,7 @@ packages:
     source: hosted
     version: "3.0.1"
   crypton:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: crypton
       url: "https://pub.dartlang.org"
@@ -151,11 +151,9 @@ packages:
   icure_dart_sdk:
     dependency: "direct main"
     description:
-      path: "."
-      ref: "8c1040c22ad4d39d5b7296a712eddcc5e19d4775"
-      resolved-ref: "8c1040c22ad4d39d5b7296a712eddcc5e19d4775"
-      url: "https://github.com/icure-io/icure-dart-sdk.git"
-    source: git
+      name: icure_dart_sdk
+      url: "https://pub.dartlang.org"
+    source: hosted
     version: "1.0.0"
   intl:
     dependency: "direct main"
