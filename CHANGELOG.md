@@ -8,3 +8,8 @@
 - Add healthcare professionals API
 - Improve test coverage
 - Add constructors to filters
+
+## 1.0.2
+
+- Fix filter mapping
+- Add tests for healthcare professionals API
