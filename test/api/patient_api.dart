@@ -2,10 +2,11 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:icure_dart_sdk/api.dart';
+import 'package:icure_dart_sdk/api.dart' as rapi;
 import 'package:icure_dart_sdk/util/binary_utils.dart';
 import 'package:icure_medical_device_dart_sdk/api.dart';
 import 'package:icure_medical_device_dart_sdk/api/impl/patient_api_impl.dart';
+import 'package:icure_medical_device_dart_sdk/api/impl/user_api_impl.dart';
 import 'package:icure_medical_device_dart_sdk/mappers/patient.dart';
 import 'package:icure_medical_device_dart_sdk/medtech_api.dart';
 import "package:test/test.dart";
@@ -35,7 +36,7 @@ void main() {
       final MedTechApi api = await medtechApi();
       final PatientApiImpl patientApi = PatientApiImpl(api);
 
-      final DecryptedPatientDto patient = DecryptedPatientDto(
+      final rapi.DecryptedPatientDto patient = rapi.DecryptedPatientDto(
           id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}),
           firstName: 'John',
           lastName: 'Doe',
@@ -56,7 +57,7 @@ void main() {
       final MedTechApi api = await medtechApi();
       final PatientApiImpl patientApi = PatientApiImpl(api);
 
-      final DecryptedPatientDto patient = DecryptedPatientDto(
+      final rapi.DecryptedPatientDto patient = rapi.DecryptedPatientDto(
           id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}),
           firstName: 'John',
           lastName: 'Doe',
@@ -72,5 +73,24 @@ void main() {
       expect(createdPatient.lastName, gotPatient.lastName);
       expect(createdPatient.note, gotPatient.note);
     });
+
+    test('test filterPatient', () async {
+      // Init
+      final MedTechApi api = await medtechApi();
+      final PatientApiImpl patientApi = PatientApiImpl(api);
+      final UserApiImpl userApi = UserApiImpl(api);
+
+      // When
+      var patients = (await patientApi.filterPatients(
+          PatientByHcPartyNameContainsFuzzyFilter(
+              healthcarePartyId: (await userApi.getLoggedUser())!.healthcarePartyId!,
+              searchString: "du")
+      ))?.rows ?? [];
+
+      expect(patients.length > 1, true);
+
+      // Then
+    });
+
   });
 }

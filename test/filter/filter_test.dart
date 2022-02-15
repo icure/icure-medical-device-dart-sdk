@@ -9,6 +9,7 @@ void main() {
     test('test healthcareParty deserialisation', () async {
       var filter = PatientByHcPartyNameContainsFuzzyFilter(healthcarePartyId: '123', searchString: 'abc');
       var converted = filter.toAbstractFilterDto();
+      var clazz = '\$${filter.runtimeType.toString()}';
       expect((converted as rawApi.PatientByHcPartyNameContainsFuzzyFilter).searchString, "abc");
     });
   });

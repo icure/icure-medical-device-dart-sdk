@@ -9,23 +9,28 @@ import 'patient.dart';
 
 extension FilterMapper<F> on Filter<F> {
   api.AbstractFilterDto<T> toAbstractFilterDto<T>() {
-        switch (F) {
-          case Coding:
-            return (this as Filter<Coding>).toAbstractFilterCodeDto() as api.AbstractFilterDto<T>;
-          case DataSample:
-            return (this as Filter<DataSample>).toAbstractFilterServiceDto() as api.AbstractFilterDto<T>;
-          case MedicalDevice:
-            return (this as Filter<MedicalDevice>).toAbstractFilterDeviceDto() as api.AbstractFilterDto<T>;
-          case HealthcareProfessional:
-            return (this as Filter<HealthcareProfessional>).toAbstractFilterHealthcarePartyDto() as api.AbstractFilterDto<T>;
-          case HealthcareElement:
-            return (this as Filter<HealthcareElement>).toAbstractFilterHealthElementDto() as api.AbstractFilterDto<T>;
-          case Patient:
-            return (this as Filter<Patient>).toAbstractFilterPatientDto() as api.AbstractFilterDto<T>;
-          case User:
-            return (this as Filter<User>).toAbstractFilterUserDto() as api.AbstractFilterDto<T>;
-        }
-        throw FormatException("No mapper for ${F} -> ${T}");
+      if (F == Coding || T == api.CodeDto) {
+        return (this as Filter<Coding>).toAbstractFilterCodeDto() as api.AbstractFilterDto<T>;
+      }
+      if (F == DataSample || T == api.ServiceDto) {
+        return (this as Filter<DataSample>).toAbstractFilterServiceDto() as api.AbstractFilterDto<T>;
+      }
+      if (F == MedicalDevice || T == api.DeviceDto) {
+        return (this as Filter<MedicalDevice>).toAbstractFilterDeviceDto() as api.AbstractFilterDto<T>;
+      }
+      if (F == HealthcareProfessional || T == api.HealthcarePartyDto) {
+        return (this as Filter<HealthcareProfessional>).toAbstractFilterHealthcarePartyDto() as api.AbstractFilterDto<T>;
+      }
+      if (F == HealthcareElement || T == api.HealthElementDto) {
+        return (this as Filter<HealthcareElement>).toAbstractFilterHealthElementDto() as api.AbstractFilterDto<T>;
+      }
+      if (F == Patient || T == api.PatientDto) {
+        return (this as Filter<Patient>).toAbstractFilterPatientDto() as api.AbstractFilterDto<T>;
+      }
+      if (F == User || T == api.UserDto) {
+        return (this as Filter<User>).toAbstractFilterUserDto() as api.AbstractFilterDto<T>;
+      }
+      throw FormatException("No mapper for ${F} -> ${T}");
   }
 }
 
@@ -356,9 +361,9 @@ extension HealthcareElementByHcPartyTagCodeFilterMapper on HealthcareElementByHc
   api.HealthElementByHcPartyTagCodeFilter toHealthElementByHcPartyTagCodeFilterDto() =>
       api.HealthElementByHcPartyTagCodeFilter(
           desc: this.description,
-          healthCarePartyId: this.healthCarePartyId,
+          healthcarePartyId: this.healthcarePartyId,
           codeType: this.codeType,
-          codeNumber: this.codeNumber,
+          codeCode: this.codeNumber,
           tagType: this.tagType,
           tagCode: this.tagCode,
           status: this.status
@@ -499,7 +504,7 @@ extension PatientByHcPartyAndSsinsFilterMapper on PatientByHcPartyAndSsinsFilter
       api.PatientByHcPartyAndSsinsFilter(
           desc: this.description,
           healthcarePartyId: this.healthcarePartyId,
-          ssins: this.ssins
+          ssins: this.ssins ?? []
       );
 }
 

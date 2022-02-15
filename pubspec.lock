@@ -99,13 +99,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.3"
-  expire_cache:
-    dependency: transitive
-    description:
-      name: expire_cache
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.0.1"
   file:
     dependency: transitive
     description:
@@ -151,12 +144,10 @@ packages:
   icure_dart_sdk:
     dependency: "direct main"
     description:
-      path: "."
-      ref: "8c1040c22ad4d39d5b7296a712eddcc5e19d4775"
-      resolved-ref: "8c1040c22ad4d39d5b7296a712eddcc5e19d4775"
-      url: "https://github.com/icure-io/icure-dart-sdk.git"
-    source: git
-    version: "1.0.0"
+      name: icure_dart_sdk
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.3"
   intl:
     dependency: "direct main"
     description:
