@@ -13,3 +13,8 @@
 
 - Fix filter mapping
 - Add tests for healthcare professionals API
+
+
+## 1.0.3
+
+- Fix filter serialization, mapping and decryption of entities without encryption keys
