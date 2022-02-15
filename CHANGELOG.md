@@ -1,3 +1,7 @@
+## 1.0.5
+
+- Fix transitive dependency problem
+
 ## 1.0.4
 
 - Improve library layout
