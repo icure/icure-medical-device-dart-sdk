@@ -4,6 +4,8 @@ import 'package:icure_dart_sdk/crypto/crypto.dart';
 import 'package:icure_dart_sdk/util/collection_utils.dart';
 import 'package:icure_dart_sdk/util/functional_utils.dart';
 import 'package:icure_medical_device_dart_sdk/api.dart';
+import 'package:icure_medical_device_dart_sdk/mappers/filter.dart';
+import 'package:icure_medical_device_dart_sdk/mappers/paginated_list.dart';
 import 'package:icure_medical_device_dart_sdk/mappers/service_data_sample.dart';
 import 'package:icure_medical_device_dart_sdk/medtech_api.dart';
 import 'package:icure_medical_device_dart_sdk/utils/iterable_utils.dart';
@@ -87,21 +89,44 @@ class DataSampleApiImpl extends DataSampleApi {
   }
 
   @override
-  Future<String?> deleteDataSample(String dataSampleId) {
-    // TODO: implement deleteDataSample
-    throw UnimplementedError();
+  Future<String?> deleteDataSample(String dataSampleId) async {
+    return (await deleteDataSamples([dataSampleId]))?.firstOrNull() ?? (throw StateError("Couldn't delete data sample $dataSampleId"));
   }
 
   @override
-  Future<List<String>?> deleteDataSamples(List<String> requestBody) {
-    // TODO: implement deleteDataSamples
-    throw UnimplementedError();
+  Future<List<String>?> deleteDataSamples(List<String> requestBody) async {
+    final localCrypto = api.localCrypto;
+    final currentUser = await api.userApi.getCurrentUser();
+
+    final DecryptedContactDto existingContact = (await _findContactsForDataSampleIds(currentUser!, localCrypto, requestBody)).firstOrNull() ??
+        (throw StateError("Could not find batch information of the data sample $requestBody"));
+
+    final existingServiceIds = existingContact.services.map((e) => e.id);
+    if (requestBody.any((element) => !existingServiceIds.contains(element))) {
+      throw StateError("Could not find all data samples in same batch ${existingContact.id}");
+    }
+
+    final contactPatient = (await _getPatientOfContact(localCrypto, currentUser, existingContact)) ??
+        (throw StateError("Couldn't find patient related to batch of data samples ${existingContact.id}"));
+    final servicesToDelete = existingContact.services.where((element) => requestBody.contains(element.id));
+
+    return (await api.contactApi
+            .deleteServices(currentUser, contactPatient, servicesToDelete.toList(), contactCryptoConfig(currentUser, localCrypto)))
+        ?.services
+        .where((element) => requestBody.contains(element.id))
+        .where((element) => element.endOfLife != null)
+        .map((e) => e.id)
+        .toList();
   }
 
   @override
-  Future<PaginatedListDataSample?> filterDataSample(Filter filter) {
-    // TODO: implement filterDataSample
-    throw UnimplementedError();
+  Future<PaginatedListDataSample?> filterDataSample(Filter filter, {String? nextDataSampleId, int? limit}) async {
+    final localCrypto = api.localCrypto;
+    final currentUser = await api.userApi.getCurrentUser();
+
+    return PaginatedListServiceDtoMapper((await api.contactApi
+            .filterServicesBy(currentUser!, FilterChain(FilterMapper(filter).toAbstractFilterDto()), null, nextDataSampleId, limit, localCrypto))!)
+        .toPaginatedListDataSample();
   }
 
   @override
@@ -205,5 +230,10 @@ class DataSampleApiImpl extends DataSampleApi {
     } else {
       return cachedContacts.values.toSet();
     }
+  }
+
+  Future<DecryptedPatientDto?> _getPatientOfContact(LocalCrypto localCrypto, UserDto currentUser, DecryptedContactDto contactDto) async {
+    return (await _getPatientIdOfContact(localCrypto, currentUser, contactDto))
+        ?.let((that) => api.patientApi.getPatient(currentUser, that, patientCryptoConfig(localCrypto)));
   }
 }
