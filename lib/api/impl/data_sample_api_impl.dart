@@ -17,9 +17,8 @@ class DataSampleApiImpl extends DataSampleApi {
   final uuid = Uuid();
 
   @override
-  Future<DataSample?> createOrModifyDataSampleFor(String patientId, DataSample dataSample) {
-    // TODO: implement createOrModifyDataSampleFor
-    throw UnimplementedError();
+  Future<DataSample?> createOrModifyDataSampleFor(String patientId, DataSample dataSample) async {
+    return (await createOrModifyDataSamplesFor(patientId, [dataSample]))?.single;
   }
 
   @override
