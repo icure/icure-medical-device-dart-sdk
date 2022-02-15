@@ -6,9 +6,7 @@ import 'package:icure_dart_sdk/api.dart';
 import 'package:icure_dart_sdk/util/binary_utils.dart';
 import 'package:icure_medical_device_dart_sdk/api.dart';
 import 'package:icure_medical_device_dart_sdk/api/impl/healthcare_element_api_impl.dart';
-import 'package:icure_medical_device_dart_sdk/api/impl/patient_api_impl.dart';
 import 'package:icure_medical_device_dart_sdk/mappers/healthcare_element.dart';
-import 'package:icure_medical_device_dart_sdk/mappers/patient.dart';
 import 'package:icure_medical_device_dart_sdk/medtech_api.dart';
 import "package:test/test.dart";
 import 'package:uuid/uuid.dart';
@@ -38,14 +36,11 @@ void main() {
       final HealthcareElementApi healthcareElementApi = HealthcareElementApiImpl(api);
 
       final DecryptedHealthElementDto healthElementDto = DecryptedHealthElementDto(
-          id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}),
-          note: 'Premature optimization is the root of all evil',
-          relevant: true,
-          status: 0
-      );
+          id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}), note: 'Premature optimization is the root of all evil', relevant: true, status: 0);
 
       // When
-      final HealthcareElement? createdHealthElement = await healthcareElementApi.createOrModifyHealthcareElement(HealthElementDtoMapper(healthElementDto).toHealthcareElement());
+      final HealthcareElement? createdHealthElement =
+          await healthcareElementApi.createOrModifyHealthcareElement(HealthElementDtoMapper(healthElementDto).toHealthcareElement());
 
       // Then
       expect(createdHealthElement!.id, healthElementDto.id);
@@ -58,14 +53,11 @@ void main() {
       final HealthcareElementApi healthcareElementApi = HealthcareElementApiImpl(api);
 
       final DecryptedHealthElementDto healthElementDto = DecryptedHealthElementDto(
-          id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}),
-          note: 'Premature optimization is the root of all evil',
-          relevant: true,
-          status: 0
-      );
+          id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}), note: 'Premature optimization is the root of all evil', relevant: true, status: 0);
 
       // When
-      final HealthcareElement? createdHealthElement = await healthcareElementApi.createOrModifyHealthcareElement(HealthElementDtoMapper(healthElementDto).toHealthcareElement());
+      final HealthcareElement? createdHealthElement =
+      await healthcareElementApi.createOrModifyHealthcareElement(HealthElementDtoMapper(healthElementDto).toHealthcareElement());
       final HealthcareElement? gotHealthElement = await healthcareElementApi.getHealthcareElement(createdHealthElement!.id!);
 
       // Then
@@ -82,11 +74,7 @@ void main() {
     final updateNote = 'Premature optimization is not the root of all evil';
 
     final DecryptedHealthElementDto healthElementDto = DecryptedHealthElementDto(
-        id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}),
-        note: 'Premature optimization is the root of all evil',
-        relevant: true,
-        status: 0
-    );
+        id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}), note: 'Premature optimization is the root of all evil', relevant: true, status: 0);
 
     final healthElementTocreate = HealthElementDtoMapper(healthElementDto).toHealthcareElement();
 
@@ -108,14 +96,11 @@ void main() {
     final HealthcareElementApi healthcareElementApi = HealthcareElementApiImpl(api);
 
     final DecryptedHealthElementDto healthElementDto = DecryptedHealthElementDto(
-        id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}),
-        note: 'Premature optimization is the root of all evil',
-        relevant: true,
-        status: 0
-    );
+        id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}), note: 'Premature optimization is the root of all evil', relevant: true, status: 0);
 
     // When
-    final HealthcareElement? createdHealthElement = await healthcareElementApi.createOrModifyHealthcareElement(HealthElementDtoMapper(healthElementDto).toHealthcareElement());
+    final HealthcareElement? createdHealthElement =
+    await healthcareElementApi.createOrModifyHealthcareElement(HealthElementDtoMapper(healthElementDto).toHealthcareElement());
     final String? deletedHealthcareElementRev = await healthcareElementApi.deleteHealthcareElement(createdHealthElement!.id!);
 
     // Then
