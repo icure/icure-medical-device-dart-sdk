@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:icure_dart_sdk/api.dart' as api;
 import 'package:icure_medical_device_dart_sdk/api.dart';
 import 'package:icure_medical_device_dart_sdk/utils/functional_utils.dart';
@@ -6,26 +8,25 @@ import 'identifier.dart';
 import 'patient.dart';
 
 extension FilterMapper<F> on Filter<F> {
-  api.AbstractFilterDto<T> toAbstractFilterDto<F, T>() =>
-      [F.runtimeType, T.runtimeType].let((t) {
-        switch (t) {
-          case [Coding, api.CodeDto]:
+  api.AbstractFilterDto<T> toAbstractFilterDto<T>() {
+        switch (F) {
+          case Coding:
             return (this as Filter<Coding>).toAbstractFilterCodeDto() as api.AbstractFilterDto<T>;
-          case [DataSample, api.ServiceDto]:
+          case DataSample:
             return (this as Filter<DataSample>).toAbstractFilterServiceDto() as api.AbstractFilterDto<T>;
-          case [MedicalDevice, api.DeviceDto]:
+          case MedicalDevice:
             return (this as Filter<MedicalDevice>).toAbstractFilterDeviceDto() as api.AbstractFilterDto<T>;
-          case [HealthcareProfessional, api.HealthcarePartyDto]:
+          case HealthcareProfessional:
             return (this as Filter<HealthcareProfessional>).toAbstractFilterHealthcarePartyDto() as api.AbstractFilterDto<T>;
-          case [HealthcareElement, api.HealthElementDto]:
+          case HealthcareElement:
             return (this as Filter<HealthcareElement>).toAbstractFilterHealthElementDto() as api.AbstractFilterDto<T>;
-          case [Patient, api.PatientDto]:
+          case Patient:
             return (this as Filter<Patient>).toAbstractFilterPatientDto() as api.AbstractFilterDto<T>;
-          case [User, api.UserDto]:
+          case User:
             return (this as Filter<User>).toAbstractFilterUserDto() as api.AbstractFilterDto<T>;
         }
         throw FormatException("No mapper for ${F} -> ${T}");
-      });
+  }
 }
 
 extension CodingFilterMapper on Filter<Coding>{
