@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 extension IterableExtension<T> on Iterable<T> {
   Iterable<T> distinctBy(dynamic selector(T input)) {
     final set = Set<dynamic>();
@@ -14,4 +16,12 @@ extension IterableExtension<T> on Iterable<T> {
     });
     return sum;
   }
+}
+
+extension IterableNum<T extends num> on Iterable<T> {
+  T get max => reduce(math.max);
+
+  T get min => reduce(math.min);
+
+  T get sum => reduce((a, b) => a + b as T);
 }
