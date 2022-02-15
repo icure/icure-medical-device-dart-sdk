@@ -75,7 +75,7 @@ abstract class DataSampleApi {
   ///
   /// * [Filter] filter (required):
   ///   The Filter object that describes which condition(s) the elements whose the ids should be returned must fulfill
-  Future<PaginatedListDataSample?> filterDataSample(Filter filter,);
+  Future<PaginatedListDataSample?> filterDataSample(Filter filter, {String? nextDataSampleId, int? limit});
 
   /// Get a [DataSample] by its id
   ///
