@@ -1,6 +1,15 @@
-## 1.0.0
+## 1.0.4
 
-- Initial version
+- Improve library layout
+
+## 1.0.3
+
+- Fix filter serialization, mapping and decryption of entities without encryption keys
+
+## 1.0.2
+
+- Fix filter mapping
+- Add tests for healthcare professionals API
 
 ## 1.0.1
 
@@ -9,12 +18,8 @@
 - Improve test coverage
 - Add constructors to filters
 
-## 1.0.2
+## 1.0.0
 
-- Fix filter mapping
-- Add tests for healthcare professionals API
+- Initial version
 
 
-## 1.0.3
-
-- Fix filter serialization, mapping and decryption of entities without encryption keys

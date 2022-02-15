@@ -9,6 +9,8 @@ extension IterableExtension<T> on Iterable<T> {
     });
   }
 
+  T? firstOrNull() => this.isNotEmpty ? this.first : null;
+
   int sumOf(int selector(T input)) {
     int sum = 0;
     this.forEach((element) {
@@ -33,4 +35,10 @@ extension IterableNum<T extends num> on Iterable<T> {
   T get min => reduce(math.min);
 
   T get sum => reduce((a, b) => a + b as T);
+}
+
+extension MapExtension<E, F> on Map<E, F> {
+  bool any(bool predicate(MapEntry<E, F> element)) {
+    return this.entries.any((element) => predicate(element));
+  }
 }

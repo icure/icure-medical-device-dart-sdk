@@ -4,8 +4,6 @@ import 'dart:io';
 
 import 'package:icure_dart_sdk/util/binary_utils.dart';
 import 'package:icure_medical_device_dart_sdk/api.dart';
-import 'package:icure_medical_device_dart_sdk/api/impl/healthcare_professional_api_impl.dart';
-import 'package:icure_medical_device_dart_sdk/medtech_api.dart';
 import "package:test/test.dart";
 import 'package:uuid/uuid.dart';
 import 'package:uuid/uuid_util.dart';

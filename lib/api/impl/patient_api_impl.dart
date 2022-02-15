@@ -1,11 +1,11 @@
-import 'package:icure_dart_sdk/api.dart' as iCureApi;
-import 'package:icure_dart_sdk/crypto/crypto.dart';
-import 'package:icure_medical_device_dart_sdk/api.dart';
-import 'package:icure_medical_device_dart_sdk/medtech_api.dart';
-import 'package:icure_medical_device_dart_sdk/mappers/patient.dart';
-import 'package:icure_medical_device_dart_sdk/mappers/paginated_list.dart';
-import 'package:icure_medical_device_dart_sdk/mappers/filter.dart';
-import 'package:uuid/uuid.dart';
+// @dart=2.12
+
+// ignore_for_file: unused_element, unused_import
+// ignore_for_file: always_put_required_named_parameters_first
+// ignore_for_file: constant_identifier_names
+// ignore_for_file: lines_longer_than_80_chars
+
+part of icure_medical_device_dart_sdk.api;
 
 class PatientApiImpl extends PatientApi {
   final MedTechApi api;
@@ -27,11 +27,11 @@ class PatientApiImpl extends PatientApi {
         throw ArgumentError("Update id should be provided as an UUID");
       }
       final modifiedPatientDto =
-          await iCureApi.PatientApiCrypto(api.patientApi).modifyPatient(currentUser, PatientMapper(patient).toPatientDto(), ccPatient);
+          await base_api.PatientApiCrypto(api.patientApi).modifyPatient(currentUser, PatientMapper(patient).toPatientDto(), ccPatient);
       return modifiedPatientDto != null ? PatientDtoMapper(modifiedPatientDto).toPatient() : null;
     }
     final createdPatientDto =
-        await iCureApi.PatientApiCrypto(api.patientApi).createPatient(currentUser, PatientMapper(patient).toPatientDto(), ccPatient);
+        await base_api.PatientApiCrypto(api.patientApi).createPatient(currentUser, PatientMapper(patient).toPatientDto(), ccPatient);
     return createdPatientDto != null ? PatientDtoMapper(createdPatientDto).toPatient() : null;
   }
 
@@ -46,7 +46,7 @@ class PatientApiImpl extends PatientApi {
     final currentUser = await api.userApi.getCurrentUser();
     final ccPatient = patientCryptoConfig(localCrypto);
 
-    return (await iCureApi.PatientApiCrypto(api.patientApi).filterPatientsBy(currentUser!, iCureApi.FilterChain<iCureApi.PatientDto>(filter.toAbstractFilterDto()), startKey, nextPatientId, limit, ccPatient))
+    return (await base_api.PatientApiCrypto(api.patientApi).filterPatientsBy(currentUser!, base_api.FilterChain<base_api.PatientDto>(filter.toAbstractFilterDto()), startKey, nextPatientId, limit, ccPatient))
         ?.toPaginatedListPatient();
   }
 

@@ -1,12 +1,11 @@
-import 'package:icure_dart_sdk/api.dart' as base_api;
-import 'package:icure_medical_device_dart_sdk/api.dart';
-import 'package:icure_medical_device_dart_sdk/utils/functional_utils.dart';
-import 'package:icure_medical_device_dart_sdk/mappers/user.dart';
-import 'package:icure_medical_device_dart_sdk/mappers/filter.dart';
-import 'package:icure_medical_device_dart_sdk/mappers/paginated_list.dart';
-import 'package:icure_medical_device_dart_sdk/medtech_api.dart';
-import 'package:uuid/uuid.dart';
-import 'package:uuid/uuid_util.dart';
+// @dart=2.12
+
+// ignore_for_file: unused_element, unused_import
+// ignore_for_file: always_put_required_named_parameters_first
+// ignore_for_file: constant_identifier_names
+// ignore_for_file: lines_longer_than_80_chars
+
+part of icure_medical_device_dart_sdk.api;
 
 class UserApiImpl extends UserApi {
   UserApiImpl(this.api);

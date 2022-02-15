@@ -1,10 +1,11 @@
-import 'package:icure_dart_sdk/api.dart';
-import 'package:icure_medical_device_dart_sdk/api.dart';
-import 'package:icure_medical_device_dart_sdk/mappers/filter.dart';
-import 'package:icure_medical_device_dart_sdk/mappers/healthcare_professional.dart';
-import 'package:icure_medical_device_dart_sdk/mappers/paginated_list.dart';
-import 'package:icure_medical_device_dart_sdk/medtech_api.dart';
-import 'package:icure_medical_device_dart_sdk/utils/functional_utils.dart';
+// @dart=2.12
+
+// ignore_for_file: unused_element, unused_import
+// ignore_for_file: always_put_required_named_parameters_first
+// ignore_for_file: constant_identifier_names
+// ignore_for_file: lines_longer_than_80_chars
+
+part of icure_medical_device_dart_sdk.api;
 
 class HealthcareProfessionalApiImpl extends HealthcareProfessionalApi {
   final MedTechApi api;
@@ -30,7 +31,7 @@ class HealthcareProfessionalApiImpl extends HealthcareProfessionalApi {
 
   @override
   Future<List<String>?> deleteHealthcareProfessionals(List<String> requestBody) async {
-    return (await api.healthcarePartyApi.deleteHealthcareParties(ListOfIdsDto(ids: requestBody)))?.map((e) => e.rev!).toList();
+    return (await api.healthcarePartyApi.deleteHealthcareParties(base_api.ListOfIdsDto(ids: requestBody)))?.map((e) => e.rev!).toList();
   }
 
   @override
@@ -42,7 +43,7 @@ class HealthcareProfessionalApiImpl extends HealthcareProfessionalApi {
 
   @override
   Future<PaginatedListHealthcareProfessional?> filterHealthcareProfessionalsBy(Filter<HealthcareProfessional> filter, {String? nextHcpId, int? limit}) async {
-    return (await api.healthcarePartyApi.filterHealthPartiesBy(FilterChain<HealthcarePartyDto>(filter.toAbstractFilterDto()), startDocumentId: nextHcpId, limit: limit))
+    return (await api.healthcarePartyApi.filterHealthPartiesBy(base_api.FilterChain<base_api.HealthcarePartyDto>(filter.toAbstractFilterDto()), startDocumentId: nextHcpId, limit: limit))
     ?.toPaginatedListHealthcareProfessional();
   }
 

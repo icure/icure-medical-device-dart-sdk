@@ -9,12 +9,12 @@ All URIs are relative to *http://127.0.0.1:8912*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**createOrModifyHealthcareElement**](HealthcareElementApi.md#createormodifyhealthcareelement) | **PUT** /rest/v2/hce | Create a Healthcare Element
-[**createOrModifyHealthcareElements**](HealthcareElementApi.md#createormodifyhealthcareelements) | **PUT** /rest/v2/hce/batch | Create a Healthcare Element
-[**deleteHealthcareElement**](HealthcareElementApi.md#deletehealthcareelement) | **DELETE** /rest/v2/hce/{id} | Delete a Healthcare Element
-[**filterHealthcareElement**](HealthcareElementApi.md#filterhealthcareelement) | **POST** /rest/v2/hce/filter | Find Healthcare Elements using a filter
-[**getHealthcareElement**](HealthcareElementApi.md#gethealthcareelement) | **GET** /rest/v2/hce/{id} | Get a Healthcare Element
-[**matchHealthcareElement**](HealthcareElementApi.md#matchhealthcareelement) | **POST** /rest/v2/hce/match | Find Healthcare Elements using a filter
+[**createOrModifyHealthcareElement**](HealthcareElementApi.md#createormodifyhealthcareelement)  | Create a Healthcare Element
+[**createOrModifyHealthcareElements**](HealthcareElementApi.md#createormodifyhealthcareelements)  | Create a Healthcare Element
+[**deleteHealthcareElement**](HealthcareElementApi.md#deletehealthcareelement) | Delete a Healthcare Element
+[**filterHealthcareElement**](HealthcareElementApi.md#filterhealthcareelement) | Find Healthcare Elements using a filter
+[**getHealthcareElement**](HealthcareElementApi.md#gethealthcareelement) | Get a Healthcare Element
+[**matchHealthcareElement**](HealthcareElementApi.md#matchhealthcareelement) | Find Healthcare Elements using a filter
 
 
 # **createOrModifyHealthcareElement**

@@ -1,10 +1,11 @@
-import 'package:icure_dart_sdk/api.dart';
-import 'package:icure_medical_device_dart_sdk/api.dart';
-import 'package:icure_medical_device_dart_sdk/mappers/filter.dart';
-import 'package:icure_medical_device_dart_sdk/mappers/medical_device.dart';
-import 'package:icure_medical_device_dart_sdk/mappers/paginated_list.dart';
-import 'package:icure_medical_device_dart_sdk/medtech_api.dart';
-import 'package:uuid/uuid.dart';
+// @dart=2.12
+
+// ignore_for_file: unused_element, unused_import
+// ignore_for_file: always_put_required_named_parameters_first
+// ignore_for_file: constant_identifier_names
+// ignore_for_file: lines_longer_than_80_chars
+
+part of icure_medical_device_dart_sdk.api;
 
 class MedicalDeviceApiImpl extends MedicalDeviceApi {
   final MedTechApi api;
@@ -32,7 +33,7 @@ class MedicalDeviceApiImpl extends MedicalDeviceApi {
     final deviceUpdated = await api.deviceApi.updateDevices(deviceToUpdate);
     final deviceIdsProcessed = [...?deviceCreated, ...?deviceUpdated].map((e) => e.id!).toList();
 
-    return (await api.deviceApi.getDevices(ListOfIdsDto(ids: deviceIdsProcessed)))!.map((e) => DeviceDtoMapper(e).toMedicalDevice()).toList();
+    return (await api.deviceApi.getDevices(base_api.ListOfIdsDto(ids: deviceIdsProcessed)))!.map((e) => DeviceDtoMapper(e).toMedicalDevice()).toList();
   }
 
   @override
@@ -42,12 +43,12 @@ class MedicalDeviceApiImpl extends MedicalDeviceApi {
 
   @override
   Future<List<String>?> deleteMedicalDevices(List<String> requestBody) async {
-    return (await api.deviceApi.deleteDevices(ListOfIdsDto(ids: requestBody)))?.map((e) => e.rev!).toList();
+    return (await api.deviceApi.deleteDevices(base_api.ListOfIdsDto(ids: requestBody)))?.map((e) => e.rev!).toList();
   }
 
   @override
   Future<PaginatedListMedicalDevice?> filterMedicalDevices(Filter filter, {String? nextDeviceId, int? limit}) async {
-    return (await api.deviceApi.filterDevicesBy(FilterChain<DeviceDto>(filter.toAbstractFilterDto()), startDocumentId: nextDeviceId, limit: limit))
+    return (await api.deviceApi.filterDevicesBy(base_api.FilterChain<base_api.DeviceDto>(filter.toAbstractFilterDto()), startDocumentId: nextDeviceId, limit: limit))
         ?.toPaginatedListMedicalDevice();
   }
 

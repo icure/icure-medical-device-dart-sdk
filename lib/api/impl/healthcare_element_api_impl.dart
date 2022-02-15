@@ -1,13 +1,11 @@
-import 'package:icure_dart_sdk/api.dart';
-import 'package:icure_dart_sdk/crypto/crypto.dart';
-import 'package:icure_medical_device_dart_sdk/api.dart';
-import 'package:icure_medical_device_dart_sdk/mappers/filter.dart';
-import 'package:icure_medical_device_dart_sdk/mappers/healthcare_element.dart';
-import 'package:icure_medical_device_dart_sdk/mappers/paginated_list.dart';
-import 'package:icure_medical_device_dart_sdk/medtech_api.dart';
-import 'package:uuid/uuid.dart';
+// @dart=2.12
 
-import '../../utils/functional_utils.dart';
+// ignore_for_file: unused_element, unused_import
+// ignore_for_file: always_put_required_named_parameters_first
+// ignore_for_file: constant_identifier_names
+// ignore_for_file: lines_longer_than_80_chars
+
+part of icure_medical_device_dart_sdk.api;
 
 class HealthcareElementApiImpl extends HealthcareElementApi {
   final MedTechApi api;
@@ -54,7 +52,7 @@ class HealthcareElementApiImpl extends HealthcareElementApi {
     final healthElementDtoToUpdate = healthElementToUpdate.map((e) => e.toHealthElementDto()).toList();
     final healthElementDtoToCreate = healthElementToCreate.map((e) => e.toHealthElementDto()).toList();
 
-    final patient = await PatientApiCrypto(api.patientApi).getPatient(currentUser!, patientId, ccPatient) ?? (throw StateError("Patient not found"));
+    final patient = await base_api.PatientApiCrypto(api.patientApi).getPatient(currentUser!, patientId, ccPatient) ?? (throw StateError("Patient not found"));
     final heCreated = await api.healthElementApi.createHealthElements(currentUser, patient, healthElementDtoToCreate, ccHealthElement);
     final heUpdated = await api.healthElementApi.modifyHealthElements(currentUser, healthElementDtoToUpdate, ccHealthElement);
     final heProcessed = [...?heCreated, ...heUpdated];
@@ -64,7 +62,7 @@ class HealthcareElementApiImpl extends HealthcareElementApi {
 
   @override
   Future<String?> deleteHealthcareElement(String id) async {
-    return (await api.healthElementApi.rawDeleteHealthElements(ListOfIdsDto(ids: [id])))?.single.rev ??
+    return (await api.healthElementApi.rawDeleteHealthElements(base_api.ListOfIdsDto(ids: [id])))?.single.rev ??
         throwFormatException("Invalid health element id");
   }
 
@@ -79,7 +77,7 @@ class HealthcareElementApiImpl extends HealthcareElementApi {
     final ccHealthElement = healthElementCryptoConfig(localCrypto);
 
     return (await api.healthElementApi.filterHealthElements(
-            currentUser!, FilterChain<HealthElementDto>(filter.toAbstractFilterDto()), ccHealthElement, nextHealthElementId, limit))
+            currentUser!, base_api.FilterChain<base_api.HealthElementDto>(filter.toAbstractFilterDto()), ccHealthElement, nextHealthElementId, limit))
         .toPaginatedListHealthcareElement();
   }
 

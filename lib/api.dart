@@ -15,8 +15,20 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart';
+import 'package:tuple/tuple.dart';
 import 'package:intl/intl.dart';
 import 'package:meta/meta.dart';
+import 'package:uuid/uuid.dart';
+import 'package:uuid/uuid_util.dart';
+
+import 'package:crypton/crypton.dart';
+
+import 'package:icure_dart_sdk/api.dart' as base_api;
+import 'package:icure_dart_sdk/crypto/crypto.dart';
+import 'package:icure_dart_sdk/extended_api/data_owner_api.dart';
+
+import 'utils/functional_utils.dart';
+import 'utils/iterable_utils.dart';
 
 import 'mappers/address.dart';
 import 'mappers/authentication_token.dart';
@@ -36,9 +48,12 @@ import 'mappers/patient_healthcare_party.dart';
 import 'mappers/person_name.dart';
 import 'mappers/property.dart';
 import 'mappers/property_type.dart';
+import 'mappers/service_data_sample.dart';
 import 'mappers/time_series.dart';
 import 'mappers/typed_value_object.dart';
 import 'mappers/user.dart';
+
+part 'medtech_api.dart';
 
 part 'api_client.dart';
 part 'api_helper.dart';
@@ -56,6 +71,15 @@ part 'api/healthcare_professional_api.dart';
 part 'api/medical_device_api.dart';
 part 'api/patient_api.dart';
 part 'api/user_api.dart';
+
+part 'api/impl/coding_api_impl.dart';
+part 'api/impl/data_sample_api_impl.dart';
+part 'api/impl/healthcare_element_api_impl.dart';
+part 'api/impl/healthcare_professional_api_impl.dart';
+part 'api/impl/medical_device_api_impl.dart';
+part 'api/impl/patient_api_impl.dart';
+part 'api/impl/user_api_impl.dart';
+
 
 part 'model/address.dart';
 part 'model/authentication_token.dart';
