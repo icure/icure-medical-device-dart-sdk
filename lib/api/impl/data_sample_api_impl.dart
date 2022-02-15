@@ -1,6 +1,7 @@
 import 'package:http/src/multipart_file.dart';
 import 'package:icure_dart_sdk/api.dart';
 import 'package:icure_dart_sdk/crypto/crypto.dart';
+import 'package:icure_dart_sdk/util/collection_utils.dart';
 import 'package:icure_dart_sdk/util/functional_utils.dart';
 import 'package:icure_medical_device_dart_sdk/api.dart';
 import 'package:icure_medical_device_dart_sdk/mappers/service_data_sample.dart';
@@ -37,8 +38,8 @@ class DataSampleApiImpl extends DataSampleApi {
 
     final contactTuple = await _getContactOfDataSample(localCrypto, currentUser!, dataSample.first);
     final contactCached = contactTuple.item1;
-    final contact = contactTuple.item2;
-    final contactPatientId = await contact?.let((that) => _getPatientIdOfContact(localCrypto, currentUser, that));
+    final existingContact = contactTuple.item2;
+    final contactPatientId = await existingContact?.let((that) => _getPatientIdOfContact(localCrypto, currentUser, that));
 
     if (contactPatientId != null && contactPatientId != patientId) {
       throw FormatException("Can't update the patient of a batch of data samples. Delete those samples and create new ones");
@@ -47,17 +48,17 @@ class DataSampleApiImpl extends DataSampleApi {
     final existingPatient = await api.patientApi.getPatient(currentUser, patientId, patientCryptoConfig(localCrypto));
     final ccContact = contactCryptoConfig(currentUser, localCrypto);
     DecryptedContactDto? createdOrModifiedContact;
-    if (contactCached && contact != null) {
+    if (contactCached && existingContact != null) {
       final serviceToModify = dataSample.map((e) => DataSampleMapper(e).toServiceDto(e.batchId));
-      contact.services = serviceToModify.toSet();
-      contact.openingDate =
+      existingContact.services = serviceToModify.toSet();
+      existingContact.openingDate =
           serviceToModify.where((element) => element.openingDate != null || element.valueDate != null).map((e) => e.openingDate ?? e.valueDate!).min;
-      contact.closingDate =
+      existingContact.closingDate =
           serviceToModify.where((element) => element.closingDate != null || element.valueDate != null).map((e) => e.closingDate ?? e.valueDate!).max;
 
-      createdOrModifiedContact = await api.contactApi.modifyContact(currentUser, contact, ccContact);
+      createdOrModifiedContact = await api.contactApi.modifyContact(currentUser, existingContact, ccContact);
     } else {
-      final contactToCreate = _createContactDtoBasedOn(dataSample, contact);
+      final contactToCreate = _createContactDtoBasedOn(dataSample, existingContact);
       createdOrModifiedContact = await api.contactApi.createContactWithPatient(currentUser, existingPatient!, contactToCreate, ccContact);
     }
 
@@ -66,9 +67,23 @@ class DataSampleApiImpl extends DataSampleApi {
   }
 
   @override
-  Future<String?> deleteAttachment(String dataSampleId, String documentId) {
-    // TODO: implement deleteAttachment
-    throw UnimplementedError();
+  Future<String?> deleteAttachment(String dataSampleId, String documentId) async {
+    final localCrypto = api.localCrypto;
+    final currentUser = await api.userApi.getCurrentUser();
+
+    final DecryptedContactDto existingContact = (await _findContactsForDataSampleIds(currentUser!, localCrypto, [dataSampleId])).firstOrNull() ??
+        (throw StateError("Could not find batch information of the data sample $dataSampleId"));
+    final DecryptedServiceDto existingService =
+        existingContact.services.findFirst((element) => element.id == dataSampleId) ?? (throw StateError("Could not find data sample $dataSampleId"));
+    final contactPatientId = (await _getPatientIdOfContact(localCrypto, currentUser, existingContact)) ??
+        (throw FormatException("Can not set an attachment to a data sample not linked to a patient"));
+    final contentToDelete = existingService.content.entries.findFirst((input) => input.value.documentId == documentId)?.key ??
+        (throw FormatException("Id $documentId does not reference any document in the data sample $dataSampleId"));
+
+    existingService.content.removeWhere((key, value) => key != contentToDelete);
+    createOrModifyDataSampleFor(contactPatientId, existingService.toDataSample(contactPatientId));
+
+    return documentId;
   }
 
   @override
@@ -167,5 +182,28 @@ class DataSampleApiImpl extends DataSampleApi {
         servicesToCreate.where((element) => element.closingDate != null || element.valueDate != null).map((e) => e.closingDate ?? e.valueDate!).max;
 
     return baseContact;
+  }
+
+  Future<Set<DecryptedContactDto>> _findContactsForDataSampleIds(UserDto currentUser, LocalCrypto localCrypto, List<String> dataSampleIds) async {
+    final cachedContacts = Map<Tuple2<String, String>, DecryptedContactDto>.of({}); //TODO: Caching contacts
+    final dataSampleIdsToSearch = dataSampleIds.where((element) => !cachedContacts.containsKey(Tuple2(currentUser.id, element)));
+
+    if (dataSampleIdsToSearch.isNotEmpty) {
+      final List<DecryptedContactDto>? notCachedContacts = (await api.contactApi.filterContactsBy(
+              currentUser,
+              FilterChain<ContactDto>(ContactByServiceIdsFilter(ids: dataSampleIdsToSearch.toSet())),
+              null,
+              null,
+              dataSampleIdsToSearch.length,
+              contactCryptoConfig(currentUser, localCrypto)))
+          ?.rows;
+      notCachedContacts?.sort((a, b) => a.modified!.compareTo(b.modified!));
+
+      //TODO : Caching contacts
+
+      return [...cachedContacts.values, ...?notCachedContacts].toSet();
+    } else {
+      return cachedContacts.values.toSet();
+    }
   }
 }

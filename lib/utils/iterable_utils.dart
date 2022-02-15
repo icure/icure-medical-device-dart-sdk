@@ -16,6 +16,15 @@ extension IterableExtension<T> on Iterable<T> {
     });
     return sum;
   }
+
+  T? findFirst(bool predicate(T input)) {
+    for (var element in this) {
+      if (predicate(element)) {
+        return element;
+      }
+    }
+    return null;
+  }
 }
 
 extension IterableNum<T extends num> on Iterable<T> {
