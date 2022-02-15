@@ -132,15 +132,21 @@ class DataSampleApiImpl extends DataSampleApi {
   }
 
   @override
-  Future<MultipartFile?> getDataSampleAttachmentContent(String dataSampleId, String documentId, String attachmentId) {
-    // TODO: implement getDataSampleAttachmentContent
-    throw UnimplementedError();
+  Future<MultipartFile?> getDataSampleAttachmentContent(String dataSampleId, String documentId, String attachmentId) async {
+    final localCrypto = api.localCrypto;
+    final currentUser = await api.userApi.getCurrentUser();
+
+    final documentOfAttachment = await _getDataSampleAttachmentDocumentFromICure(localCrypto, currentUser!, dataSampleId, documentId);
+    return api.documentApi.rawGetDocumentAttachment(documentId, attachmentId,
+        enckeys: (await _getDocumentEncryptionKeys(localCrypto, currentUser, documentOfAttachment)).join(","), fileName: null);
   }
 
   @override
-  Future<Document?> getDataSampleAttachmentDocument(String dataSampleId, String documentId) {
-    // TODO: implement getDataSampleAttachmentDocument
-    throw UnimplementedError();
+  Future<Document?> getDataSampleAttachmentDocument(String dataSampleId, String documentId) async {
+    final localCrypto = api.localCrypto;
+    final currentUser = await api.userApi.getCurrentUser();
+
+    return DocumentDtoMapper((await _getDataSampleAttachmentDocumentFromICure(localCrypto, currentUser!, dataSampleId, documentId))).toDocument();
   }
 
   @override
@@ -242,5 +248,20 @@ class DataSampleApiImpl extends DataSampleApi {
     final currentUser = await api.userApi.getCurrentUser();
 
     return (await api.contactApi.listServices(currentUser!, base_api.ListOfIdsDto(ids: [dataSampleId]), localCrypto)).firstOrNull();
+  }
+
+  Future<base_api.DecryptedDocumentDto> _getDataSampleAttachmentDocumentFromICure(
+      LocalCrypto localCrypto, base_api.UserDto currentUser, String dataSampleId, String documentId) async {
+    final existingDataSample = await getDataSample(dataSampleId);
+    if (existingDataSample!.content.entries.findFirst((input) => input.value.documentId == documentId) == null) {
+      throw FormatException("Id $documentId does not reference any document in the data sample $dataSampleId");
+    }
+
+    return (await api.documentApi.getDocument(currentUser, documentId, documentCryptoConfig(localCrypto)))!;
+  }
+
+  Future<Set<String>> _getDocumentEncryptionKeys(
+      LocalCrypto localCrypto, base_api.UserDto currentUser, base_api.DecryptedDocumentDto document) async {
+    return await localCrypto.decryptEncryptionKeys(currentUser.findDataOwnerId(), document.encryptionKeys);
   }
 }
