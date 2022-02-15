@@ -2,7 +2,6 @@ import 'package:http/src/multipart_file.dart';
 import 'package:icure_dart_sdk/api.dart';
 import 'package:icure_dart_sdk/crypto/crypto.dart';
 import 'package:icure_dart_sdk/util/collection_utils.dart';
-import 'package:icure_dart_sdk/util/functional_utils.dart';
 import 'package:icure_medical_device_dart_sdk/api.dart';
 import 'package:icure_medical_device_dart_sdk/mappers/filter.dart';
 import 'package:icure_medical_device_dart_sdk/mappers/paginated_list.dart';
@@ -130,9 +129,9 @@ class DataSampleApiImpl extends DataSampleApi {
   }
 
   @override
-  Future<DataSample?> getDataSample(String dataSampleId) {
-    // TODO: implement getDataSample
-    throw UnimplementedError();
+  Future<DataSample?> getDataSample(String dataSampleId) async {
+    return ServiceDtoMapper(await _getServiceFromICure(dataSampleId))?.toDataSample(null) ??
+        (throw FormatException("Id $dataSampleId does not correspond to any existing data sample"));
   }
 
   @override
@@ -235,5 +234,12 @@ class DataSampleApiImpl extends DataSampleApi {
   Future<DecryptedPatientDto?> _getPatientOfContact(LocalCrypto localCrypto, UserDto currentUser, DecryptedContactDto contactDto) async {
     return (await _getPatientIdOfContact(localCrypto, currentUser, contactDto))
         ?.let((that) => api.patientApi.getPatient(currentUser, that, patientCryptoConfig(localCrypto)));
+  }
+
+  Future<DecryptedServiceDto?> _getServiceFromICure(String dataSampleId) async {
+    final localCrypto = api.localCrypto;
+    final currentUser = await api.userApi.getCurrentUser();
+
+    return (await api.contactApi.listServices(currentUser!, ListOfIdsDto(ids: [dataSampleId]), localCrypto)).firstOrNull();
   }
 }
