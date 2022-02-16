@@ -25,14 +25,16 @@ void main() {
     return builder.build();
   }
 
+  HealthcareProfessional getHcp() => HealthcareProfessional(
+      id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}), name: 'Wick', firstName: 'John', gender: HealthcareProfessionalGenderEnum.male);
+
   group('tests for HealthcareProfessionalApi', () {
     test('test createOrModifyHealthcareProfessional', () async {
       // Init
       final MedTechApi api = await medtechApi();
       final HealthcareProfessionalApi healthcareProfessionalApi = HealthcareProfessionalApiImpl(api);
 
-      final HealthcareProfessional healthcareProfessional = HealthcareProfessional(
-          id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}), name: 'Wick', firstName: 'John', gender: HealthcareProfessionalGenderEnum.male);
+      final HealthcareProfessional healthcareProfessional = getHcp();
 
       // When
       final HealthcareProfessional? createdHcp = await healthcareProfessionalApi.createOrModifyHealthcareProfessional(healthcareProfessional);
@@ -49,8 +51,7 @@ void main() {
       final MedTechApi api = await medtechApi();
       final HealthcareProfessionalApi healthcareProfessionalApi = HealthcareProfessionalApiImpl(api);
 
-      final HealthcareProfessional healthcareProfessional = HealthcareProfessional(
-          id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}), name: 'Wick', firstName: 'John', gender: HealthcareProfessionalGenderEnum.male);
+      final HealthcareProfessional healthcareProfessional = getHcp();
 
       // When
       final HealthcareProfessional? createdHcp = await healthcareProfessionalApi.createOrModifyHealthcareProfessional(healthcareProfessional);
@@ -70,8 +71,7 @@ void main() {
     final HealthcareProfessionalApi healthcareProfessionalApi = HealthcareProfessionalApiImpl(api);
     final updateFirstname = "Johnny";
 
-    final HealthcareProfessional healthcareProfessional = HealthcareProfessional(
-        id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}), name: 'Wick', firstName: 'John', gender: HealthcareProfessionalGenderEnum.male);
+    final HealthcareProfessional healthcareProfessional = getHcp();
 
     // When
     final HealthcareProfessional? createdHcp = await healthcareProfessionalApi.createOrModifyHealthcareProfessional(healthcareProfessional);
@@ -90,8 +90,7 @@ void main() {
     final MedTechApi api = await medtechApi();
     final HealthcareProfessionalApi healthcareProfessionalApi = HealthcareProfessionalApiImpl(api);
 
-    final HealthcareProfessional healthcareProfessional = HealthcareProfessional(
-        id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}), name: 'Wick', firstName: 'John', gender: HealthcareProfessionalGenderEnum.male);
+    final HealthcareProfessional healthcareProfessional = getHcp();
 
     // When
     final HealthcareProfessional? createdHcp = await healthcareProfessionalApi.createOrModifyHealthcareProfessional(healthcareProfessional);
