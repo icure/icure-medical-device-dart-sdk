@@ -150,9 +150,8 @@ class DataSampleApiImpl extends DataSampleApi {
   }
 
   @override
-  Future<List<String>?> matchDataSample(Filter filter) {
-    // TODO: implement matchDataSample
-    throw UnimplementedError();
+  Future<List<String>?> matchDataSample(Filter filter) async {
+    return await api.contactApi.rawMatchServicesBy(filter.toAbstractFilterDto());
   }
 
   @override
