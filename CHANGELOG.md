@@ -1,3 +1,7 @@
+## 1.0.6
+
+- Performance improvement
+
 ## 1.0.5
 
 - Fix transitive dependency problem
