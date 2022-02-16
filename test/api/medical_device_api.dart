@@ -25,17 +25,16 @@ void main() {
     return builder.build();
   }
 
+  MedicalDevice getMedicalDevice() =>
+      MedicalDevice(id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}), brand: 'Apple', model: '13 Pro', type: 'iPhone');
+
   group('tests for MedicalDeviceApi', () {
     test('test createDevice CREATE', () async {
       // Init
       final MedTechApi api = await medtechApi();
       final MedicalDeviceApi deviceApi = MedicalDeviceApiImpl(api);
 
-      final MedicalDevice device = MedicalDevice(
-          id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}),
-          brand: 'Apple',
-          model: '13 Pro',
-          type: 'iPhone');
+      final MedicalDevice device = getMedicalDevice();
 
       // When
       final MedicalDevice? createdDevice = await deviceApi.createOrModifyMedicalDevice(device);
@@ -52,11 +51,7 @@ void main() {
       final MedTechApi api = await medtechApi();
       final MedicalDeviceApi deviceApi = MedicalDeviceApiImpl(api);
 
-      final MedicalDevice device = MedicalDevice(
-          id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}),
-          brand: 'Apple',
-          model: '13 Pro',
-          type: 'iPhone');
+      final MedicalDevice device = getMedicalDevice();
 
       // When
       final MedicalDevice? createdDevice = await deviceApi.createOrModifyMedicalDevice(device);
@@ -101,12 +96,7 @@ void main() {
       final MedTechApi api = await medtechApi();
       final MedicalDeviceApi deviceApi = MedicalDeviceApiImpl(api);
 
-      final MedicalDevice device = MedicalDevice(
-          id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}),
-          brand: 'Apple',
-          model: '13 Pro',
-          type: 'iPhone'
-      );
+      final MedicalDevice device = getMedicalDevice();
 
       // When
       final MedicalDevice? createdDevice = await deviceApi.createOrModifyMedicalDevice(device);

@@ -10,6 +10,8 @@ part of icure_medical_device_dart_sdk.api;
 class DataSampleApiImpl extends DataSampleApi {
   DataSampleApiImpl(this.api);
 
+  CachedMap<String, base_api.DecryptedContactDto> contactsLinkedToDataSamplesCache = CachedMap(expirationInMillis: 1000 * 60 * 5, maxSize: 5000);
+
   final MedTechApi api;
   final uuid = Uuid();
 
@@ -24,8 +26,8 @@ class DataSampleApiImpl extends DataSampleApi {
       throw FormatException("Only data samples of a same batch can be processed together");
     }
 
+    // Arbitrary : 1 service = 1K
     if (_countHierarchyOfDataSamples(0, 0, dataSample) > 1000) {
-      // Arbitrary : 1 service = 1K
       throw FormatException("Can't process more than 1000 data samples in the same batch");
     }
 
@@ -35,15 +37,21 @@ class DataSampleApiImpl extends DataSampleApi {
     final contactTuple = await _getContactOfDataSample(localCrypto, currentUser!, dataSample.first);
     final contactCached = contactTuple.item1;
     final existingContact = contactTuple.item2;
+
     final contactPatientId = await existingContact?.let((that) => _getPatientIdOfContact(localCrypto, currentUser, that));
 
-    if (contactPatientId != null && contactPatientId != patientId) {
+    if (existingContact != null && contactPatientId == null) {
+      throw FormatException("Can't update a batch of data samples that is not linked to any patient yet.");
+    }
+
+    if (contactPatientId != patientId) {
       throw FormatException("Can't update the patient of a batch of data samples. Delete those samples and create new ones");
     }
 
     final existingPatient = await api.basePatientApi.getPatient(currentUser, patientId, patientCryptoConfig(localCrypto));
     final ccContact = contactCryptoConfig(currentUser, localCrypto);
     base_api.DecryptedContactDto? createdOrModifiedContact;
+
     if (contactCached && existingContact != null) {
       final serviceToModify = dataSample.map((e) => DataSampleMapper(e).toServiceDto(e.batchId));
       existingContact.services = serviceToModify.toSet();
@@ -58,8 +66,9 @@ class DataSampleApiImpl extends DataSampleApi {
       createdOrModifiedContact = await api.baseContactApi.createContactWithPatient(currentUser, existingPatient!, contactToCreate, ccContact);
     }
 
-    //TODO: Caching createdOrModifiedContact
-    return createdOrModifiedContact!.services.map((e) => e.toDataSample(createdOrModifiedContact!.id)).toList();
+    createdOrModifiedContact!.services.forEach((service) => contactsLinkedToDataSamplesCache.put(service.id, createdOrModifiedContact!));
+
+    return createdOrModifiedContact.services.map((e) => e.toDataSample(createdOrModifiedContact!.id)).toList();
   }
 
   @override
@@ -70,10 +79,13 @@ class DataSampleApiImpl extends DataSampleApi {
     final base_api.DecryptedContactDto existingContact =
         (await _findContactsForDataSampleIds(currentUser!, localCrypto, [dataSampleId])).firstOrNull() ??
             (throw StateError("Could not find batch information of the data sample $dataSampleId"));
+
     final base_api.DecryptedServiceDto existingService =
         existingContact.services.findFirst((element) => element.id == dataSampleId) ?? (throw StateError("Could not find data sample $dataSampleId"));
+
     final contactPatientId = (await _getPatientIdOfContact(localCrypto, currentUser, existingContact)) ??
         (throw FormatException("Can not set an attachment to a data sample not linked to a patient"));
+
     final contentToDelete = existingService.content.entries.findFirst((input) => input.value.documentId == documentId)?.key ??
         (throw FormatException("Id $documentId does not reference any document in the data sample $dataSampleId"));
 
@@ -150,9 +162,8 @@ class DataSampleApiImpl extends DataSampleApi {
   }
 
   @override
-  Future<List<String>?> matchDataSample(Filter filter) {
-    // TODO: implement matchDataSample
-    throw UnimplementedError();
+  Future<List<String>?> matchDataSample(Filter filter) async {
+    return await api.contactApi.rawMatchServicesBy(filter.toAbstractFilterDto());
   }
 
   @override
@@ -168,17 +179,26 @@ class DataSampleApiImpl extends DataSampleApi {
     }
     final currentDS = dataSamples[dataSampleIndex];
     final dataSampleCount = currentDS.content.values
-        .where((element) => element.compoundValue.isEmpty)
-        .sumOf((input) => _countHierarchyOfDataSamples(0, 0, input.compoundValue!));
+        .where((element) => element.compoundValue.isNotEmpty)
+        .sumOf((input) => _countHierarchyOfDataSamples(0, 0, input.compoundValue));
     return _countHierarchyOfDataSamples(currentCount + dataSampleCount, dataSampleIndex + 1, dataSamples);
   }
 
   Future<Tuple2<bool, base_api.DecryptedContactDto?>> _getContactOfDataSample(
       LocalCrypto localCrypto, base_api.UserDto currentUser, DataSample dataSample) async {
-    // TODO: Caching contact ?
-    final base_api.DecryptedContactDto? contact = await dataSample.batchId
-        ?.let((that) async => await api.baseContactApi.getContact(currentUser, that, contactCryptoConfig(currentUser, localCrypto)));
-    return Tuple2(false, contact);
+
+    final cachedContact = dataSample.id?.let((dsId) => contactsLinkedToDataSamplesCache.getIfPresent(dsId));
+    if (cachedContact != null) {
+      return Tuple2(true, cachedContact);
+    } else {
+      final base_api.DecryptedContactDto? contact = await dataSample.batchId
+          ?.let((that) async => await api.baseContactApi.getContact(currentUser, that, contactCryptoConfig(currentUser, localCrypto)));
+
+      if (dataSample.id != null) {
+        contactsLinkedToDataSamplesCache.put(dataSample.id!, contact!);
+      }
+      return Tuple2(false, contact);
+    }
   }
 
   Future<String?> _getPatientIdOfContact(LocalCrypto localCrypto, base_api.UserDto currentUser, base_api.DecryptedContactDto contactDto) async =>
@@ -215,23 +235,28 @@ class DataSampleApiImpl extends DataSampleApi {
 
   Future<Set<base_api.DecryptedContactDto>> _findContactsForDataSampleIds(
       base_api.UserDto currentUser, LocalCrypto localCrypto, List<String> dataSampleIds) async {
-    final cachedContacts = Map<Tuple2<String, String>, base_api.DecryptedContactDto>.of({}); //TODO: Caching contacts
-    final dataSampleIdsToSearch = dataSampleIds.where((element) => !cachedContacts.containsKey(Tuple2(currentUser.id, element)));
+    final cachedContacts = contactsLinkedToDataSamplesCache.getAllPresent(dataSampleIds);
+    final dataSampleIdsToSearch = dataSampleIds.where((element) => !cachedContacts.containsKey(element));
 
     if (dataSampleIdsToSearch.isNotEmpty) {
-      final List<base_api.DecryptedContactDto>? notCachedContacts = (await api.baseContactApi.filterContactsBy(
+      final List<base_api.DecryptedContactDto> notCachedContacts = (await api.baseContactApi.filterContactsBy(
               currentUser,
               base_api.FilterChain<base_api.ContactDto>(base_api.ContactByServiceIdsFilter(ids: dataSampleIdsToSearch.toSet())),
               null,
               null,
               dataSampleIdsToSearch.length,
               contactCryptoConfig(currentUser, localCrypto)))
-          ?.rows;
-      notCachedContacts?.sort((a, b) => a.modified!.compareTo(b.modified!));
+          ?.rows ?? [];
+      notCachedContacts.sort((a, b) => a.modified!.compareTo(b.modified!));
 
-      //TODO : Caching contacts
+      // Caching
+      notCachedContacts.forEach((contact) {
+        contact.services
+            .where((service) => dataSampleIdsToSearch.contains(service.id))
+            .forEach((service) => contactsLinkedToDataSamplesCache.put(service.id, contact));
+      });
 
-      return [...cachedContacts.values, ...?notCachedContacts].toSet();
+      return [...cachedContacts.values, ...notCachedContacts].toSet();
     } else {
       return cachedContacts.values.toSet();
     }
