@@ -128,7 +128,7 @@ abstract class DataSampleApi {
   ///
   /// * [String] dataSampleId (required):
   ///
-  /// * [MultipartFile] body (required):
+  /// * [ByteStream] body (required):
   ///
   /// * [String] documentName:
   ///
@@ -137,5 +137,5 @@ abstract class DataSampleApi {
   /// * [String] documentExternalUuid:
   ///
   /// * [String] documentLanguage:
-  Future<Document?> setDataSampleAttachment(String dataSampleId, MultipartFile body, { String? documentName, String? documentVersion, String? documentExternalUuid, String? documentLanguage, });
+  Future<Document?> setDataSampleAttachment(String dataSampleId, ByteStream body, { String? documentName, String? documentVersion, String? documentExternalUuid, String? documentLanguage, });
 }
