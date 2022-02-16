@@ -34,6 +34,8 @@ import 'utils/iterable_utils.dart';
 import 'utils/cached_map.dart';
 import 'utils/uti_detector.dart';
 
+export 'package:icure_dart_sdk/crypto/crypto.dart' show Crypto;
+
 import 'mappers/address.dart';
 import 'mappers/authentication_token.dart';
 import 'mappers/code_coding.dart';
