@@ -42,3 +42,7 @@ extension MapExtension<E, F> on Map<E, F> {
     return this.entries.any((element) => predicate(element));
   }
 }
+
+extension SetOfSetExtension<E> on Set<Set<E>> {
+  Set<E> flatten() => this.fold(<E>{}, (Set<E> previousValue, Set<E> element) => previousValue..union(element));
+}
