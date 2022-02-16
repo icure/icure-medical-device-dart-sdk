@@ -8,18 +8,34 @@
 part of icure_medical_device_dart_sdk.api;
 
 class MedTechApi {
-  final base_api.CodeApi codeApi;
-  final base_api.UserApi userApi;
-  final base_api.PatientApi patientApi;
-  final base_api.HealthElementApi healthElementApi;
-  final base_api.DeviceApi deviceApi;
-  final base_api.HealthcarePartyApi healthcarePartyApi;
-  final base_api.ContactApi contactApi;
+  final base_api.CodeApi baseCodeApi;
+  final base_api.UserApi baseUserApi;
+  final base_api.PatientApi basePatientApi;
+  final base_api.HealthElementApi baseHealthElementApi;
+  final base_api.DeviceApi baseDeviceApi;
+  final base_api.HealthcarePartyApi baseHealthcarePartyApi;
+  final base_api.ContactApi baseContactApi;
   final LocalCrypto localCrypto;
-  final base_api.DocumentApi documentApi;
+  final base_api.DocumentApi baseDocumentApi;
 
-  MedTechApi(this.codeApi, this.userApi, this.patientApi, this.healthElementApi, this.deviceApi, this.healthcarePartyApi, this.contactApi,
-      this.localCrypto, this.documentApi);
+  MedTechApi(this.baseCodeApi, this.baseUserApi, this.basePatientApi, this.baseHealthElementApi, this.baseDeviceApi, this.baseHealthcarePartyApi, this.baseContactApi,
+      this.localCrypto, this.baseDocumentApi);
+
+  CodingApi? _codingApi;
+  PatientApi? _patientApi;
+  UserApi? _userApi;
+  HealthcareElementApi? _healthcareElementApi;
+  MedicalDeviceApi? _medicalDeviceApi;
+  DataSampleApi? _dataSampleApi;
+  HealthcareProfessionalApi? _healthcareProfessionalApi;
+
+  CodingApi get codingApi => _codingApi ?? (_codingApi = CodingApiImpl(this));
+  PatientApi get patientApi => _patientApi ?? (_patientApi = PatientApiImpl(this));
+  UserApi get userApi => _userApi ?? (_userApi = UserApiImpl(this));
+  HealthcareElementApi get healthcareElementApi => _healthcareElementApi ?? (_healthcareElementApi = HealthcareElementApiImpl(this));
+  MedicalDeviceApi get medicalDeviceApi => _medicalDeviceApi ?? (_medicalDeviceApi = MedicalDeviceApiImpl(this));
+  DataSampleApi get dataSampleApi => _dataSampleApi ?? (_dataSampleApi = DataSampleApiImpl(this));
+  HealthcareProfessionalApi get healthcareProfessionalApi => _healthcareProfessionalApi ?? (_healthcareProfessionalApi = HealthcareProfessionalApiImpl(this));
 }
 
 class MedTechApiBuilder {
@@ -34,10 +50,20 @@ class MedTechApiBuilder {
     _iCureBasePath = newICureBasePath;
   }
 
+  MedTechApiBuilder withICureBasePath(String newICureBasePath) {
+    _iCureBasePath = newICureBasePath;
+    return this;
+  }
+
   String get userName => _userName;
 
   set userName(String newUserName) {
     _userName = newUserName;
+  }
+
+  MedTechApiBuilder withUserName(String newUserName) {
+    _userName = newUserName;
+    return this;
   }
 
   String get password => _password;
@@ -46,9 +72,15 @@ class MedTechApiBuilder {
     _password = newPassword;
   }
 
-  void addKeyPair(String keyId, RSAPrivateKey privateKey) {
+  MedTechApiBuilder withPassword(String newPassword) {
+    _password = newPassword;
+    return this;
+  }
+
+  MedTechApiBuilder addKeyPair(String keyId, RSAPrivateKey privateKey) {
     var keyPair = RSAKeypair(privateKey);
     rsaKeyPairs[keyId] = keyPair;
+    return this;
   }
 
   MedTechApi build() {

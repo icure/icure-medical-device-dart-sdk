@@ -14,8 +14,8 @@ class HealthcareProfessionalApiImpl extends HealthcareProfessionalApi {
 
   @override
   Future<HealthcareProfessional?> createOrModifyHealthcareProfessional(HealthcareProfessional healthcareProfessional) async =>
-      (await (healthcareProfessional.rev?.let((it) => api.healthcarePartyApi.modifyHealthcareParty(healthcareProfessional.toHealthcarePartyDto())) ??
-              api.healthcarePartyApi.createHealthcareParty(healthcareProfessional.toHealthcarePartyDto())))
+      (await (healthcareProfessional.rev?.let((it) => api.baseHealthcarePartyApi.modifyHealthcareParty(healthcareProfessional.toHealthcarePartyDto())) ??
+              api.baseHealthcarePartyApi.createHealthcareParty(healthcareProfessional.toHealthcarePartyDto())))
           ?.toHealthcareProfessional();
 
   @override
@@ -31,23 +31,23 @@ class HealthcareProfessionalApiImpl extends HealthcareProfessionalApi {
 
   @override
   Future<List<String>?> deleteHealthcareProfessionals(List<String> requestBody) async {
-    return (await api.healthcarePartyApi.deleteHealthcareParties(base_api.ListOfIdsDto(ids: requestBody)))?.map((e) => e.rev!).toList();
+    return (await api.baseHealthcarePartyApi.deleteHealthcareParties(base_api.ListOfIdsDto(ids: requestBody)))?.map((e) => e.rev!).toList();
   }
 
   @override
   Future<HealthcareProfessional?> getHealthcareProfessional(String healthcareProfessionalId) async {
     return HealthcarePartyDtoMapper(
-            await api.healthcarePartyApi.getHealthcareParty(healthcareProfessionalId) ?? (throw ArgumentError("HealthcareProfessional not found")))
+            await api.baseHealthcarePartyApi.getHealthcareParty(healthcareProfessionalId) ?? (throw ArgumentError("HealthcareProfessional not found")))
         .toHealthcareProfessional();
   }
 
   @override
   Future<PaginatedListHealthcareProfessional?> filterHealthcareProfessionalsBy(Filter<HealthcareProfessional> filter, {String? nextHcpId, int? limit}) async {
-    return (await api.healthcarePartyApi.filterHealthPartiesBy(base_api.FilterChain<base_api.HealthcarePartyDto>(filter.toAbstractFilterDto()), startDocumentId: nextHcpId, limit: limit))
+    return (await api.baseHealthcarePartyApi.filterHealthPartiesBy(base_api.FilterChain<base_api.HealthcarePartyDto>(filter.toAbstractFilterDto()), startDocumentId: nextHcpId, limit: limit))
     ?.toPaginatedListHealthcareProfessional();
   }
 
   @override
   Future<List<String>?> matchHealthcareProfessionalsBy(Filter<HealthcareProfessional> filter) =>
-      api.healthcarePartyApi.matchHealthcarePartiesBy(filter.toAbstractFilterDto());
+      api.baseHealthcarePartyApi.matchHealthcarePartiesBy(filter.toAbstractFilterDto());
 }

@@ -2,20 +2,20 @@
 
 ## Load the API package
 ```dart
-import 'package:openapi/api.dart';
+import 'package:icure_medical_device_dart_sdk/api.dart';
 ```
 
 All URIs are relative to *http://127.0.0.1:8912*
 
-Method | HTTP request | Description
-------------- | ------------- | -------------
-[**createOrModifyMedicalDevice**](MedicalDeviceApi.md#createormodifymedicaldevice) | **PUT** /rest/v2/medical/device | Create or update a [MedicalDevice]
-[**createOrModifyMedicalDevices**](MedicalDeviceApi.md#createormodifymedicaldevices) | **PUT** /rest/v2/medical/device/batch | Create or update a batch of [MedicalDevice]
-[**deleteMedicalDevice**](MedicalDeviceApi.md#deletemedicaldevice) | **DELETE** /rest/v2/medical/device/{medicalDeviceId} | Delete a [MedicalDevice]
-[**deleteMedicalDevices**](MedicalDeviceApi.md#deletemedicaldevices) | **POST** /rest/v2/medical/device/batch | Delete a batch of [MedicalDevice]
-[**filterMedicalDevices**](MedicalDeviceApi.md#filtermedicaldevices) | **POST** /rest/v2/medical/device/filter | Load devices from the database by filtering them using the provided [filter].
-[**getMedicalDevice**](MedicalDeviceApi.md#getmedicaldevice) | **GET** /rest/v2/medical/device/{medicalDeviceId} | Get a Medical Device
-[**matchMedicalDevices**](MedicalDeviceApi.md#matchmedicaldevices) | **POST** /rest/v2/medical/device/match | Load medical device ids from the database by filtering them using the provided Filter.
+Method | Description
+------------- | -------------
+[**createOrModifyMedicalDevice**](MedicalDeviceApi.md#createormodifymedicaldevice) | Create or update a [MedicalDevice]
+[**createOrModifyMedicalDevices**](MedicalDeviceApi.md#createormodifymedicaldevices) | Create or update a batch of [MedicalDevice]
+[**deleteMedicalDevice**](MedicalDeviceApi.md#deletemedicaldevice) | Delete a [MedicalDevice]
+[**deleteMedicalDevices**](MedicalDeviceApi.md#deletemedicaldevices) | Delete a batch of [MedicalDevice]
+[**filterMedicalDevices**](MedicalDeviceApi.md#filtermedicaldevices) | Load devices from the database by filtering them using the provided [filter].
+[**getMedicalDevice**](MedicalDeviceApi.md#getmedicaldevice) | Get a Medical Device
+[**matchMedicalDevices**](MedicalDeviceApi.md#matchmedicaldevices) | Load medical device ids from the database by filtering them using the provided Filter.
 
 
 # **createOrModifyMedicalDevice**
@@ -27,13 +27,20 @@ When modifying a device, you must ensure that the rev obtained when getting or c
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:icure_medical_device_dart_sdk/api.dart';
 
-final api_instance = MedicalDeviceApi();
+final api = MedTechApiBuilder()
+    .withICureBasePath('https://kraken.icure.dev')
+    .withUserName('user')
+    .withPassword('password')
+    .addKeyPair('id', private_key)
+    .build();
+
+final medical_device_api = api.medicalDeviceApi;
 final medicalDevice = MedicalDevice(); // MedicalDevice | 
 
 try {
-    final result = api_instance.createOrModifyMedicalDevice(medicalDevice);
+    final result = medical_device_api.createOrModifyMedicalDevice(medicalDevice);
     print(result);
 } catch (e) {
     print('Exception when calling MedicalDeviceApi->createOrModifyMedicalDevice: $e\n');
@@ -70,13 +77,20 @@ When modifying a device, you must ensure that the rev obtained when getting or c
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:icure_medical_device_dart_sdk/api.dart';
 
-final api_instance = MedicalDeviceApi();
+final api = MedTechApiBuilder()
+    .withICureBasePath('https://kraken.icure.dev')
+    .withUserName('user')
+    .withPassword('password')
+    .addKeyPair('id', private_key)
+    .build();
+
+final medical_device_api = api.medicalDeviceApi;
 final medicalDevice = [List<MedicalDevice>()]; // List<MedicalDevice> | 
 
 try {
-    final result = api_instance.createOrModifyMedicalDevices(medicalDevice);
+    final result = medical_device_api.createOrModifyMedicalDevices(medicalDevice);
     print(result);
 } catch (e) {
     print('Exception when calling MedicalDeviceApi->createOrModifyMedicalDevices: $e\n');
@@ -113,13 +127,20 @@ Deletes the medical device identified by the provided unique [medicalDeviceId].
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:icure_medical_device_dart_sdk/api.dart';
 
-final api_instance = MedicalDeviceApi();
+final api = MedTechApiBuilder()
+    .withICureBasePath('https://kraken.icure.dev')
+    .withUserName('user')
+    .withPassword('password')
+    .addKeyPair('id', private_key)
+    .build();
+
+final medical_device_api = api.medicalDeviceApi;
 final medicalDeviceId = medicalDeviceId_example; // String | 
 
 try {
-    final result = api_instance.deleteMedicalDevice(medicalDeviceId);
+    final result = medical_device_api.deleteMedicalDevice(medicalDeviceId);
     print(result);
 } catch (e) {
     print('Exception when calling MedicalDeviceApi->deleteMedicalDevice: $e\n');
@@ -156,13 +177,20 @@ Deletes the batch of medical device identified by the provided [medicalDeviceIds
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:icure_medical_device_dart_sdk/api.dart';
 
-final api_instance = MedicalDeviceApi();
+final api = MedTechApiBuilder()
+    .withICureBasePath('https://kraken.icure.dev')
+    .withUserName('user')
+    .withPassword('password')
+    .addKeyPair('id', private_key)
+    .build();
+
+final medical_device_api = api.medicalDeviceApi;
 final requestBody = [List<String>()]; // List<String> | 
 
 try {
-    final result = api_instance.deleteMedicalDevices(requestBody);
+    final result = medical_device_api.deleteMedicalDevices(requestBody);
     print(result);
 } catch (e) {
     print('Exception when calling MedicalDeviceApi->deleteMedicalDevices: $e\n');
@@ -199,15 +227,22 @@ Filters are complex selectors that are built by combining basic building blocks.
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:icure_medical_device_dart_sdk/api.dart';
 
-final api_instance = MedicalDeviceApi();
+final api = MedTechApiBuilder()
+    .withICureBasePath('https://kraken.icure.dev')
+    .withUserName('user')
+    .withPassword('password')
+    .addKeyPair('id', private_key)
+    .build();
+
+final medical_device_api = api.medicalDeviceApi;
 final filter = Filter(); // Filter | The Filter object that describes which condition(s) the elements whose the ids should be returned must fulfill
 final nextDeviceId = nextDeviceId_example; // String | The id of the first device in the next page
 final limit = 56; // int | The number of devices to return in the queried page
 
 try {
-    final result = api_instance.filterMedicalDevices(filter, nextDeviceId, limit);
+    final result = medical_device_api.filterMedicalDevices(filter, nextDeviceId, limit);
     print(result);
 } catch (e) {
     print('Exception when calling MedicalDeviceApi->filterMedicalDevices: $e\n');
@@ -246,13 +281,20 @@ Each medical device is uniquely identified by a device id. The device id is a UU
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:icure_medical_device_dart_sdk/api.dart';
 
-final api_instance = MedicalDeviceApi();
+final api = MedTechApiBuilder()
+    .withICureBasePath('https://kraken.icure.dev')
+    .withUserName('user')
+    .withPassword('password')
+    .addKeyPair('id', private_key)
+    .build();
+
+final medical_device_api = api.medicalDeviceApi;
 final medicalDeviceId = medicalDeviceId_example; // String | 
 
 try {
-    final result = api_instance.getMedicalDevice(medicalDeviceId);
+    final result = medical_device_api.getMedicalDevice(medicalDeviceId);
     print(result);
 } catch (e) {
     print('Exception when calling MedicalDeviceApi->getMedicalDevice: $e\n');
@@ -289,13 +331,20 @@ Filters are complex selectors that are built by combining basic building blocks.
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:icure_medical_device_dart_sdk/api.dart';
 
-final api_instance = MedicalDeviceApi();
+final api = MedTechApiBuilder()
+    .withICureBasePath('https://kraken.icure.dev')
+    .withUserName('user')
+    .withPassword('password')
+    .addKeyPair('id', private_key)
+    .build();
+
+final medical_device_api = api.medicalDeviceApi;
 final filter = Filter(); // Filter | The Filter object that describes which condition(s) the elements whose the ids should be returned must fulfill
 
 try {
-    final result = api_instance.matchMedicalDevices(filter);
+    final result = medical_device_api.matchMedicalDevices(filter);
     print(result);
 } catch (e) {
     print('Exception when calling MedicalDeviceApi->matchMedicalDevices: $e\n');

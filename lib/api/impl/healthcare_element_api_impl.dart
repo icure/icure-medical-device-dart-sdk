@@ -15,7 +15,7 @@ class HealthcareElementApiImpl extends HealthcareElementApi {
   @override
   Future<HealthcareElement?> createOrModifyHealthcareElement(HealthcareElement healthcareElement) async {
     final localCrypto = api.localCrypto;
-    final currentUser = await api.userApi.getCurrentUser();
+    final currentUser = await api.baseUserApi.getCurrentUser();
     final ccHealthElement = healthElementCryptoConfig(localCrypto);
 
     if (currentUser == null) {
@@ -26,11 +26,11 @@ class HealthcareElementApiImpl extends HealthcareElementApi {
       if (healthcareElement.id == null || !Uuid.isValidUUID(fromString: healthcareElement.id!)) {
         throw ArgumentError("Update id should be provided as an UUID");
       }
-      final modifiedHealthElementDto = await api.healthElementApi
+      final modifiedHealthElementDto = await api.baseHealthElementApi
           .modifyHealthElement(currentUser, HealthcareElementMapper(healthcareElement).toHealthElementDto(), ccHealthElement);
       return modifiedHealthElementDto != null ? HealthElementDtoMapper(modifiedHealthElementDto).toHealthcareElement() : null;
     }
-    final createdHealthElementDto = await api.healthElementApi
+    final createdHealthElementDto = await api.baseHealthElementApi
         .createHealthElement(currentUser, HealthcareElementMapper(healthcareElement).toHealthElementDto(), ccHealthElement);
     return createdHealthElementDto != null ? HealthElementDtoMapper(createdHealthElementDto).toHealthcareElement() : null;
   }
@@ -38,7 +38,7 @@ class HealthcareElementApiImpl extends HealthcareElementApi {
   @override
   Future<List<HealthcareElement>?> createOrModifyHealthcareElements(String patientId, List<HealthcareElement> healthcareElement) async {
     final localCrypto = api.localCrypto;
-    final currentUser = await api.userApi.getCurrentUser();
+    final currentUser = await api.baseUserApi.getCurrentUser();
     final ccHealthElement = healthElementCryptoConfig(localCrypto);
     final ccPatient = patientCryptoConfig(localCrypto);
 
@@ -52,9 +52,9 @@ class HealthcareElementApiImpl extends HealthcareElementApi {
     final healthElementDtoToUpdate = healthElementToUpdate.map((e) => e.toHealthElementDto()).toList();
     final healthElementDtoToCreate = healthElementToCreate.map((e) => e.toHealthElementDto()).toList();
 
-    final patient = await base_api.PatientApiCrypto(api.patientApi).getPatient(currentUser!, patientId, ccPatient) ?? (throw StateError("Patient not found"));
-    final heCreated = await api.healthElementApi.createHealthElements(currentUser, patient, healthElementDtoToCreate, ccHealthElement);
-    final heUpdated = await api.healthElementApi.modifyHealthElements(currentUser, healthElementDtoToUpdate, ccHealthElement);
+    final patient = await base_api.PatientApiCrypto(api.basePatientApi).getPatient(currentUser!, patientId, ccPatient) ?? (throw StateError("Patient not found"));
+    final heCreated = await api.baseHealthElementApi.createHealthElements(currentUser, patient, healthElementDtoToCreate, ccHealthElement);
+    final heUpdated = await api.baseHealthElementApi.modifyHealthElements(currentUser, healthElementDtoToUpdate, ccHealthElement);
     final heProcessed = [...?heCreated, ...heUpdated];
 
     return heProcessed.map((e) => e.toHealthcareElement()).toList();
@@ -62,7 +62,7 @@ class HealthcareElementApiImpl extends HealthcareElementApi {
 
   @override
   Future<String?> deleteHealthcareElement(String id) async {
-    return (await api.healthElementApi.rawDeleteHealthElements(base_api.ListOfIdsDto(ids: [id])))?.single.rev ??
+    return (await api.baseHealthElementApi.rawDeleteHealthElements(base_api.ListOfIdsDto(ids: [id])))?.single.rev ??
         throwFormatException("Invalid health element id");
   }
 
@@ -73,10 +73,10 @@ class HealthcareElementApiImpl extends HealthcareElementApi {
     int? limit,
   }) async {
     final localCrypto = api.localCrypto;
-    final currentUser = await api.userApi.getCurrentUser();
+    final currentUser = await api.baseUserApi.getCurrentUser();
     final ccHealthElement = healthElementCryptoConfig(localCrypto);
 
-    return (await api.healthElementApi.filterHealthElements(
+    return (await api.baseHealthElementApi.filterHealthElements(
             currentUser!, base_api.FilterChain<base_api.HealthElementDto>(filter.toAbstractFilterDto()), ccHealthElement, nextHealthElementId, limit))
         .toPaginatedListHealthcareElement();
   }
@@ -84,14 +84,14 @@ class HealthcareElementApiImpl extends HealthcareElementApi {
   @override
   Future<HealthcareElement?> getHealthcareElement(String id) async {
     final localCrypto = api.localCrypto;
-    final currentUser = await api.userApi.getCurrentUser();
+    final currentUser = await api.baseUserApi.getCurrentUser();
     final ccHealthElement = healthElementCryptoConfig(localCrypto);
 
-    return (await api.healthElementApi.getHeathElement(currentUser!, id, ccHealthElement))?.toHealthcareElement();
+    return (await api.baseHealthElementApi.getHeathElement(currentUser!, id, ccHealthElement))?.toHealthcareElement();
   }
 
   @override
   Future<List<String>?> matchHealthcareElement(Filter filter) {
-    return api.healthElementApi.rawMatchHealthElementsBy(filter.toAbstractFilterDto());
+    return api.baseHealthElementApi.rawMatchHealthElementsBy(filter.toAbstractFilterDto());
   }
 }
