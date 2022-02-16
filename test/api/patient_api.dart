@@ -79,7 +79,7 @@ void main() {
               searchString: "du")
       ))?.rows ?? [];
 
-      expect(patients.length > 1, true);
+      expect(patients.length == 1, true);
 
       // Then
     });

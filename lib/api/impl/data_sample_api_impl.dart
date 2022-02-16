@@ -163,7 +163,7 @@ class DataSampleApiImpl extends DataSampleApi {
 
   @override
   Future<List<String>?> matchDataSample(Filter filter) async {
-    return await api.contactApi.rawMatchServicesBy(filter.toAbstractFilterDto());
+    return await api.baseContactApi.rawMatchServicesBy(filter.toAbstractFilterDto());
   }
 
   @override
