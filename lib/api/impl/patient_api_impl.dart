@@ -15,7 +15,7 @@ class PatientApiImpl extends PatientApi {
   @override
   Future<Patient?> createOrModifyPatient(Patient patient) async {
     final localCrypto = api.localCrypto;
-    final currentUser = await api.userApi.getCurrentUser();
+    final currentUser = await api.baseUserApi.getCurrentUser();
     final ccPatient = patientCryptoConfig(localCrypto);
 
     if (currentUser == null) {
@@ -27,11 +27,11 @@ class PatientApiImpl extends PatientApi {
         throw ArgumentError("Update id should be provided as an UUID");
       }
       final modifiedPatientDto =
-          await base_api.PatientApiCrypto(api.patientApi).modifyPatient(currentUser, PatientMapper(patient).toPatientDto(), ccPatient);
+          await base_api.PatientApiCrypto(api.basePatientApi).modifyPatient(currentUser, PatientMapper(patient).toPatientDto(), ccPatient);
       return modifiedPatientDto != null ? PatientDtoMapper(modifiedPatientDto).toPatient() : null;
     }
     final createdPatientDto =
-        await base_api.PatientApiCrypto(api.patientApi).createPatient(currentUser, PatientMapper(patient).toPatientDto(), ccPatient);
+        await base_api.PatientApiCrypto(api.basePatientApi).createPatient(currentUser, PatientMapper(patient).toPatientDto(), ccPatient);
     return createdPatientDto != null ? PatientDtoMapper(createdPatientDto).toPatient() : null;
   }
 
@@ -43,20 +43,20 @@ class PatientApiImpl extends PatientApi {
   @override
   Future<PaginatedListPatient?> filterPatients(Filter filter, {String? nextPatientId, int? limit, String? startKey}) async {
     final localCrypto = api.localCrypto;
-    final currentUser = await api.userApi.getCurrentUser();
+    final currentUser = await api.baseUserApi.getCurrentUser();
     final ccPatient = patientCryptoConfig(localCrypto);
 
-    return (await base_api.PatientApiCrypto(api.patientApi).filterPatientsBy(currentUser!, base_api.FilterChain<base_api.PatientDto>(filter.toAbstractFilterDto()), startKey, nextPatientId, limit, ccPatient))
+    return (await base_api.PatientApiCrypto(api.basePatientApi).filterPatientsBy(currentUser!, base_api.FilterChain<base_api.PatientDto>(filter.toAbstractFilterDto()), startKey, nextPatientId, limit, ccPatient))
         ?.toPaginatedListPatient();
   }
 
   @override
-  Future<Patient?> getPatient(String patientId) async => await PatientDtoMapper(await api.patientApi.getPatient(
-          (await api.userApi.getCurrentUser() ?? (throw StateError("Couldn't get current user"))), patientId, patientCryptoConfig(api.localCrypto)))
+  Future<Patient?> getPatient(String patientId) async => await PatientDtoMapper(await api.basePatientApi.getPatient(
+          (await api.baseUserApi.getCurrentUser() ?? (throw StateError("Couldn't get current user"))), patientId, patientCryptoConfig(api.localCrypto)))
       ?.toPatient();
 
   @override
   Future<List<String>?> matchPatients(Filter filter) {
-    return api.patientApi.rawMatchPatientsBy(filter.toAbstractFilterDto());
+    return api.basePatientApi.rawMatchPatientsBy(filter.toAbstractFilterDto());
   }
 }

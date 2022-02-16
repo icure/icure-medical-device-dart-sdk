@@ -2,18 +2,18 @@
 
 ## Load the API package
 ```dart
-import 'package:openapi/api.dart';
+import 'package:icure_medical_device_dart_sdk/api.dart';
 ```
 
 All URIs are relative to *http://127.0.0.1:8912*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**createOrModifyHealthcareProfessional**](HealthcareProfessionalApi.md#createormodifyhealthcareprofessional) | **PUT** /rest/v2/healthcareprofessional | Create a newhealthcare professional or modify an existing one.
-[**deleteHealthcareProfessional**](HealthcareProfessionalApi.md#deletehealthcareprofessional) | **DELETE** /rest/v2/healthcareprofessional/{hcpId} | Delete an existing healthcare professional.
-[**filterHealthcareProfessionalBy**](HealthcareProfessionalApi.md#filterhealthcareprofessionalby) | **POST** /rest/v2/healthcareprofessional/filter | Load healthcare professionals from the database by filtering them using the provided Filter.
-[**getHealthcareProfessional**](HealthcareProfessionalApi.md#gethealthcareprofessional) | **GET** /rest/v2/healthcareprofessional/{hcpId} | Get a Healthcare professional by id.
-[**matchHealthcareProfessionalBy**](HealthcareProfessionalApi.md#matchhealthcareprofessionalby) | **POST** /rest/v2/healthcareprofessional/match | Loadhealthcare professional ids from the database by filtering them using the provided Filter.
+[**createOrModifyHealthcareProfessional**](HealthcareProfessionalApi.md#createormodifyhealthcareprofessional) | Create a newhealthcare professional or modify an existing one.
+[**deleteHealthcareProfessional**](HealthcareProfessionalApi.md#deletehealthcareprofessional) | Delete an existing healthcare professional.
+[**filterHealthcareProfessionalBy**](HealthcareProfessionalApi.md#filterhealthcareprofessionalby) | Load healthcare professionals from the database by filtering them using the provided Filter.
+[**getHealthcareProfessional**](HealthcareProfessionalApi.md#gethealthcareprofessional) | Get a Healthcare professional by id.
+[**matchHealthcareProfessionalBy**](HealthcareProfessionalApi.md#matchhealthcareprofessionalby) | Loadhealthcare professional ids from the database by filtering them using the provided Filter.
 
 
 # **createOrModifyHealthcareProfessional**
@@ -25,13 +25,20 @@ Ahealthcare professional must have a login, an email or a mobilePhone defined, a
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:icure_medical_device_dart_sdk/api.dart';
 
-final api_instance = HealthcareProfessionalApi();
+final api = MedTechApiBuilder()
+    .withICureBasePath('https://kraken.icure.dev')
+    .withUserName('user')
+    .withPassword('password')
+    .addKeyPair('id', private_key)
+.build();
+
+final healthcare_professional_api = api.healthcareProfessionalApi;
 final healthcareProfessional = HealthcareProfessional(); // HealthcareProfessional | Thehealthcare professional that must be created in the database.
 
 try {
-    final result = api_instance.createOrModifyHealthcareProfessional(healthcareProfessional);
+    final result = healthcare_professional_api.createOrModifyHealthcareProfessional(healthcareProfessional);
     print(result);
 } catch (e) {
     print('Exception when calling HealthcareProfessionalApi->createOrModifyHealthcareProfessional: $e\n');
@@ -68,13 +75,20 @@ Deletes thehealthcare professional identified by the provided unique hcpId.
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:icure_medical_device_dart_sdk/api.dart';
 
-final api_instance = HealthcareProfessionalApi();
+final api = MedTechApiBuilder()
+    .withICureBasePath('https://kraken.icure.dev')
+    .withUserName('user')
+    .withPassword('password')
+    .addKeyPair('id', private_key)
+.build();
+
+final healthcare_professional_api = api.healthcareProfessionalApi;
 final hcpId = hcpId_example; // String | The UUID that uniquely identifies thehealthcare professional to be deleted.
 
 try {
-    final result = api_instance.deleteHealthcareProfessional(hcpId);
+    final result = healthcare_professional_api.deleteHealthcareProfessional(hcpId);
     print(result);
 } catch (e) {
     print('Exception when calling HealthcareProfessionalApi->deleteHealthcareProfessional: $e\n');
@@ -111,15 +125,22 @@ Filters are complex selectors that are built by combining basic building blocks.
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:icure_medical_device_dart_sdk/api.dart';
 
-final api_instance = HealthcareProfessionalApi();
+final api = MedTechApiBuilder()
+    .withICureBasePath('https://kraken.icure.dev')
+    .withUserName('user')
+    .withPassword('password')
+    .addKeyPair('id', private_key)
+.build();
+
+final healthcare_professional_api = api.healthcareProfessionalApi;
 final filter = Filter(); // Filter | The Filter object that describes which condition(s) the elements whose the ids should be returned must fulfill
 final nextHcpId = nextHcpId_example; // String | The id of the first Healthcare professional in the next page
 final limit = 56; // int | The number of healthcare professionals to return in the queried page
 
 try {
-    final result = api_instance.filterHealthcareProfessionalBy(filter, nextHcpId, limit);
+    final result = healthcare_professional_api.filterHealthcareProfessionalBy(filter, nextHcpId, limit);
     print(result);
 } catch (e) {
     print('Exception when calling HealthcareProfessionalApi->filterHealthcareProfessionalBy: $e\n');
@@ -158,13 +179,20 @@ Eachhealthcare professional is uniquely identified by ahealthcare professional i
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:icure_medical_device_dart_sdk/api.dart';
 
-final api_instance = HealthcareProfessionalApi();
+final api = MedTechApiBuilder()
+    .withICureBasePath('https://kraken.icure.dev')
+    .withUserName('user')
+    .withPassword('password')
+    .addKeyPair('id', private_key)
+.build();
+
+final healthcare_professional_api = api.healthcareProfessionalApi;
 final hcpId = hcpId_example; // String | The UUID that identifies thehealthcare professional uniquely
 
 try {
-    final result = api_instance.getHealthcareProfessional(hcpId);
+    final result = healthcare_professional_api.getHealthcareProfessional(hcpId);
     print(result);
 } catch (e) {
     print('Exception when calling HealthcareProfessionalApi->getHealthcareProfessional: $e\n');
@@ -201,13 +229,20 @@ Filters are complex selectors that are built by combining basic building blocks.
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:icure_medical_device_dart_sdk/api.dart';
 
-final api_instance = HealthcareProfessionalApi();
+final api = MedTechApiBuilder()
+    .withICureBasePath('https://kraken.icure.dev')
+    .withUserName('user')
+    .withPassword('password')
+    .addKeyPair('id', private_key)
+.build();
+
+final healthcare_professional_api = api.healthcareProfessionalApi;
 final filter = Filter(); // Filter | The Filter object that describes which condition(s) the elements whose the ids should be returned must fulfill
 
 try {
-    final result = api_instance.matchHealthcareProfessionalBy(filter);
+    final result = healthcare_professional_api.matchHealthcareProfessionalBy(filter);
     print(result);
 } catch (e) {
     print('Exception when calling HealthcareProfessionalApi->matchHealthcareProfessionalBy: $e\n');

@@ -2,24 +2,24 @@
 
 ## Load the API package
 ```dart
-import 'package:openapi/api.dart';
+import 'package:icure_medical_device_dart_sdk/api.dart';
 ```
 
 All URIs are relative to *http://127.0.0.1:8912*
 
-Method | HTTP request | Description
-------------- | ------------- | -------------
-[**createOrModifyDataSampleFor**](DataSampleApi.md#createormodifydatasamplefor) | **PUT** /rest/v2/data/sample/for/{patientId} | Create or update a [DataSample] for a patient
-[**createOrModifyDataSamplesFor**](DataSampleApi.md#createormodifydatasamplesfor) | **PUT** /rest/v2/data/sample/batch/for/{patientId} | Create or update a batch of [DataSample] for a patient
-[**deleteAttachment**](DataSampleApi.md#deleteattachment) | **DELETE** /rest/v2/data/sample/{dataSampleId}/attachment/{documentId} | Delete an attachment of a DataSample
-[**deleteDataSample**](DataSampleApi.md#deletedatasample) | **DELETE** /rest/v2/data/sample/{dataSampleId} | Delete a [DataSample] by its id
-[**deleteDataSamples**](DataSampleApi.md#deletedatasamples) | **POST** /rest/v2/data/sample/batch | Delete a batch of [Data Samples]
-[**filterDataSample**](DataSampleApi.md#filterdatasample) | **POST** /rest/v2/data/sample/filter | Find data samples using the provided [filter].
-[**getDataSample**](DataSampleApi.md#getdatasample) | **GET** /rest/v2/data/sample/{dataSampleId} | Get a [DataSample] by its id
-[**getDataSampleAttachmentContent**](DataSampleApi.md#getdatasampleattachmentcontent) | **GET** /rest/v2/data/sample/{dataSampleId}/attachment/{documentId}/{attachmentId} | Get attachment content of a DataSample
-[**getDataSampleAttachmentDocument**](DataSampleApi.md#getdatasampleattachmentdocument) | **GET** /rest/v2/data/sample/{dataSampleId}/attachment/{documentId} | Get document metadata of a DataSample attachment
-[**matchDataSample**](DataSampleApi.md#matchdatasample) | **POST** /rest/v2/data/sample/match | Find data samples ids using the provided Filter.
-[**setDataSampleAttachment**](DataSampleApi.md#setdatasampleattachment) | **PUT** /rest/v2/data/sample/{dataSampleId}/attachment | Add or update the attachment of a DataSample
+Method | Description
+------------- | -------------
+[**createOrModifyDataSampleFor**](DataSampleApi.md#createormodifydatasamplefor) | Create or update a [DataSample] for a patient
+[**createOrModifyDataSamplesFor**](DataSampleApi.md#createormodifydatasamplesfor) | Create or update a batch of [DataSample] for a patient
+[**deleteAttachment**](DataSampleApi.md#deleteattachment) | Delete an attachment of a DataSample
+[**deleteDataSample**](DataSampleApi.md#deletedatasample) | Delete a [DataSample] by its id
+[**deleteDataSamples**](DataSampleApi.md#deletedatasamples) | Delete a batch of [Data Samples]
+[**filterDataSample**](DataSampleApi.md#filterdatasample) | Find data samples using the provided [filter].
+[**getDataSample**](DataSampleApi.md#getdatasample) | Get a [DataSample] by its id
+[**getDataSampleAttachmentContent**](DataSampleApi.md#getdatasampleattachmentcontent) | Get attachment content of a DataSample
+[**getDataSampleAttachmentDocument**](DataSampleApi.md#getdatasampleattachmentdocument) | Get document metadata of a DataSample attachment
+[**matchDataSample**](DataSampleApi.md#matchdatasample) | Find data samples ids using the provided Filter.
+[**setDataSampleAttachment**](DataSampleApi.md#setdatasampleattachment) | Add or update the attachment of a DataSample
 
 
 # **createOrModifyDataSampleFor**
@@ -31,14 +31,21 @@ When modifying a data sample, you can't update the patient of it : For this, you
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:icure_medical_device_dart_sdk/api.dart';
 
-final api_instance = DataSampleApi();
+final api = MedTechApiBuilder()
+    .withICureBasePath('https://kraken.icure.dev')
+    .withUserName('user')
+    .withPassword('password')
+    .addKeyPair('id', private_key)
+.build();
+
+final data_sample_api = api.dataSampleApi;
 final patientId = patientId_example; // String | 
 final dataSample = DataSample(); // DataSample | 
 
 try {
-    final result = api_instance.createOrModifyDataSampleFor(patientId, dataSample);
+    final result = data_sample_api.createOrModifyDataSampleFor(patientId, dataSample);
     print(result);
 } catch (e) {
     print('Exception when calling DataSampleApi->createOrModifyDataSampleFor: $e\n');
@@ -76,14 +83,21 @@ All the provided data samples will be created in the same batch. If you are tryi
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:icure_medical_device_dart_sdk/api.dart';
 
-final api_instance = DataSampleApi();
+final api = MedTechApiBuilder()
+    .withICureBasePath('https://kraken.icure.dev')
+    .withUserName('user')
+    .withPassword('password')
+    .addKeyPair('id', private_key)
+.build();
+
+final data_sample_api = api.dataSampleApi;
 final patientId = patientId_example; // String | 
 final dataSample = [List<DataSample>()]; // List<DataSample> | 
 
 try {
-    final result = api_instance.createOrModifyDataSamplesFor(patientId, dataSample);
+    final result = data_sample_api.createOrModifyDataSamplesFor(patientId, dataSample);
     print(result);
 } catch (e) {
     print('Exception when calling DataSampleApi->createOrModifyDataSamplesFor: $e\n');
@@ -121,14 +135,21 @@ Deletes an attachment, using its corresponding documentId
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:icure_medical_device_dart_sdk/api.dart';
 
-final api_instance = DataSampleApi();
+final api = MedTechApiBuilder()
+    .withICureBasePath('https://kraken.icure.dev')
+    .withUserName('user')
+    .withPassword('password')
+    .addKeyPair('id', private_key)
+.build();
+
+final data_sample_api = api.dataSampleApi;
 final dataSampleId = dataSampleId_example; // String | 
 final documentId = documentId_example; // String | 
 
 try {
-    final result = api_instance.deleteAttachment(dataSampleId, documentId);
+    final result = data_sample_api.deleteAttachment(dataSampleId, documentId);
     print(result);
 } catch (e) {
     print('Exception when calling DataSampleApi->deleteAttachment: $e\n');
@@ -166,13 +187,20 @@ Deletes the data sample identified by the provided unique [dataSampleId].
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:icure_medical_device_dart_sdk/api.dart';
 
-final api_instance = DataSampleApi();
+final api = MedTechApiBuilder()
+    .withICureBasePath('https://kraken.icure.dev')
+    .withUserName('user')
+    .withPassword('password')
+    .addKeyPair('id', private_key)
+.build();
+
+final data_sample_api = api.dataSampleApi;
 final dataSampleId = dataSampleId_example; // String | 
 
 try {
-    final result = api_instance.deleteDataSample(dataSampleId);
+    final result = data_sample_api.deleteDataSample(dataSampleId);
     print(result);
 } catch (e) {
     print('Exception when calling DataSampleApi->deleteDataSample: $e\n');
@@ -209,13 +237,20 @@ Deletes the batch of data samples identified by the provided [dataSampleIds]. Th
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:icure_medical_device_dart_sdk/api.dart';
 
-final api_instance = DataSampleApi();
+final api = MedTechApiBuilder()
+    .withICureBasePath('https://kraken.icure.dev')
+    .withUserName('user')
+    .withPassword('password')
+    .addKeyPair('id', private_key)
+.build();
+
+final data_sample_api = api.dataSampleApi;
 final requestBody = [List<String>()]; // List<String> | 
 
 try {
-    final result = api_instance.deleteDataSamples(requestBody);
+    final result = data_sample_api.deleteDataSamples(requestBody);
     print(result);
 } catch (e) {
     print('Exception when calling DataSampleApi->deleteDataSamples: $e\n');
@@ -252,13 +287,20 @@ Filters are complex selectors that are built by combining basic building blocks.
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:icure_medical_device_dart_sdk/api.dart';
 
-final api_instance = DataSampleApi();
+final api = MedTechApiBuilder()
+    .withICureBasePath('https://kraken.icure.dev')
+    .withUserName('user')
+    .withPassword('password')
+    .addKeyPair('id', private_key)
+.build();
+
+final data_sample_api = api.dataSampleApi;
 final filter = Filter(); // Filter | The Filter object that describes which condition(s) the elements whose the ids should be returned must fulfill
 
 try {
-    final result = api_instance.filterDataSample(filter);
+    final result = data_sample_api.filterDataSample(filter);
     print(result);
 } catch (e) {
     print('Exception when calling DataSampleApi->filterDataSample: $e\n');
@@ -295,13 +337,20 @@ Each data sample is uniquely identified by a data sample id which is a UUID. Thi
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:icure_medical_device_dart_sdk/api.dart';
 
-final api_instance = DataSampleApi();
+final api = MedTechApiBuilder()
+    .withICureBasePath('https://kraken.icure.dev')
+    .withUserName('user')
+    .withPassword('password')
+    .addKeyPair('id', private_key)
+.build();
+
+final data_sample_api = api.dataSampleApi;
 final dataSampleId = dataSampleId_example; // String | 
 
 try {
-    final result = api_instance.getDataSample(dataSampleId);
+    final result = data_sample_api.getDataSample(dataSampleId);
     print(result);
 } catch (e) {
     print('Exception when calling DataSampleApi->getDataSample: $e\n');
@@ -338,15 +387,22 @@ Data Samples may contain attachments such as prescriptions, reports, ... Use thi
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:icure_medical_device_dart_sdk/api.dart';
 
-final api_instance = DataSampleApi();
+final api = MedTechApiBuilder()
+    .withICureBasePath('https://kraken.icure.dev')
+    .withUserName('user')
+    .withPassword('password')
+    .addKeyPair('id', private_key)
+.build();
+
+final data_sample_api = api.dataSampleApi;
 final dataSampleId = dataSampleId_example; // String | 
 final documentId = documentId_example; // String | 
 final attachmentId = attachmentId_example; // String | 
 
 try {
-    final result = api_instance.getDataSampleAttachmentContent(dataSampleId, documentId, attachmentId);
+    final result = data_sample_api.getDataSampleAttachmentContent(dataSampleId, documentId, attachmentId);
     print(result);
 } catch (e) {
     print('Exception when calling DataSampleApi->getDataSampleAttachmentContent: $e\n');
@@ -385,14 +441,21 @@ Data Samples may contain attachments such as prescriptions, reports, ... Use thi
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:icure_medical_device_dart_sdk/api.dart';
 
-final api_instance = DataSampleApi();
+final api = MedTechApiBuilder()
+    .withICureBasePath('https://kraken.icure.dev')
+    .withUserName('user')
+    .withPassword('password')
+    .addKeyPair('id', private_key)
+.build();
+
+final data_sample_api = api.dataSampleApi;
 final dataSampleId = dataSampleId_example; // String | 
 final documentId = documentId_example; // String | 
 
 try {
-    final result = api_instance.getDataSampleAttachmentDocument(dataSampleId, documentId);
+    final result = data_sample_api.getDataSampleAttachmentDocument(dataSampleId, documentId);
     print(result);
 } catch (e) {
     print('Exception when calling DataSampleApi->getDataSampleAttachmentDocument: $e\n');
@@ -430,13 +493,20 @@ Filters are complex selectors that are built by combining basic building blocks.
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:icure_medical_device_dart_sdk/api.dart';
 
-final api_instance = DataSampleApi();
+final api = MedTechApiBuilder()
+    .withICureBasePath('https://kraken.icure.dev')
+    .withUserName('user')
+    .withPassword('password')
+    .addKeyPair('id', private_key)
+.build();
+
+final data_sample_api = api.dataSampleApi;
 final filter = Filter(); // Filter | The Filter object that describes which condition(s) the elements whose the ids should be returned must fulfill
 
 try {
-    final result = api_instance.matchDataSample(filter);
+    final result = data_sample_api.matchDataSample(filter);
     print(result);
 } catch (e) {
     print('Exception when calling DataSampleApi->matchDataSample: $e\n');
@@ -473,9 +543,16 @@ Link an attachment or update the attachment of a data sample
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:icure_medical_device_dart_sdk/api.dart';
 
-final api_instance = DataSampleApi();
+final api = MedTechApiBuilder()
+    .withICureBasePath('https://kraken.icure.dev')
+    .withUserName('user')
+    .withPassword('password')
+    .addKeyPair('id', private_key)
+.build();
+
+final data_sample_api = api.dataSampleApi;
 final dataSampleId = dataSampleId_example; // String | 
 final body = MultipartFile(); // MultipartFile | 
 final documentName = documentName_example; // String | 
@@ -484,7 +561,7 @@ final documentExternalUuid = documentExternalUuid_example; // String |
 final documentLanguage = documentLanguage_example; // String | 
 
 try {
-    final result = api_instance.setDataSampleAttachment(dataSampleId, body, documentName, documentVersion, documentExternalUuid, documentLanguage);
+    final result = data_sample_api.setDataSampleAttachment(dataSampleId, body, documentName, documentVersion, documentExternalUuid, documentLanguage);
     print(result);
 } catch (e) {
     print('Exception when calling DataSampleApi->setDataSampleAttachment: $e\n');

@@ -29,36 +29,36 @@ class MedicalDeviceApiImpl extends MedicalDeviceApi {
     final deviceToCreate = medicalDevicesToCreate.map((e) => MedicalDeviceMapper(e).toDeviceDto()).toList();
     final deviceToUpdate = medicalDevicesToUpdate.map((e) => MedicalDeviceMapper(e).toDeviceDto()).toList();
 
-    final deviceCreated = await api.deviceApi.createDevices(deviceToCreate);
-    final deviceUpdated = await api.deviceApi.updateDevices(deviceToUpdate);
+    final deviceCreated = await api.baseDeviceApi.createDevices(deviceToCreate);
+    final deviceUpdated = await api.baseDeviceApi.updateDevices(deviceToUpdate);
     final deviceIdsProcessed = [...?deviceCreated, ...?deviceUpdated].map((e) => e.id!).toList();
 
-    return (await api.deviceApi.getDevices(base_api.ListOfIdsDto(ids: deviceIdsProcessed)))!.map((e) => DeviceDtoMapper(e).toMedicalDevice()).toList();
+    return (await api.baseDeviceApi.getDevices(base_api.ListOfIdsDto(ids: deviceIdsProcessed)))!.map((e) => DeviceDtoMapper(e).toMedicalDevice()).toList();
   }
 
   @override
   Future<String?> deleteMedicalDevice(String medicalDeviceId) async {
-    return (await api.deviceApi.deleteDevice(medicalDeviceId))?.rev ?? (throw StateError("Invalid medical device id"));
+    return (await api.baseDeviceApi.deleteDevice(medicalDeviceId))?.rev ?? (throw StateError("Invalid medical device id"));
   }
 
   @override
   Future<List<String>?> deleteMedicalDevices(List<String> requestBody) async {
-    return (await api.deviceApi.deleteDevices(base_api.ListOfIdsDto(ids: requestBody)))?.map((e) => e.rev!).toList();
+    return (await api.baseDeviceApi.deleteDevices(base_api.ListOfIdsDto(ids: requestBody)))?.map((e) => e.rev!).toList();
   }
 
   @override
   Future<PaginatedListMedicalDevice?> filterMedicalDevices(Filter filter, {String? nextDeviceId, int? limit}) async {
-    return (await api.deviceApi.filterDevicesBy(base_api.FilterChain<base_api.DeviceDto>(filter.toAbstractFilterDto()), startDocumentId: nextDeviceId, limit: limit))
+    return (await api.baseDeviceApi.filterDevicesBy(base_api.FilterChain<base_api.DeviceDto>(filter.toAbstractFilterDto()), startDocumentId: nextDeviceId, limit: limit))
         ?.toPaginatedListMedicalDevice();
   }
 
   @override
   Future<MedicalDevice?> getMedicalDevice(String medicalDeviceId) async {
-    return DeviceDtoMapper(await api.deviceApi.getDevice(medicalDeviceId) ?? (throw ArgumentError("MedicalDevice not found"))).toMedicalDevice();
+    return DeviceDtoMapper(await api.baseDeviceApi.getDevice(medicalDeviceId) ?? (throw ArgumentError("MedicalDevice not found"))).toMedicalDevice();
   }
 
   @override
   Future<List<String>?> matchMedicalDevices(Filter filter) {
-    return api.deviceApi.matchDevicesBy(filter.toAbstractFilterDto());
+    return api.baseDeviceApi.matchDevicesBy(filter.toAbstractFilterDto());
   }
 }

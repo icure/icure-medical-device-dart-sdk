@@ -2,18 +2,18 @@
 
 ## Load the API package
 ```dart
-import 'package:openapi/api.dart';
+import 'package:icure_medical_device_dart_sdk/api.dart';
 ```
 
 All URIs are relative to *http://127.0.0.1:8912*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**createOrModifyPatient**](PatientApi.md#createormodifypatient) | **PUT** /rest/v2/patient | Create or update a [Patient]
-[**deletePatient**](PatientApi.md#deletepatient) | **DELETE** /rest/v2/patient/{patientId} | Delete a [Patient]
-[**filterPatients**](PatientApi.md#filterpatients) | **POST** /rest/v2/patient/filter | Load patients from the database by filtering them using the provided [filter].
-[**getPatient**](PatientApi.md#getpatient) | **GET** /rest/v2/patient/{patientId} | Get a [Patient]
-[**matchPatients**](PatientApi.md#matchpatients) | **POST** /rest/v2/patient/match | Load patient ids from the database by filtering them using the provided [filter].
+[**createOrModifyPatient**](PatientApi.md#createormodifypatient) | Create or update a [Patient]
+[**deletePatient**](PatientApi.md#deletepatient) | Delete a [Patient]
+[**filterPatients**](PatientApi.md#filterpatients) | Load patients from the database by filtering them using the provided [filter].
+[**getPatient**](PatientApi.md#getpatient) | Get a [Patient]
+[**matchPatients**](PatientApi.md#matchpatients) | Load patient ids from the database by filtering them using the provided [filter].
 
 
 # **createOrModifyPatient**
@@ -25,13 +25,20 @@ When modifying a patient, you must ensure that the rev obtained when getting or 
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:icure_medical_device_dart_sdk/api.dart';
 
-final api_instance = PatientApi();
+final api = MedTechApiBuilder()
+    .withICureBasePath('https://kraken.icure.dev')
+    .withUserName('user')
+    .withPassword('password')
+    .addKeyPair('id', private_key)
+    .build();
+
+final patient_api = api.patientApi;
 final patient = Patient(); // Patient | 
 
 try {
-    final result = api_instance.createOrModifyPatient(patient);
+    final result = patient_api.createOrModifyPatient(patient);
     print(result);
 } catch (e) {
     print('Exception when calling PatientApi->createOrModifyPatient: $e\n');
@@ -68,13 +75,20 @@ Deletes the patient identified by the provided unique [patientId].
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:icure_medical_device_dart_sdk/api.dart';
 
-final api_instance = PatientApi();
+final api = MedTechApiBuilder()
+    .withICureBasePath('https://kraken.icure.dev')
+    .withUserName('user')
+    .withPassword('password')
+    .addKeyPair('id', private_key)
+    .build();
+
+final patient_api = api.patientApi;
 final patientId = patientId_example; // String | 
 
 try {
-    final result = api_instance.deletePatient(patientId);
+    final result = patient_api.deletePatient(patientId);
     print(result);
 } catch (e) {
     print('Exception when calling PatientApi->deletePatient: $e\n');
@@ -111,15 +125,22 @@ Filters are complex selectors that are built by combining basic building blocks.
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:icure_medical_device_dart_sdk/api.dart';
 
-final api_instance = PatientApi();
+final api = MedTechApiBuilder()
+    .withICureBasePath('https://kraken.icure.dev')
+    .withUserName('user')
+    .withPassword('password')
+    .addKeyPair('id', private_key)
+    .build();
+
+final patient_api = api.patientApi;
 final filter = Filter(); // Filter | The Filter object that describes which condition(s) the elements whose the ids should be returned must fulfill
 final nextPatientId = nextPatientId_example; // String | The id of the first patient in the next page
 final limit = 56; // int | The number of patients to return in the queried page
 
 try {
-    final result = api_instance.filterPatients(filter, nextPatientId, limit);
+    final result = patient_api.filterPatients(filter, nextPatientId, limit);
     print(result);
 } catch (e) {
     print('Exception when calling PatientApi->filterPatients: $e\n');
@@ -158,13 +179,20 @@ Each patient is uniquely identified by a patient id. The patient id is a UUID. T
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:icure_medical_device_dart_sdk/api.dart';
 
-final api_instance = PatientApi();
+final api = MedTechApiBuilder()
+    .withICureBasePath('https://kraken.icure.dev')
+    .withUserName('user')
+    .withPassword('password')
+    .addKeyPair('id', private_key)
+    .build();
+
+final patient_api = api.patientApi;
 final patientId = patientId_example; // String | 
 
 try {
-    final result = api_instance.getPatient(patientId);
+    final result = patient_api.getPatient(patientId);
     print(result);
 } catch (e) {
     print('Exception when calling PatientApi->getPatient: $e\n');
@@ -201,13 +229,20 @@ Filters are complex selectors that are built by combining basic building blocks.
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:icure_medical_device_dart_sdk/api.dart';
 
-final api_instance = PatientApi();
+final api = MedTechApiBuilder()
+    .withICureBasePath('https://kraken.icure.dev')
+    .withUserName('user')
+    .withPassword('password')
+    .addKeyPair('id', private_key)
+    .build();
+
+final patient_api = api.patientApi;
 final filter = Filter(); // Filter | The Filter object that describes which condition(s) the elements whose the ids should be returned must fulfill
 
 try {
-    final result = api_instance.matchPatients(filter);
+    final result = patient_api.matchPatients(filter);
     print(result);
 } catch (e) {
     print('Exception when calling PatientApi->matchPatients: $e\n');

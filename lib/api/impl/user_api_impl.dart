@@ -14,18 +14,18 @@ class UserApiImpl extends UserApi {
   final uuid = Uuid();
 
   @override
-  Future<bool?> checkTokenValidity(String userId, String token) => api.userApi.checkTokenValidity(userId, token);
+  Future<bool?> checkTokenValidity(String userId, String token) => api.baseUserApi.checkTokenValidity(userId, token);
 
   @override
   Future<User?> createOrModifyUser(User user) async =>
-      (await (user.rev?.let((it) => api.userApi.modifyUser(user.toUserDto())) ?? api.userApi.createUser(user.toUserDto())))?.toUser();
+      (await (user.rev?.let((it) => api.baseUserApi.modifyUser(user.toUserDto())) ?? api.baseUserApi.createUser(user.toUserDto())))?.toUser();
 
   @override
   Future<String?> createToken(String userId) =>
-      api.userApi.getToken(userId, uuid.v4(options: {'rng': UuidUtil.cryptoRNG}), tokenValidity: 3600 * 24 * 30);
+      api.baseUserApi.getToken(userId, uuid.v4(options: {'rng': UuidUtil.cryptoRNG}), tokenValidity: 3600 * 24 * 30);
 
   @override
-  Future<String?> deleteUser(String userId) async => (await api.userApi.deleteUser(userId))?.rev ?? throwFormatException("Invalid user id");
+  Future<String?> deleteUser(String userId) async => (await api.baseUserApi.deleteUser(userId))?.rev ?? throwFormatException("Invalid user id");
 
   @override
   Future<PaginatedListUser?> filterUsers(
@@ -33,16 +33,16 @@ class UserApiImpl extends UserApi {
     String? nextUserId,
     int? limit,
   }) async {
-    return (await api.userApi.filterUsersBy(base_api.FilterChain<base_api.UserDto>(filter.toAbstractFilterDto()), startDocumentId: nextUserId, limit: limit))
+    return (await api.baseUserApi.filterUsersBy(base_api.FilterChain<base_api.UserDto>(filter.toAbstractFilterDto()), startDocumentId: nextUserId, limit: limit))
         ?.toPaginatedListUser();
   }
 
   @override
-  Future<User?> getLoggedUser() async => (await api.userApi.getCurrentUser())?.toUser();
+  Future<User?> getLoggedUser() async => (await api.baseUserApi.getCurrentUser())?.toUser();
 
   @override
-  Future<User?> getUser(String userId) async => (await api.userApi.getUser(userId))?.toUser();
+  Future<User?> getUser(String userId) async => (await api.baseUserApi.getUser(userId))?.toUser();
 
   @override
-  Future<List<String>?> matchUsers(Filter filter) => api.userApi.matchUsersBy(filter.toAbstractFilterDto());
+  Future<List<String>?> matchUsers(Filter filter) => api.baseUserApi.matchUsersBy(filter.toAbstractFilterDto());
 }

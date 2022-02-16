@@ -2,21 +2,21 @@
 
 ## Load the API package
 ```dart
-import 'package:openapi/api.dart';
+import 'package:icure_medical_device_dart_sdk/api.dart';
 ```
 
 All URIs are relative to *http://127.0.0.1:8912*
 
-Method | HTTP request | Description
-------------- | ------------- | -------------
-[**checkTokenValidity**](UserApi.md#checktokenvalidity) | **GET** /rest/v2/user/token/{userId} | Check token validity for a user.
-[**createOrModifyUser**](UserApi.md#createormodifyuser) | **PUT** /rest/v2/user | Create a new user or modify an existing one.
-[**createToken**](UserApi.md#createtoken) | **POST** /rest/v2/user/token/{userId} | Create a token for a user.
-[**deleteUser**](UserApi.md#deleteuser) | **DELETE** /rest/v2/user/{userId} | Delete an existing user.
-[**filterUsers**](UserApi.md#filterusers) | **POST** /rest/v2/user/filter | Load users from the database by filtering them using the provided Filter.
-[**getLoggedUser**](UserApi.md#getloggeduser) | **GET** /rest/v2/user | Get the details of the logged User.
-[**getUser**](UserApi.md#getuser) | **GET** /rest/v2/user/{userId} | Get a User by id.
-[**matchUsers**](UserApi.md#matchusers) | **POST** /rest/v2/user/match | Load user ids from the database by filtering them using the provided Filter.
+Method | Description
+------------- | -------------
+[**checkTokenValidity**](UserApi.md#checktokenvalidity) | Check token validity for a user.
+[**createOrModifyUser**](UserApi.md#createormodifyuser) | Create a new user or modify an existing one.
+[**createToken**](UserApi.md#createtoken) | Create a token for a user.
+[**deleteUser**](UserApi.md#deleteuser) | Delete an existing user.
+[**filterUsers**](UserApi.md#filterusers) | Load users from the database by filtering them using the provided Filter.
+[**getLoggedUser**](UserApi.md#getloggeduser) | Get the details of the logged User.
+[**getUser**](UserApi.md#getuser) | Get a User by id.
+[**matchUsers**](UserApi.md#matchusers) | Load user ids from the database by filtering them using the provided Filter.
 
 
 # **checkTokenValidity**
@@ -28,7 +28,7 @@ Checks that the provided token is (still) valid for the provided user id (or use
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:icure_medical_device_dart_sdk/api.dart';
 
 final api_instance = UserApi();
 final userId = userId_example; // String | The UUID that identifies the user uniquely
@@ -73,7 +73,7 @@ A user must have a login, an email or a mobilePhone defined, a user should be li
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:icure_medical_device_dart_sdk/api.dart';
 
 final api_instance = UserApi();
 final user = User(); // User | The user that must be created in the database.
@@ -116,7 +116,7 @@ A token is used to authenticate the user. It is just like a password but it is d
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:icure_medical_device_dart_sdk/api.dart';
 
 final api_instance = UserApi();
 final userId = userId_example; // String | The UUID that identifies the user uniquely
@@ -159,7 +159,7 @@ Deletes the user identified by the provided unique userId.
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:icure_medical_device_dart_sdk/api.dart';
 
 final api_instance = UserApi();
 final userId = userId_example; // String | The UUID that uniquely identifies the user to be deleted.
@@ -202,7 +202,7 @@ Filters are complex selectors that are built by combining basic building blocks.
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:icure_medical_device_dart_sdk/api.dart';
 
 final api_instance = UserApi();
 final filter = Filter(); // Filter | The Filter object that describes which condition(s) the elements whose the ids should be returned must fulfill
@@ -249,7 +249,7 @@ When you make a call to the server, an authentication token is used to identify 
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:icure_medical_device_dart_sdk/api.dart';
 
 final api_instance = UserApi();
 
@@ -288,7 +288,7 @@ Each user is uniquely identified by a user id. The user id is a UUID. This userI
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:icure_medical_device_dart_sdk/api.dart';
 
 final api_instance = UserApi();
 final userId = userId_example; // String | The UUID that identifies the user uniquely
@@ -331,7 +331,7 @@ Filters are complex selectors that are built by combining basic building blocks.
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:icure_medical_device_dart_sdk/api.dart';
 
 final api_instance = UserApi();
 final filter = Filter(); // Filter | The Filter object that describes which condition(s) the elements whose the ids should be returned must fulfill

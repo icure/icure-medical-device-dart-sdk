@@ -2,7 +2,7 @@
 
 ## Load the API package
 ```dart
-import 'package:openapi/api.dart';
+import 'package:icure_medical_device_dart_sdk/api.dart';
 ```
 
 All URIs are relative to *http://127.0.0.1:8912*
@@ -24,9 +24,16 @@ Create a Healthcare Element
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:icure_medical_device_dart_sdk/api.dart';
 
-final api_instance = HealthcareElementApi();
+final api = MedTechApiBuilder()
+    .withICureBasePath('https://kraken.icure.dev')
+    .withUserName('user')
+    .withPassword('password')
+    .addKeyPair('id', private_key)
+.build();
+
+final healthcare_element_api = api.healthcareElementApi;
 final healthcareElement = HealthcareElement(); // HealthcareElement | 
 
 try {
@@ -65,9 +72,16 @@ Create a Healthcare Element
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:icure_medical_device_dart_sdk/api.dart';
 
-final api_instance = HealthcareElementApi();
+final api = MedTechApiBuilder()
+    .withICureBasePath('https://kraken.icure.dev')
+    .withUserName('user')
+    .withPassword('password')
+    .addKeyPair('id', private_key)
+.build();
+
+final healthcare_element_api = api.healthcareElementApi;
 final healthcareElement = [List<HealthcareElement>()]; // List<HealthcareElement> | 
 
 try {
@@ -106,9 +120,16 @@ Delete a Healthcare Element
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:icure_medical_device_dart_sdk/api.dart';
 
-final api_instance = HealthcareElementApi();
+final api = MedTechApiBuilder()
+    .withICureBasePath('https://kraken.icure.dev')
+    .withUserName('user')
+    .withPassword('password')
+    .addKeyPair('id', private_key)
+.build();
+
+final healthcare_element_api = api.healthcareElementApi;
 final id = id_example; // String | 
 
 try {
@@ -147,9 +168,16 @@ Find Healthcare Elements using a filter
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:icure_medical_device_dart_sdk/api.dart';
 
-final api_instance = HealthcareElementApi();
+final api = MedTechApiBuilder()
+    .withICureBasePath('https://kraken.icure.dev')
+    .withUserName('user')
+    .withPassword('password')
+    .addKeyPair('id', private_key)
+.build();
+
+final healthcare_element_api = api.healthcareElementApi;
 final filter = Filter(); // Filter | 
 
 try {
@@ -188,9 +216,16 @@ Get a Healthcare Element
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:icure_medical_device_dart_sdk/api.dart';
 
-final api_instance = HealthcareElementApi();
+final api = MedTechApiBuilder()
+    .withICureBasePath('https://kraken.icure.dev')
+    .withUserName('user')
+    .withPassword('password')
+    .addKeyPair('id', private_key)
+.build();
+
+final healthcare_element_api = api.healthcareElementApi;
 final id = id_example; // String | 
 
 try {
@@ -229,9 +264,16 @@ Find Healthcare Elements using a filter
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:icure_medical_device_dart_sdk/api.dart';
 
-final api_instance = HealthcareElementApi();
+final api = MedTechApiBuilder()
+    .withICureBasePath('https://kraken.icure.dev')
+    .withUserName('user')
+    .withPassword('password')
+    .addKeyPair('id', private_key)
+.build();
+
+final healthcare_element_api = api.healthcareElementApi;
 final filter = Filter(); // Filter | 
 
 try {

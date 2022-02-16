@@ -11,12 +11,14 @@
 import 'package:icure_dart_sdk/api.dart';
 import 'package:icure_medical_device_dart_sdk/api.dart';
 import 'package:icure_medical_device_dart_sdk/utils/functional_utils.dart';
+import 'package:icure_medical_device_dart_sdk/utils/iterable_utils.dart';
 import 'package:uuid/uuid.dart';
 import 'package:uuid/uuid_util.dart';
+
 import 'address.dart';
 import 'code_stub_coding_reference.dart';
-import 'identifier.dart';
 import 'delegation.dart';
+import 'identifier.dart';
 import 'partnership.dart';
 import 'patient_healthcare_party.dart';
 import 'person_name.dart';
@@ -165,7 +167,8 @@ extension PatientMapper on Patient {
 }
 
 extension PatientDeactivationReasonEnumMapper on PatientDeactivationReasonEnum {
-  PatientDtoDeactivationReasonEnum toDeactivationReason() => PatientDtoDeactivationReasonEnum.values.firstWhere((it) => it.value == this.value);
+  PatientDtoDeactivationReasonEnum toDeactivationReason() =>
+      PatientDtoDeactivationReasonEnum.values.findFirst((it) => it.value == this.value) ?? PatientDtoDeactivationReasonEnum.none;
 }
 extension PatientGenderEnumMapper on PatientGenderEnum {
   PatientDtoGenderEnum toGender() => PatientDtoGenderEnum.values.firstWhere((it) => it.value == this.value);

@@ -14,17 +14,16 @@ void main() {
   final Uuid uuid = Uuid();
 
   Future<MedTechApi> medtechApi() async {
-    final MedTechApiBuilder builder = MedTechApiBuilder();
-    builder.iCureBasePath = 'https://kraken.icure.dev';
-    builder.userName = 'abdemotst2';
-    builder.password = '27b90f6e-6847-44bf-b90f-6e6847b4bf1c';
-
     var fileUri = Uri.file("test/resources/keys/782f1bcd-9f3f-408a-af1b-cd9f3f908a98-icc-priv.2048.key", windows: false);
     var hcpKeyFile = File.fromUri(fileUri);
 
-    builder.addKeyPair("782f1bcd-9f3f-408a-af1b-cd9f3f908a98", (await hcpKeyFile.readAsString(encoding: utf8)).toPrivateKey());
 
-    return builder.build();
+    return MedTechApiBuilder()
+        .withICureBasePath('https://kraken.icure.dev')
+        .withUserName('abdemotst2')
+        .withPassword('27b90f6e-6847-44bf-b90f-6e6847b4bf1c')
+        .addKeyPair("782f1bcd-9f3f-408a-af1b-cd9f3f908a98", (await hcpKeyFile.readAsString(encoding: utf8)).toPrivateKey())
+    .build();
   }
 
   rapi.DecryptedPatientDto getPatient() => rapi.DecryptedPatientDto(
@@ -34,7 +33,8 @@ void main() {
     test('test createPatient', () async {
       // Init
       final MedTechApi api = await medtechApi();
-      final PatientApiImpl patientApi = PatientApiImpl(api);
+
+      final PatientApi patientApi = api.patientApi;
 
       final rapi.DecryptedPatientDto patient = getPatient();
 

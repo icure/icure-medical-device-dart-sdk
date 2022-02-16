@@ -32,7 +32,7 @@ class DataSampleApiImpl extends DataSampleApi {
     }
 
     final localCrypto = api.localCrypto;
-    final currentUser = await api.userApi.getCurrentUser();
+    final currentUser = await api.baseUserApi.getCurrentUser();
 
     final contactTuple = await _getContactOfDataSample(localCrypto, currentUser!, dataSample.first);
     final contactCached = contactTuple.item1;
@@ -44,11 +44,11 @@ class DataSampleApiImpl extends DataSampleApi {
       throw FormatException("Can't update a batch of data samples that is not linked to any patient yet.");
     }
 
-    if (contactPatientId != patientId) {
+    if (contactPatientId != null && contactPatientId != patientId) {
       throw FormatException("Can't update the patient of a batch of data samples. Delete those samples and create new ones");
     }
 
-    final existingPatient = await api.patientApi.getPatient(currentUser, patientId, patientCryptoConfig(localCrypto));
+    final existingPatient = await api.basePatientApi.getPatient(currentUser, patientId, patientCryptoConfig(localCrypto));
     final ccContact = contactCryptoConfig(currentUser, localCrypto);
     base_api.DecryptedContactDto? createdOrModifiedContact;
 
@@ -60,10 +60,10 @@ class DataSampleApiImpl extends DataSampleApi {
       existingContact.closingDate =
           serviceToModify.where((element) => element.closingDate != null || element.valueDate != null).map((e) => e.closingDate ?? e.valueDate!).max;
 
-      createdOrModifiedContact = await api.contactApi.modifyContact(currentUser, existingContact, ccContact);
+      createdOrModifiedContact = await api.baseContactApi.modifyContact(currentUser, existingContact, ccContact);
     } else {
       final contactToCreate = _createContactDtoBasedOn(dataSample, existingContact);
-      createdOrModifiedContact = await api.contactApi.createContactWithPatient(currentUser, existingPatient!, contactToCreate, ccContact);
+      createdOrModifiedContact = await api.baseContactApi.createContactWithPatient(currentUser, existingPatient!, contactToCreate, ccContact);
     }
 
     createdOrModifiedContact!.services.forEach((service) => contactsLinkedToDataSamplesCache.put(service.id, createdOrModifiedContact!));
@@ -74,7 +74,7 @@ class DataSampleApiImpl extends DataSampleApi {
   @override
   Future<String?> deleteAttachment(String dataSampleId, String documentId) async {
     final localCrypto = api.localCrypto;
-    final currentUser = await api.userApi.getCurrentUser();
+    final currentUser = await api.baseUserApi.getCurrentUser();
 
     final base_api.DecryptedContactDto existingContact =
         (await _findContactsForDataSampleIds(currentUser!, localCrypto, [dataSampleId])).firstOrNull() ??
@@ -103,7 +103,7 @@ class DataSampleApiImpl extends DataSampleApi {
   @override
   Future<List<String>?> deleteDataSamples(List<String> requestBody) async {
     final localCrypto = api.localCrypto;
-    final currentUser = await api.userApi.getCurrentUser();
+    final currentUser = await api.baseUserApi.getCurrentUser();
 
     final base_api.DecryptedContactDto existingContact =
         (await _findContactsForDataSampleIds(currentUser!, localCrypto, requestBody)).firstOrNull() ??
@@ -118,8 +118,8 @@ class DataSampleApiImpl extends DataSampleApi {
         (throw StateError("Couldn't find patient related to batch of data samples ${existingContact.id}"));
     final servicesToDelete = existingContact.services.where((element) => requestBody.contains(element.id));
 
-    return (await api.contactApi
-        .deleteServices(currentUser, contactPatient, servicesToDelete.toList(), contactCryptoConfig(currentUser, localCrypto)))
+    return (await api.baseContactApi
+            .deleteServices(currentUser, contactPatient, servicesToDelete.toList(), contactCryptoConfig(currentUser, localCrypto)))
         ?.services
         .where((element) => requestBody.contains(element.id))
         .where((element) => element.endOfLife != null)
@@ -130,10 +130,10 @@ class DataSampleApiImpl extends DataSampleApi {
   @override
   Future<PaginatedListDataSample?> filterDataSample(Filter filter, {String? nextDataSampleId, int? limit}) async {
     final localCrypto = api.localCrypto;
-    final currentUser = await api.userApi.getCurrentUser();
+    final currentUser = await api.baseUserApi.getCurrentUser();
 
-    return PaginatedListServiceDtoMapper((await api.contactApi
-        .filterServicesBy(currentUser!, base_api.FilterChain(filter.toAbstractFilterDto()), null, nextDataSampleId, limit, localCrypto))!)
+    return PaginatedListServiceDtoMapper((await api.baseContactApi
+            .filterServicesBy(currentUser!, base_api.FilterChain(filter.toAbstractFilterDto()), null, nextDataSampleId, limit, localCrypto))!)
         .toPaginatedListDataSample();
   }
 
@@ -146,24 +146,24 @@ class DataSampleApiImpl extends DataSampleApi {
   @override
   Future<MultipartFile?> getDataSampleAttachmentContent(String dataSampleId, String documentId, String attachmentId) async {
     final localCrypto = api.localCrypto;
-    final currentUser = await api.userApi.getCurrentUser();
+    final currentUser = await api.baseUserApi.getCurrentUser();
 
     final documentOfAttachment = await _getDataSampleAttachmentDocumentFromICure(localCrypto, currentUser!, dataSampleId, documentId);
-    return api.documentApi.rawGetDocumentAttachment(documentId, attachmentId,
+    return api.baseDocumentApi.rawGetDocumentAttachment(documentId, attachmentId,
         enckeys: (await _getDocumentEncryptionKeys(localCrypto, currentUser, documentOfAttachment)).join(","), fileName: null);
   }
 
   @override
   Future<Document?> getDataSampleAttachmentDocument(String dataSampleId, String documentId) async {
     final localCrypto = api.localCrypto;
-    final currentUser = await api.userApi.getCurrentUser();
+    final currentUser = await api.baseUserApi.getCurrentUser();
 
     return DocumentDtoMapper((await _getDataSampleAttachmentDocumentFromICure(localCrypto, currentUser!, dataSampleId, documentId))).toDocument();
   }
 
   @override
   Future<List<String>?> matchDataSample(Filter filter) async {
-    return await api.contactApi.rawMatchServicesBy(filter.toAbstractFilterDto());
+    return await api.baseContactApi.rawMatchServicesBy(filter.toAbstractFilterDto());
   }
 
   @override
@@ -171,7 +171,7 @@ class DataSampleApiImpl extends DataSampleApi {
       {String? documentName, String? documentVersion, String? documentExternalUuid, String? documentLanguage}) async {
 
     final localCrypto = api.localCrypto;
-    final currentUser = await api.userApi.getCurrentUser();
+    final currentUser = await api.baseUserApi.getCurrentUser();
 
     final existingDataSample = await getDataSample(dataSampleId);
     final contactDataSample = (await _getContactOfDataSample(localCrypto, currentUser!, existingDataSample!)).item2
@@ -190,7 +190,7 @@ class DataSampleApiImpl extends DataSampleApi {
 
 
     final documentCC = documentCryptoConfig(localCrypto);
-    final createdDocument = await api.documentApi.createDocument(currentUser, documentToCreate, documentCC)
+    final createdDocument = await api.baseDocumentApi.createDocument(currentUser, documentToCreate, documentCC)
       ?? throwFormatException("Could not create document for data sample $dataSampleId");
 
     // Update data sample with documentId
@@ -201,7 +201,7 @@ class DataSampleApiImpl extends DataSampleApi {
     // Add attachment to document
     List<int> docDigest = [];
     final String? docEncKey = (await _getDocumentEncryptionKeys(localCrypto, currentUser, createdDocument)).firstOrNull();
-    await api.documentApi.setAttachmentTo(
+    await api.baseDocumentApi.setAttachmentTo(
           currentUser,
           createdDocument.id,
           ByteStream(body.map((bytes) {
@@ -214,7 +214,7 @@ class DataSampleApiImpl extends DataSampleApi {
 
     // Update document with digest
     createdDocument.hash = sha256.convert(docDigest).toString();
-    final finalDoc = await api.documentApi.modifyDocument(currentUser, createdDocument, documentCC);
+    final finalDoc = await api.baseDocumentApi.modifyDocument(currentUser, createdDocument, documentCC);
 
     return finalDoc?.toDocument();
   }
@@ -238,12 +238,7 @@ class DataSampleApiImpl extends DataSampleApi {
       return Tuple2(true, cachedContact);
     } else {
       final base_api.DecryptedContactDto? contact = await dataSample.batchId
-          ?.let((that) async => await api.contactApi.getContact(currentUser, that, contactCryptoConfig(currentUser, localCrypto)));
-
-      if (dataSample.id != null) {
-        contactsLinkedToDataSamplesCache.put(dataSample.id!, contact!);
-      }
-
+          ?.let((that) async => await api.baseContactApi.getContact(currentUser, that, contactCryptoConfig(currentUser, localCrypto)));
       return Tuple2(false, contact);
     }
   }
@@ -286,13 +281,13 @@ class DataSampleApiImpl extends DataSampleApi {
     final dataSampleIdsToSearch = dataSampleIds.where((element) => !cachedContacts.containsKey(element));
 
     if (dataSampleIdsToSearch.isNotEmpty) {
-      final List<base_api.DecryptedContactDto> notCachedContacts = (await api.contactApi.filterContactsBy(
-          currentUser,
-          base_api.FilterChain<base_api.ContactDto>(base_api.ContactByServiceIdsFilter(ids: dataSampleIdsToSearch.toSet())),
-          null,
-          null,
-          dataSampleIdsToSearch.length,
-          contactCryptoConfig(currentUser, localCrypto)))
+      final List<base_api.DecryptedContactDto> notCachedContacts = (await api.baseContactApi.filterContactsBy(
+              currentUser,
+              base_api.FilterChain<base_api.ContactDto>(base_api.ContactByServiceIdsFilter(ids: dataSampleIdsToSearch.toSet())),
+              null,
+              null,
+              dataSampleIdsToSearch.length,
+              contactCryptoConfig(currentUser, localCrypto)))
           ?.rows ?? [];
       notCachedContacts.sort((a, b) => a.modified!.compareTo(b.modified!));
 
@@ -312,14 +307,14 @@ class DataSampleApiImpl extends DataSampleApi {
   Future<base_api.DecryptedPatientDto?> _getPatientOfContact(
       LocalCrypto localCrypto, base_api.UserDto currentUser, base_api.DecryptedContactDto contactDto) async {
     return (await _getPatientIdOfContact(localCrypto, currentUser, contactDto))
-        ?.let((that) => api.patientApi.getPatient(currentUser, that, patientCryptoConfig(localCrypto)));
+        ?.let((that) => api.basePatientApi.getPatient(currentUser, that, patientCryptoConfig(localCrypto)));
   }
 
   Future<base_api.DecryptedServiceDto?> _getServiceFromICure(String dataSampleId) async {
     final localCrypto = api.localCrypto;
-    final currentUser = await api.userApi.getCurrentUser();
+    final currentUser = await api.baseUserApi.getCurrentUser();
 
-    return (await api.contactApi.listServices(currentUser!, base_api.ListOfIdsDto(ids: [dataSampleId]), localCrypto)).firstOrNull();
+    return (await api.baseContactApi.listServices(currentUser!, base_api.ListOfIdsDto(ids: [dataSampleId]), localCrypto)).firstOrNull();
   }
 
   Future<base_api.DecryptedDocumentDto> _getDataSampleAttachmentDocumentFromICure(
@@ -329,7 +324,7 @@ class DataSampleApiImpl extends DataSampleApi {
       throw FormatException("Id $documentId does not reference any document in the data sample $dataSampleId");
     }
 
-    return (await api.documentApi.getDocument(currentUser, documentId, documentCryptoConfig(localCrypto)))!;
+    return (await api.baseDocumentApi.getDocument(currentUser, documentId, documentCryptoConfig(localCrypto)))!;
   }
 
   Future<Set<String>> _getDocumentEncryptionKeys(

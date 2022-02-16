@@ -14,7 +14,7 @@ class CodingApiImpl extends CodingApi {
 
   @override
   Future<Coding?> createOrModifyCoding(Coding coding) async =>
-      (await (coding.rev?.let((it) => api.codeApi.modifyCode(coding.toCodeDto())) ?? api.codeApi.createCode(coding.toCodeDto())))?.toCoding();
+      (await (coding.rev?.let((it) => api.baseCodeApi.modifyCode(coding.toCodeDto())) ?? api.baseCodeApi.createCode(coding.toCodeDto())))?.toCoding();
 
   @override
   Future<List<Coding>?> createOrModifyCodings(List<Coding> codings) async => (await Future.wait(codings.map((coding) async =>
@@ -27,14 +27,14 @@ class CodingApiImpl extends CodingApi {
     String? nextCodingId,
     int? limit,
   }) async {
-    return (await api.codeApi.filterCodesBy(filterChainCode: base_api.FilterChain<base_api.CodeDto>(filter.toAbstractFilterDto()), startDocumentId: nextCodingId, limit: limit))
+    return (await api.baseCodeApi.filterCodesBy(filterChainCode: base_api.FilterChain<base_api.CodeDto>(filter.toAbstractFilterDto()), startDocumentId: nextCodingId, limit: limit))
         ?.toPaginatedListCoding();
   }
 
   @override
-  Future<Coding?> getCoding(String codeId) async => (await api.codeApi.getCode(codeId))?.toCoding();
+  Future<Coding?> getCoding(String codeId) async => (await api.baseCodeApi.getCode(codeId))?.toCoding();
 
   @override
-  Future<List<String>?> matchCoding(Filter filter) => api.codeApi.matchCodesBy(filter.toAbstractFilterDto());
+  Future<List<String>?> matchCoding(Filter filter) => api.baseCodeApi.matchCodesBy(filter.toAbstractFilterDto());
 
 }
