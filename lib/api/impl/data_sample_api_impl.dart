@@ -44,7 +44,7 @@ class DataSampleApiImpl extends DataSampleApi {
       throw FormatException("Can't update a batch of data samples that is not linked to any patient yet.");
     }
 
-    if (contactPatientId != patientId) {
+    if (contactPatientId != null && contactPatientId != patientId) {
       throw FormatException("Can't update the patient of a batch of data samples. Delete those samples and create new ones");
     }
 
@@ -167,10 +167,56 @@ class DataSampleApiImpl extends DataSampleApi {
   }
 
   @override
-  Future<Document?> setDataSampleAttachment(String dataSampleId, MultipartFile body,
-      {String? documentName, String? documentVersion, String? documentExternalUuid, String? documentLanguage}) {
-    // TODO: implement setDataSampleAttachment
-    throw UnimplementedError();
+  Future<Document?> setDataSampleAttachment(String dataSampleId, ByteStream body,
+      {String? documentName, String? documentVersion, String? documentExternalUuid, String? documentLanguage}) async {
+
+    final localCrypto = api.localCrypto;
+    final currentUser = await api.baseUserApi.getCurrentUser();
+
+    final existingDataSample = await getDataSample(dataSampleId);
+    final contactDataSample = (await _getContactOfDataSample(localCrypto, currentUser!, existingDataSample!)).item2
+        ?? throwFormatException("Could not find batch information of the data sample $dataSampleId");
+
+    final patientIdOfContact = (await _getPatientIdOfContact(localCrypto, currentUser, contactDataSample!))
+        ?? throwFormatException("Can not set an attachment to a data sample not linked to a patient");
+
+    final documentToCreate = base_api.DecryptedDocumentDto(
+        id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}),
+        name: documentName,
+        version: documentVersion,
+        externalUuid: documentExternalUuid,
+        mainUti: UtiDetector.getUtiFor(documentName)
+    );
+
+
+    final documentCC = documentCryptoConfig(localCrypto);
+    final createdDocument = await api.baseDocumentApi.createDocument(currentUser, documentToCreate, documentCC)
+      ?? throwFormatException("Could not create document for data sample $dataSampleId");
+
+    // Update data sample with documentId
+    final contentIso = documentLanguage ?? "en";
+    existingDataSample.content[contentIso] = Content(documentId: createdDocument!.id);
+    createOrModifyDataSampleFor(patientIdOfContact!, existingDataSample);
+
+    // Add attachment to document
+    List<int> docDigest = [];
+    final String? docEncKey = (await _getDocumentEncryptionKeys(localCrypto, currentUser, createdDocument)).firstOrNull();
+    await api.baseDocumentApi.setAttachmentTo(
+          currentUser,
+          createdDocument.id,
+          ByteStream(body.map((bytes) {
+            docDigest = bytes;
+            return bytes;
+          })),
+          docEncKey,
+          documentCC
+    );
+
+    // Update document with digest
+    createdDocument.hash = sha256.convert(docDigest).toString();
+    final finalDoc = await api.baseDocumentApi.modifyDocument(currentUser, createdDocument, documentCC);
+
+    return finalDoc?.toDocument();
   }
 
   int _countHierarchyOfDataSamples(int currentCount, int dataSampleIndex, List<DataSample> dataSamples) {
@@ -193,10 +239,6 @@ class DataSampleApiImpl extends DataSampleApi {
     } else {
       final base_api.DecryptedContactDto? contact = await dataSample.batchId
           ?.let((that) async => await api.baseContactApi.getContact(currentUser, that, contactCryptoConfig(currentUser, localCrypto)));
-
-      if (dataSample.id != null) {
-        contactsLinkedToDataSamplesCache.put(dataSample.id!, contact!);
-      }
       return Tuple2(false, contact);
     }
   }
