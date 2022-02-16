@@ -27,14 +27,16 @@ void main() {
     return builder.build();
   }
 
+  DecryptedHealthElementDto getHealthElementDto() => DecryptedHealthElementDto(
+      id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}), note: 'Premature optimization is the root of all evil', relevant: true, status: 0);
+
   group('tests for HealthElementApi', () {
     test('test createHealthcareElement', () async {
       // Init
       final MedTechApi api = await medtechApi();
       final HealthcareElementApi healthcareElementApi = HealthcareElementApiImpl(api);
 
-      final DecryptedHealthElementDto healthElementDto = DecryptedHealthElementDto(
-          id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}), note: 'Premature optimization is the root of all evil', relevant: true, status: 0);
+      final DecryptedHealthElementDto healthElementDto = getHealthElementDto();
 
       // When
       final HealthcareElement? createdHealthElement =
@@ -50,8 +52,7 @@ void main() {
       final MedTechApi api = await medtechApi();
       final HealthcareElementApi healthcareElementApi = HealthcareElementApiImpl(api);
 
-      final DecryptedHealthElementDto healthElementDto = DecryptedHealthElementDto(
-          id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}), note: 'Premature optimization is the root of all evil', relevant: true, status: 0);
+      final DecryptedHealthElementDto healthElementDto = getHealthElementDto();
 
       // When
       final HealthcareElement? createdHealthElement =
@@ -71,8 +72,7 @@ void main() {
     final HealthcareElementApi healthcareElementApi = HealthcareElementApiImpl(api);
     final updateNote = 'Premature optimization is not the root of all evil';
 
-    final DecryptedHealthElementDto healthElementDto = DecryptedHealthElementDto(
-        id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}), note: 'Premature optimization is the root of all evil', relevant: true, status: 0);
+    final DecryptedHealthElementDto healthElementDto = getHealthElementDto();
 
     final healthElementTocreate = HealthElementDtoMapper(healthElementDto).toHealthcareElement();
 
@@ -93,9 +93,7 @@ void main() {
     final MedTechApi api = await medtechApi();
     final HealthcareElementApi healthcareElementApi = HealthcareElementApiImpl(api);
 
-    final DecryptedHealthElementDto healthElementDto = DecryptedHealthElementDto(
-        id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}), note: 'Premature optimization is the root of all evil', relevant: true, status: 0);
-
+    final DecryptedHealthElementDto healthElementDto = getHealthElementDto();
     // When
     final HealthcareElement? createdHealthElement =
     await healthcareElementApi.createOrModifyHealthcareElement(HealthElementDtoMapper(healthElementDto).toHealthcareElement());

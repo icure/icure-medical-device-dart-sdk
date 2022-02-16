@@ -27,17 +27,16 @@ void main() {
     return builder.build();
   }
 
+  rapi.DecryptedPatientDto getPatient() => rapi.DecryptedPatientDto(
+      id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}), firstName: 'John', lastName: 'Doe', note: 'Premature optimization is the root of all evil');
+
   group('tests for PatientApi', () {
     test('test createPatient', () async {
       // Init
       final MedTechApi api = await medtechApi();
       final PatientApiImpl patientApi = PatientApiImpl(api);
 
-      final rapi.DecryptedPatientDto patient = rapi.DecryptedPatientDto(
-          id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}),
-          firstName: 'John',
-          lastName: 'Doe',
-          note: 'Premature optimization is the root of all evil');
+      final rapi.DecryptedPatientDto patient = getPatient();
 
       // When
       final Patient? createdPatient = await patientApi.createOrModifyPatient(PatientDtoMapper(patient).toPatient());
@@ -54,11 +53,7 @@ void main() {
       final MedTechApi api = await medtechApi();
       final PatientApiImpl patientApi = PatientApiImpl(api);
 
-      final rapi.DecryptedPatientDto patient = rapi.DecryptedPatientDto(
-          id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}),
-          firstName: 'John',
-          lastName: 'Doe',
-          note: 'Premature optimization is the root of all evil');
+      final rapi.DecryptedPatientDto patient = getPatient();
 
       // When
       final Patient? createdPatient = await patientApi.createOrModifyPatient(PatientDtoMapper(patient).toPatient());
