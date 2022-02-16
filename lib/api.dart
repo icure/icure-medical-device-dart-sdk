@@ -28,6 +28,7 @@ import 'package:icure_dart_sdk/api.dart' as base_api;
 import 'package:icure_dart_sdk/crypto/crypto.dart';
 import 'package:icure_dart_sdk/extended_api/data_owner_api.dart';
 
+import 'utils/date_utils.dart';
 import 'utils/functional_utils.dart';
 import 'utils/iterable_utils.dart';
 import 'utils/cached_map.dart';
@@ -150,6 +151,7 @@ part 'filter/filter.dart';
 part 'filter/intersection_filter.dart';
 part 'filter/union_filter.dart';
 
+part 'filter/filter_dsl.dart';
 
 const _delimiters = {'csv': ',', 'ssv': ' ', 'tsv': '\t', 'pipes': '|'};
 const _dateEpochMarker = 'epoch';

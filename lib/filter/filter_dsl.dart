@@ -1,10 +1,5 @@
-import 'package:icure_dart_sdk/crypto/crypto.dart';
-import 'package:icure_medical_device_dart_sdk/api.dart';
-import 'package:tuple/tuple.dart';
-import '../utils/functional_utils.dart';
-import '../utils/date_utils.dart';
-import '../utils/iterable_utils.dart';
-import '../mappers/delegation.dart';
+// @dart=2.12
+part of icure_medical_device_dart_sdk.api;
 
 abstract class FilterBuilder<T> {
   Future<Filter<T>> build();
