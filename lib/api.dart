@@ -29,6 +29,7 @@ import 'package:icure_dart_sdk/extended_api/data_owner_api.dart';
 
 import 'utils/functional_utils.dart';
 import 'utils/iterable_utils.dart';
+import 'utils/cached_map.dart';
 
 import 'mappers/address.dart';
 import 'mappers/authentication_token.dart';
