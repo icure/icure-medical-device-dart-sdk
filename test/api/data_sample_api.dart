@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:icure_dart_sdk/util/binary_utils.dart';
 import 'package:icure_medical_device_dart_sdk/api.dart';
+import 'package:icure_medical_device_dart_sdk/utils/iterable_utils.dart';
 import "package:test/test.dart";
 import 'package:uuid/uuid.dart';
 import 'package:uuid/uuid_util.dart';
@@ -26,16 +27,18 @@ void main() {
   }
 
   DataSample getHeightDataSample() => DataSample(
-      id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}),
-      content: {"en": Content(numberValue: 159.0)},
-      valueDate: 20220203111128,
-      labels: [CodingReference(id: "LOINC|8302-2|2", code: "8302-2", type: "LOINC", version: "2")].toSet());
+        id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}),
+        content: {"en": Content(numberValue: 159.0)},
+        valueDate: 20220203111128,
+        labels: [CodingReference(id: "LOINC|8302-2|2", code: "8302-2", type: "LOINC", version: "2")].toSet(),
+      );
 
   DataSample getWeightDataSample() => DataSample(
-      id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}),
-      content: {"en": Content(numberValue: 53.5)},
-      valueDate: 20220203111034,
-      labels: [CodingReference(id: "LOINC|29463-7|2", code: "29463-7", type: "LOINC", version: "2")].toSet());
+        id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}),
+        content: {"en": Content(numberValue: 53.5)},
+        valueDate: 20220203111034,
+        labels: [CodingReference(id: "LOINC|29463-7|2", code: "29463-7", type: "LOINC", version: "2")].toSet(),
+      );
 
   Patient getPatient() => Patient(id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}), firstName: "Max", lastName: "LaMenace");
 
@@ -44,7 +47,18 @@ void main() {
       // Init
       final MedTechApi api = await medtechApi();
       final DataSampleApi dataSampleApi = DataSampleApiImpl(api);
+      final PatientApi patientApi = PatientApiImpl(api);
       final DataSample weight = getWeightDataSample();
+      final DataSample height = getHeightDataSample();
+      final dataSamples = [weight, height];
+      final Patient patient = getPatient();
+
+      final createdPatient = await patientApi.createOrModifyPatient(patient);
+      final createdDataSamples = await dataSampleApi.createOrModifyDataSamplesFor(createdPatient!.id!, dataSamples);
+
+      expect(dataSamples.length, createdDataSamples!.length);
+      assert(createdDataSamples.findFirst((it) => it.id == weight.id) != null);
+      assert(createdDataSamples.findFirst((it) => it.id == height.id) != null);
     });
   });
 }

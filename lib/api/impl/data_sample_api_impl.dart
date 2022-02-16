@@ -44,7 +44,7 @@ class DataSampleApiImpl extends DataSampleApi {
       throw FormatException("Can't update a batch of data samples that is not linked to any patient yet.");
     }
 
-    if (contactPatientId != patientId) {
+    if (contactPatientId != null && contactPatientId != patientId) {
       throw FormatException("Can't update the patient of a batch of data samples. Delete those samples and create new ones");
     }
 
@@ -163,7 +163,7 @@ class DataSampleApiImpl extends DataSampleApi {
 
   @override
   Future<List<String>?> matchDataSample(Filter filter) async {
-    return await api.contactApi.rawMatchServicesBy(filter.toAbstractFilterDto());
+    return await api.baseContactApi.rawMatchServicesBy(filter.toAbstractFilterDto());
   }
 
   @override
@@ -194,9 +194,9 @@ class DataSampleApiImpl extends DataSampleApi {
       final base_api.DecryptedContactDto? contact = await dataSample.batchId
           ?.let((that) async => await api.baseContactApi.getContact(currentUser, that, contactCryptoConfig(currentUser, localCrypto)));
 
-      if (dataSample.id != null) {
+/*      if (dataSample.id != null) {
         contactsLinkedToDataSamplesCache.put(dataSample.id!, contact!);
-      }
+      }*/
       return Tuple2(false, contact);
     }
   }
