@@ -29,7 +29,7 @@ abstract class DataSampleApi {
 
   /// Create or update a batch of [DataSample] for a patient
   ///
-  /// All the provided data samples will be created in the same batch. If you are trying to update some data samples, then those ones need to come from the same batch.                  When modifying a data sample, you can't update the patient of it : For this, you need to delete the faulty data sample and create a new one. When modifying the data sample, you also need to keep the same batchId : It is not possible to change the batch of a data sample.                 
+  /// All the provided data samples will be created in the same batch. If you are trying to update some data samples, then those ones need to come from the same batch.                  When modifying a data sample, you can't update the patient of it : For this, you need to delete the faulty data sample and create a new one. When modifying the data sample, you also need to keep the same batchId : It is not possible to change the batch of a data sample.
   ///
   /// Parameters:
   ///
@@ -75,7 +75,7 @@ abstract class DataSampleApi {
   ///
   /// * [Filter] filter (required):
   ///   The Filter object that describes which condition(s) the elements whose the ids should be returned must fulfill
-  Future<PaginatedListDataSample?> filterDataSample(Filter filter, {String? nextDataSampleId, int? limit});
+  Future<PaginatedListDataSample?> filterDataSample(Filter<DataSample> filter, {String? nextDataSampleId, int? limit});
 
   /// Get a [DataSample] by its id
   ///

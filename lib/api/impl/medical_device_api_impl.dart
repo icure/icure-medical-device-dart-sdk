@@ -47,7 +47,7 @@ class MedicalDeviceApiImpl extends MedicalDeviceApi {
   }
 
   @override
-  Future<PaginatedListMedicalDevice?> filterMedicalDevices(Filter filter, {String? nextDeviceId, int? limit}) async {
+  Future<PaginatedListMedicalDevice?> filterMedicalDevices(Filter<MedicalDevice> filter, {String? nextDeviceId, int? limit}) async {
     return (await api.baseDeviceApi.filterDevicesBy(base_api.FilterChain<base_api.DeviceDto>(filter.toAbstractFilterDto()), startDocumentId: nextDeviceId, limit: limit))
         ?.toPaginatedListMedicalDevice();
   }

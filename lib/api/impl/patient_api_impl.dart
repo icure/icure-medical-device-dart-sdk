@@ -41,7 +41,7 @@ class PatientApiImpl extends PatientApi {
   }
 
   @override
-  Future<PaginatedListPatient?> filterPatients(Filter filter, {String? nextPatientId, int? limit, String? startKey}) async {
+  Future<PaginatedListPatient?> filterPatients(Filter<Patient> filter, {String? nextPatientId, int? limit, String? startKey}) async {
     final localCrypto = api.localCrypto;
     final currentUser = await api.baseUserApi.getCurrentUser();
     final ccPatient = patientCryptoConfig(localCrypto);

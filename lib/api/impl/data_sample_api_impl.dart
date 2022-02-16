@@ -128,7 +128,7 @@ class DataSampleApiImpl extends DataSampleApi {
   }
 
   @override
-  Future<PaginatedListDataSample?> filterDataSample(Filter filter, {String? nextDataSampleId, int? limit}) async {
+  Future<PaginatedListDataSample?> filterDataSample(Filter<DataSample> filter, {String? nextDataSampleId, int? limit}) async {
     final localCrypto = api.localCrypto;
     final currentUser = await api.baseUserApi.getCurrentUser();
 

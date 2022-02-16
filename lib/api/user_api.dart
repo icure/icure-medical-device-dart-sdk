@@ -73,7 +73,7 @@ abstract class UserApi {
   ///
   /// * [int] limit:
   ///   The number of users to return in the queried page
-  Future<PaginatedListUser?> filterUsers(Filter filter, { String? nextUserId, int? limit, });
+  Future<PaginatedListUser?> filterUsers(Filter<User> filter, { String? nextUserId, int? limit, });
 
   /// Get the details of the logged User.
   ///

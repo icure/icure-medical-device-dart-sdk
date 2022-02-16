@@ -66,7 +66,7 @@ abstract class MedicalDeviceApi {
   ///
   /// * [int] limit:
   ///   The number of devices to return in the queried page
-  Future<PaginatedListMedicalDevice?> filterMedicalDevices(Filter filter, { String? nextDeviceId, int? limit, });
+  Future<PaginatedListMedicalDevice?> filterMedicalDevices(Filter<MedicalDevice> filter, { String? nextDeviceId, int? limit, });
 
   /// Get a Medical Device
   ///

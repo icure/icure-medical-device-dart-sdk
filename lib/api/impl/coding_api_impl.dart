@@ -23,7 +23,7 @@ class CodingApiImpl extends CodingApi {
 
   @override
   Future<PaginatedListCoding?> filterCoding(
-    Filter filter, {
+    Filter<Coding> filter, {
     String? nextCodingId,
     int? limit,
   }) async {

@@ -29,7 +29,7 @@ class UserApiImpl extends UserApi {
 
   @override
   Future<PaginatedListUser?> filterUsers(
-    Filter filter, {
+    Filter<User> filter, {
     String? nextUserId,
     int? limit,
   }) async {

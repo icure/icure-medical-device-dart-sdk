@@ -68,7 +68,7 @@ class HealthcareElementApiImpl extends HealthcareElementApi {
 
   @override
   Future<PaginatedListHealthcareElement?> filterHealthcareElement(
-    Filter filter, {
+    Filter<HealthcareElement> filter, {
     String? nextHealthElementId,
     int? limit,
   }) async {

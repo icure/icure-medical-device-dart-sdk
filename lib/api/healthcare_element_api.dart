@@ -42,7 +42,7 @@ abstract class HealthcareElementApi {
   /// Parameters:
   ///
   /// * [Filter] filter (required):
-  Future<PaginatedListHealthcareElement?> filterHealthcareElement(Filter filter, { String? nextHealthElementId, int? limit, });
+  Future<PaginatedListHealthcareElement?> filterHealthcareElement(Filter<HealthcareElement> filter, { String? nextHealthElementId, int? limit, });
 
   /// Get a Healthcare Element
   ///

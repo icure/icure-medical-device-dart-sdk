@@ -48,7 +48,7 @@ abstract class CodingApi {
   ///
   /// * [int] limit:
   ///   The number of codings to return in the queried page
-  Future<PaginatedListCoding?> filterCoding(Filter filter, { String? nextCodingId, int? limit, });
+  Future<PaginatedListCoding?> filterCoding(Filter<Coding> filter, { String? nextCodingId, int? limit, });
 
   /// Get a [Coding]
   ///
