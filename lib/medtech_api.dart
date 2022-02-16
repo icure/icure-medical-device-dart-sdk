@@ -15,11 +15,11 @@ class MedTechApi {
   final base_api.DeviceApi deviceApi;
   final base_api.HealthcarePartyApi healthcarePartyApi;
   final base_api.ContactApi contactApi;
-
   final LocalCrypto localCrypto;
+  final base_api.DocumentApi documentApi;
 
-  MedTechApi(
-      this.codeApi, this.userApi, this.patientApi, this.healthElementApi, this.deviceApi, this.healthcarePartyApi, this.contactApi, this.localCrypto);
+  MedTechApi(this.codeApi, this.userApi, this.patientApi, this.healthElementApi, this.deviceApi, this.healthcarePartyApi, this.contactApi,
+      this.localCrypto, this.documentApi);
 }
 
 class MedTechApiBuilder {
@@ -58,6 +58,6 @@ class MedTechApiBuilder {
     final deviceApi = base_api.DeviceApi(client);
 
     return MedTechApi(base_api.CodeApi(client), base_api.UserApi(client), patientApi, base_api.HealthElementApi(client), deviceApi, hcpApi,
-        base_api.ContactApi(client), LocalCrypto(DataOwnerResolver(hcpApi, patientApi, deviceApi), rsaKeyPairs));
+        base_api.ContactApi(client), LocalCrypto(DataOwnerResolver(hcpApi, patientApi, deviceApi), rsaKeyPairs), base_api.DocumentApi(client));
   }
 }

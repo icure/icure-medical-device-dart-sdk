@@ -16,7 +16,7 @@ import 'package:uuid/uuid_util.dart';
 
 final Uuid uuid = Uuid();
 
-extension DocumentDtoMapper on DocumentDto {
+extension DocumentDtoMapper on DecryptedDocumentDto {
   Document toDocument() => Document(
         id: this.id,
         otherUtis: this.otherUtis,
@@ -39,7 +39,7 @@ extension DocumentDtoMapper on DocumentDto {
 }
 
 extension DocumentMapper on Document {
-  DocumentDto toDocumentDto() => DocumentDto(
+      DecryptedDocumentDto toDecryptedDocumentDto() => DecryptedDocumentDto(
         id: this.id?.also((it) {
               if (!Uuid.isValidUUID(fromString: it)) {
                 throw FormatException("Invalid id, id must be a valid UUID");
