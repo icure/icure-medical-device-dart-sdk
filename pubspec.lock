@@ -144,12 +144,10 @@ packages:
   icure_dart_sdk:
     dependency: "direct main"
     description:
-      path: "."
-      ref: badb84a4e45079dd804245c970caca27b61e2436
-      resolved-ref: badb84a4e45079dd804245c970caca27b61e2436
-      url: "https://github.com/icure-io/icure-dart-sdk.git"
-    source: git
-    version: "1.0.12"
+      name: icure_dart_sdk
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.13"
   intl:
     dependency: "direct main"
     description:
