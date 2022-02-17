@@ -32,8 +32,8 @@ extension CodeDtoMapper on CodeDto {
 extension CodingMapper on Coding {
   CodeDto toCodeDto() => CodeDto(
         id: this.id?.also((it) {
-              if (!Uuid.isValidUUID(fromString: it)) {
-                throw FormatException("Invalid id, id must be a valid UUID");
+              if (RegExp(r"/^[a-zA-Z0-9]*\|[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-\b[0-9a-fA-F]{12}\|[0-9]*/g").hasMatch(it)) {
+                throw FormatException("Invalid id, id must be a valid TYPE|CODE|VERSION");
               }
             }) ??
             uuid.v4(options: {'rng': UuidUtil.cryptoRNG}),
