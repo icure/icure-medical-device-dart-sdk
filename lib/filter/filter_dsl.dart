@@ -5,6 +5,47 @@ abstract class FilterBuilder<T> {
   Future<Filter<T>> build();
 }
 
+
+class UserFilter extends FilterBuilder<User> {
+  Set<String>? _byIds;
+  List<UserFilter>? _union;
+  List<UserFilter>? _intersection;
+
+  UserFilter byIds(Set<String> byIds) {
+    this._byIds = byIds;
+    return this;
+  }
+
+  UserFilter union(List<UserFilter> filters) {
+    this._union = filters;
+    return this;
+  }
+
+  UserFilter intersection(List<UserFilter> filters) {
+    this._intersection = filters;
+    return this;
+  }
+
+  @override
+  Future<Filter<User>> build() async {
+    List<Filter<User>> filters = [
+      _byIds?.let((v) => UserByIdsFilter(ids: v)),
+      await _union?.let((v) async => UnionFilter<User>(filters:await Future.wait(v.map((f) async => await f.build()).toList()))),
+      await _intersection?.let((v) async => IntersectionFilter<User>(filters:await Future.wait(v.map((f) async => await f.build()).toList())))
+    ].whereType<Filter<User>>().toList();
+
+    if (filters.isEmpty) {
+      return AllUsersFilter();
+    } else if (filters.length == 1) {
+      return filters[0];
+    } else {
+      return IntersectionFilter(filters: filters);
+    }
+  }
+}
+
+
+
 class PatientFilter extends FilterBuilder<Patient> {
   HealthcareProfessional? _forHcp;
   HealthcareProfessional? get hcp => this._forHcp;
@@ -33,7 +74,7 @@ class PatientFilter extends FilterBuilder<Patient> {
     return this;
   }
 
-  PatientFilter byGenderEducationProfession(PatientGenderEnum gender, String? education, String? profession) {
+  PatientFilter byGenderEducationProfession(PatientGenderEnum gender, {String? education = null, String? profession = null}) {
     this._byGenderEducationProfession = Tuple3(gender, education, profession);
     return this;
   }
@@ -45,7 +86,10 @@ class PatientFilter extends FilterBuilder<Patient> {
 
   PatientFilter ofAge(int age) {
     final now = DateTime.now();
-    return dateOfBirthBetween(DateTime(now.year - age - 1, now.month, now.day).add(Duration(days: 1)), DateTime(now.year - age, now.month, now.day));
+    return dateOfBirthBetween(
+        DateTime(now.year - age - 1, now.month, now.day).add(Duration(days: 1)),
+        DateTime(now.year - age, now.month, now.day)
+    );
   }
 
   PatientFilter dateOfBirthBetween(DateTime from, DateTime to) {
@@ -96,6 +140,215 @@ class PatientFilter extends FilterBuilder<Patient> {
   }
 }
 
+class HealthcareProfessionalFilter extends FilterBuilder<HealthcareProfessional> {
+  Set<String>? _byIds;
+  List<HealthcareProfessionalFilter>? _union;
+  List<HealthcareProfessionalFilter>? _intersection;
+
+  HealthcareProfessionalFilter byIds(Set<String> byIds) {
+    this._byIds = byIds;
+    return this;
+  }
+
+  HealthcareProfessionalFilter union(List<HealthcareProfessionalFilter> filters) {
+    this._union = filters;
+    return this;
+  }
+
+  HealthcareProfessionalFilter intersection(List<HealthcareProfessionalFilter> filters) {
+    this._intersection = filters;
+    return this;
+  }
+
+
+  @override
+  Future<Filter<HealthcareProfessional>> build() async {
+    List<Filter<HealthcareProfessional>> filters = [
+      _byIds?.let((v) => HealthcareProfessionalByIdsFilter(ids: v)),
+      await _union?.let((v) async => UnionFilter<HealthcareProfessional>(filters:await Future.wait(v.map((f) async => await f.build()).toList()))),
+      await _intersection?.let((v) async => IntersectionFilter<HealthcareProfessional>(filters:await Future.wait(v.map((f) async => await f.build()).toList())))
+    ].whereType<Filter<HealthcareProfessional>>().toList();
+
+    if (filters.isEmpty) {
+      return AllHealthcareProfessionalsFilter();
+    } else if (filters.length == 1) {
+      return filters[0];
+    } else {
+      return IntersectionFilter(filters: filters);
+    }
+  }
+}
+
+class MedicalDeviceFilter extends FilterBuilder<MedicalDevice> {
+  Set<String>? _byIds;
+  List<MedicalDeviceFilter>? _union;
+  List<MedicalDeviceFilter>? _intersection;
+
+  MedicalDeviceFilter byIds(Set<String> byIds) {
+    this._byIds = byIds;
+    return this;
+  }
+
+  MedicalDeviceFilter union(List<MedicalDeviceFilter> filters) {
+    this._union = filters;
+    return this;
+  }
+
+  MedicalDeviceFilter intersection(List<MedicalDeviceFilter> filters) {
+    this._intersection = filters;
+    return this;
+  }
+
+
+  @override
+  Future<Filter<MedicalDevice>> build() async {
+    List<Filter<MedicalDevice>> filters = [
+      _byIds?.let((v) => MedicalDeviceByIdsFilter(ids: v)),
+      await _union?.let((v) async => UnionFilter<MedicalDevice>(filters:await Future.wait(v.map((f) async => await f.build()).toList()))),
+      await _intersection?.let((v) async => IntersectionFilter<MedicalDevice>(filters:await Future.wait(v.map((f) async => await f.build()).toList())))
+    ].whereType<Filter<MedicalDevice>>().toList();
+
+    if (filters.isEmpty) {
+      return AllMedicalDevicesFilter();
+    } else if (filters.length == 1) {
+      return filters[0];
+    } else {
+      return IntersectionFilter(filters: filters);
+    }
+  }
+}
+
+class HealthcareElementFilter extends FilterBuilder<HealthcareElement> {
+  HealthcareProfessional? _forHcp;
+  HealthcareProfessional? get hcp => this._forHcp;
+
+  Set<String>? _byIds;
+  Set<Identifier>? _byIdentifiers;
+  HealthcareElementByHcPartyTagCodeFilter? _byTagCodeFilter;
+  Tuple2<Crypto, List<Patient>>? _forPatients;
+
+  List<HealthcareElementFilter>? _union;
+  List<HealthcareElementFilter>? _intersection;
+
+  HealthcareElementFilter forHcp(HealthcareProfessional hcp) {
+    this._forHcp = hcp;
+    return this;
+  }
+
+  HealthcareElementFilter byIds(Set<String> byIds) {
+    this._byIds = byIds;
+    return this;
+  }
+
+  HealthcareElementFilter byIdentifiers(Set<Identifier> identifiers) {
+    this._byIdentifiers = identifiers;
+    return this;
+  }
+
+  HealthcareElementFilter byTagCodeFilter({
+    String? tagType = null,
+    String? tagCode = null,
+    String? codeType = null,
+    String? codeNumber = null,
+    int? status = null}) {
+    this._byTagCodeFilter = HealthcareElementByHcPartyTagCodeFilter(tagType: tagType, tagCode: tagCode, codeType: codeType, codeNumber: codeNumber, status: status);
+    return this;
+  }
+
+  HealthcareElementFilter forPatients(Crypto crypto, List<Patient> patients) {
+    this._forPatients = Tuple2(crypto, patients);
+    return this;
+  }
+
+  HealthcareElementFilter union(List<HealthcareElementFilter> filters) {
+    this._union = filters;
+    return this;
+  }
+
+  HealthcareElementFilter intersection(List<HealthcareElementFilter> filters) {
+    this._intersection = filters;
+    return this;
+  }
+
+
+  @override
+  Future<Filter<HealthcareElement>> build() async {
+    if (_forHcp == null) {
+      throw FormatException("Hcp must be set for patient filter.");
+    }
+    final HealthcareProfessional hp = _forHcp!;
+
+    List<Filter<HealthcareElement>> filters = [
+      _byIds?.let((v) => HealthcareElementByIdsFilter(ids: v)),
+      _byIdentifiers?.let((v) => HealthcareElementByHcPartyIdentifiersFilter(healthcarePartyId: hp.id!, identifiers: v.toList())),
+      _byTagCodeFilter?.let((v) => v.healthcarePartyId = hp.id!),
+      await _forPatients?.let((v) async => HealthcareElementByHcPartyPatientFilter(healthcarePartyId: hp.id!, patientSecretForeignKeys: (await Future.wait(v.item2.map((p) => v.item1.decryptEncryptionKeys(hp.id!, (p.systemMetaData?.delegations ?? {}).map((k,v) => MapEntry(k, v.map((d)=> d.toDelegationDto()).toSet())))))).toSet().flatten())),
+      await _union?.let((v) async => UnionFilter<HealthcareElement>(filters:await Future.wait(v.map((f) async => await f.forHcp(f.hcp ?? hp).build()).toList()))),
+      await _intersection?.let((v) async => IntersectionFilter<HealthcareElement>(filters:await Future.wait(v.map((f) async => await f.forHcp(f.hcp ?? hp).build()).toList())))
+    ].whereType<Filter<HealthcareElement>>().toList();
+
+    if (filters.isEmpty) {
+      return HealthcareElementByHcPartyFilter(hcpId: hp.id!);
+    } else if (filters.length == 1) {
+      return filters[0];
+    } else {
+      return IntersectionFilter(filters: filters);
+    }
+  }
+}
+
+
+class CodingFilter extends FilterBuilder<Coding> {
+  Set<String>? _byIds;
+  CodingByRegionTypeLabelLanguageFilter? _byRegionTypeLabelLanguageFilter;
+  List<CodingFilter>? _union;
+  List<CodingFilter>? _intersection;
+
+  CodingFilter byIds(Set<String> byIds) {
+    this._byIds = byIds;
+    return this;
+  }
+
+  CodingFilter byRegionTypeLabelLanguage({
+      String? region = null,
+      String? type = null,
+      String? language = null,
+      String? label = null}) {
+    this._byRegionTypeLabelLanguageFilter = CodingByRegionTypeLabelLanguageFilter(region: region, type: type, language: language, label: label);
+    return this;
+  }
+
+  CodingFilter union(List<CodingFilter> filters) {
+    this._union = filters;
+    return this;
+  }
+
+  CodingFilter intersection(List<CodingFilter> filters) {
+    this._intersection = filters;
+    return this;
+  }
+
+
+  @override
+  Future<Filter<Coding>> build() async {
+    List<Filter<Coding>> filters = [
+      _byIds?.let((v) => CodingByIdsFilter(ids: v)),
+      _byRegionTypeLabelLanguageFilter?.let((v) => v),
+      await _union?.let((v) async => UnionFilter<Coding>(filters:await Future.wait(v.map((f) async => await f.build()).toList()))),
+      await _intersection?.let((v) async => IntersectionFilter<Coding>(filters:await Future.wait(v.map((f) async => await f.build()).toList())))
+    ].whereType<Filter<Coding>>().toList();
+
+    if (filters.isEmpty) {
+      return AllCodingsFilter();
+    } else if (filters.length == 1) {
+      return filters[0];
+    } else {
+      return IntersectionFilter(filters: filters);
+    }
+  }
+}
+
+
 class DataSampleFilter extends FilterBuilder<DataSample> {
   HealthcareProfessional? _forHcp;
   HealthcareProfessional? get hcp => this._forHcp;
@@ -122,14 +375,14 @@ class DataSampleFilter extends FilterBuilder<DataSample> {
     return this;
   }
 
-  DataSampleFilter byTagCodeDateFilter(
-  String? tagType,
-  String? tagCode,
-  String? codeType,
-  String? codeCode,
-  int? startValueDate,
-  int? endValueDate,
-  ) {
+  DataSampleFilter byTagCodeDateFilter({
+    String? tagType = null,
+    String? tagCode = null,
+    String? codeType = null,
+    String? codeCode = null,
+    int? startValueDate = null,
+    int? endValueDate = null,
+  }) {
     this._byTagCodeDateFilter = DataSampleByHcPartyTagCodeDateFilter(tagType: tagType, tagCode: tagCode, codeType: codeType, codeCode: codeCode, startValueDate: startValueDate, endValueDate: endValueDate);
     return this;
   }

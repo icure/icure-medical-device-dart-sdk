@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:icure_dart_sdk/api.dart' as rawApi;
 import 'package:icure_medical_device_dart_sdk/api.dart';
 import 'package:icure_medical_device_dart_sdk/mappers/filter.dart';
@@ -15,15 +13,24 @@ void main() {
       expect((converted as rawApi.PatientByHcPartyNameContainsFuzzyFilter).searchString, "abc");
     });
 
-    test('test filter dsl', () async {
+    test('test patient filter dsl', () async {
       var filter = await PatientFilter()
           .forHcp(HealthcareProfessional(id: '123'))
-          .byGenderEducationProfession(PatientGenderEnum.male, null, null)
+          .byGenderEducationProfession(PatientGenderEnum.male)
           .intersection([
               PatientFilter().containsFuzzy("lisa"),
               PatientFilter().ofAge(28),
           ]).build();
       expect((filter as IntersectionFilter<Patient>).filters[1] is IntersectionFilter<Patient>, true);
+    });
+
+    test('test coding filter dsl', () async {
+      var filter = await CodingFilter()
+          .byIds({"123", "456"})
+          .byRegionTypeLabelLanguage(region: "region")
+          .build();
+      expect((filter as IntersectionFilter<Coding>).filters[0] is CodingByIdsFilter, true);
+      expect((filter as IntersectionFilter<Coding>).filters[1] is CodingByRegionTypeLabelLanguageFilter, true);
     });
 
   });

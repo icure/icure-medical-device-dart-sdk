@@ -1,3 +1,7 @@
+## 1.1.0
+
+- Added data samples API
+
 ## 1.0.7
 
 - Better documentation, better top level api

@@ -1,8 +1,5 @@
-import 'dart:developer';
-
 import 'package:icure_dart_sdk/api.dart' as api;
 import 'package:icure_medical_device_dart_sdk/api.dart';
-import 'package:icure_medical_device_dart_sdk/utils/functional_utils.dart';
 
 import 'identifier.dart';
 import 'patient.dart';
@@ -300,8 +297,8 @@ extension HealthcareElementFilterMapper on Filter<HealthcareElement>{
     if (this is HealthcareElementByHcPartyIdentifiersFilter) {
       return (this as HealthcareElementByHcPartyIdentifiersFilter).toHealthElementByHcPartyIdentifiersFilterDto();
     }
-    if (this is HealthcareElementByHcPartySecretForeignKeysFilter) {
-      return (this as HealthcareElementByHcPartySecretForeignKeysFilter).toHealthElementByHcPartySecretForeignKeysFilterDto();
+    if (this is HealthcareElementByHcPartyPatientFilter) {
+      return (this as HealthcareElementByHcPartyPatientFilter).toHealthElementByHcPartySecretForeignKeysFilterDto();
     }
     if (this is HealthcareElementByHcPartyTagCodeFilter) {
       return (this as HealthcareElementByHcPartyTagCodeFilter).toHealthElementByHcPartyTagCodeFilterDto();
@@ -348,7 +345,7 @@ extension HealthcareElementByHcPartyIdentifiersFilterMapper on HealthcareElement
       );
 }
 
-extension HealthcareElementByHcPartySecretForeignKeysFilterMapper on HealthcareElementByHcPartySecretForeignKeysFilter {
+extension HealthcareElementByHcPartySecretForeignKeysFilterMapper on HealthcareElementByHcPartyPatientFilter {
   api.HealthElementByHcPartySecretForeignKeysFilter toHealthElementByHcPartySecretForeignKeysFilterDto() =>
       api.HealthElementByHcPartySecretForeignKeysFilter(
           desc: this.description,

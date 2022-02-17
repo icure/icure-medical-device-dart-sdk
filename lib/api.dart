@@ -134,7 +134,7 @@ part 'filter/hcp/all_healthcare_professionals_filter.dart';
 part 'filter/hcp/healthcare_professional_by_ids_filter.dart';
 part 'filter/healthcareelement/healthcare_element_by_hc_party_filter.dart';
 part 'filter/healthcareelement/healthcare_element_by_hc_party_identifiers_filter.dart';
-part 'filter/healthcareelement/healthcare_element_by_hc_party_secret_foreign_keys_filter.dart';
+part 'filter/healthcareelement/healthcare_element_by_hc_party_patient_filter.dart';
 part 'filter/healthcareelement/healthcare_element_by_hc_party_tag_code_filter.dart';
 part 'filter/healthcareelement/healthcare_element_by_ids_filter.dart';
 part 'filter/medicaldevice/all_medical_devices_filter.dart';
