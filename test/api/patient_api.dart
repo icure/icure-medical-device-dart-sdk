@@ -76,10 +76,10 @@ void main() {
       var patients = (await patientApi.filterPatients(
           PatientByHcPartyNameContainsFuzzyFilter(
               healthcarePartyId: (await userApi.getLoggedUser())!.healthcarePartyId!,
-              searchString: "du")
+              searchString: "maes")
       ))?.rows ?? [];
 
-      expect(patients.length == 1, true);
+      expect(patients.length == 3, true);
 
       // Then
     });
