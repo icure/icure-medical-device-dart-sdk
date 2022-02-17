@@ -43,7 +43,7 @@ void main() {
   Patient getPatient() => Patient(id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}), firstName: "Max", lastName: "LaMenace");
 
   group('tests for DataSampleApi', () {
-    test('test createOrModifyDataSampleFor', () async {
+    test('test createOrModifyDataSampleFor CREATE', () async {
       // Init
       final MedTechApi api = await medtechApi();
       final DataSampleApi dataSampleApi = DataSampleApiImpl(api);
@@ -53,12 +53,72 @@ void main() {
       final dataSamples = [weight, height];
       final Patient patient = getPatient();
 
+      // When
       final createdPatient = await patientApi.createOrModifyPatient(patient);
       final createdDataSamples = await dataSampleApi.createOrModifyDataSamplesFor(createdPatient!.id!, dataSamples);
 
+      // Then
       expect(dataSamples.length, createdDataSamples!.length);
       assert(createdDataSamples.findFirst((it) => it.id == weight.id) != null);
       assert(createdDataSamples.findFirst((it) => it.id == height.id) != null);
+    });
+
+    test('test createOrModifyDataSampleFor UPDATE', () async {
+      // Init
+      final MedTechApi api = await medtechApi();
+      final DataSampleApi dataSampleApi = DataSampleApiImpl(api);
+      final PatientApi patientApi = PatientApiImpl(api);
+      final DataSample weight = getWeightDataSample();
+      final Patient patient = getPatient();
+      final updateContent = {"en": Content(numberValue: 60.0)};
+
+      // When
+      final createdPatient = await patientApi.createOrModifyPatient(patient);
+      final createdDataSample = await dataSampleApi.createOrModifyDataSampleFor(createdPatient!.id!, weight);
+      createdDataSample!.content = updateContent;
+      final updatedDataSample = await dataSampleApi.createOrModifyDataSampleFor(createdPatient.id!, createdDataSample);
+
+      // Then
+      expect(createdDataSample.id, updatedDataSample!.id);
+      assert(createdDataSample.id == updatedDataSample.id);
+      assert(weight.content != updatedDataSample.content);
+      expect(updatedDataSample.content["en"]!.numberValue!, updateContent["en"]!.numberValue!);
+    });
+
+    test('test getDataSample', () async {
+      // Init
+      final MedTechApi api = await medtechApi();
+      final DataSampleApi dataSampleApi = DataSampleApiImpl(api);
+      final PatientApi patientApi = PatientApiImpl(api);
+      final DataSample weight = getWeightDataSample();
+      final Patient patient = getPatient();
+
+      // When
+      final createdPatient = await patientApi.createOrModifyPatient(patient);
+      final createdDataSample = await dataSampleApi.createOrModifyDataSampleFor(createdPatient!.id!, weight);
+      final gotDataSample = await dataSampleApi.getDataSample(createdDataSample!.id!);
+
+      // Then
+      assert(gotDataSample!.id != null && gotDataSample.id == createdDataSample.id);
+      assert(createdDataSample.batchId == gotDataSample!.batchId);
+      assert(createdDataSample.author == gotDataSample!.author);
+    });
+
+    test('test deleteDataSample', () async {
+      // Init
+      final MedTechApi api = await medtechApi();
+      final DataSampleApi dataSampleApi = DataSampleApiImpl(api);
+      final PatientApi patientApi = PatientApiImpl(api);
+      final DataSample weight = getWeightDataSample();
+      final Patient patient = getPatient();
+
+      // When
+      final createdPatient = await patientApi.createOrModifyPatient(patient);
+      final createdDataSample = await dataSampleApi.createOrModifyDataSampleFor(createdPatient!.id!, weight);
+      final deletedDataSampleId = await dataSampleApi.deleteDataSample(createdDataSample!.id!);
+
+      // Then
+      assert(deletedDataSampleId != null && deletedDataSampleId == createdDataSample.id);
     });
   });
 }
