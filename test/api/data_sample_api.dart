@@ -40,7 +40,8 @@ void main() {
         labels: [CodingReference(id: "LOINC|29463-7|2", code: "29463-7", type: "LOINC", version: "2")].toSet(),
       );
 
-  Patient getPatient() => Patient(id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}), firstName: "Max", lastName: "LaMenace");
+  Patient getPatient() => Patient(id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}), firstName: "Raymond", lastName: "Jambongras");
+  Patient getEmptyPatient() => Patient(id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}), firstName: "Raymond", lastName: "Jambomaigre");
 
   group('tests for DataSampleApi', () {
     test('test createOrModifyDataSampleFor CREATE', () async {
@@ -110,7 +111,7 @@ void main() {
       final DataSampleApi dataSampleApi = DataSampleApiImpl(api);
       final PatientApi patientApi = PatientApiImpl(api);
       final DataSample weight = getWeightDataSample();
-      final Patient patient = getPatient();
+      final Patient patient = getEmptyPatient();
 
       // When
       final createdPatient = await patientApi.createOrModifyPatient(patient);
