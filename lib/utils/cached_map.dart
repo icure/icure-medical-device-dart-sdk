@@ -12,9 +12,9 @@ class CachedMap<K, V> {
   V? getIfPresent(K key) {
     final element = cachedElements[key];
     if (element == null || DateTime.now().compareTo(element.creationDateTime.add(Duration(milliseconds: expirationInMillis))) > 0) {
+      cachedElements.remove(key);
       return null;
     } else {
-      cachedElements.remove(key);
       return element.value;
     }
   }
