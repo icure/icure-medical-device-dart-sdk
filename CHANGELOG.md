@@ -1,3 +1,7 @@
+## 1.1.2
+
+- Fix forPatient DataSample filter builder
+
 ## 1.1.1
 
 - Update dependencies

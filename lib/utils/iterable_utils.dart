@@ -44,5 +44,5 @@ extension MapExtension<E, F> on Map<E, F> {
 }
 
 extension SetOfSetExtension<E> on Set<Set<E>> {
-  Set<E> flatten() => this.fold(<E>{}, (Set<E> previousValue, Set<E> element) => previousValue..union(element));
+  Set<E> flatten() => this.fold(<E>{}, (Set<E> previousValue, Set<E> element) => previousValue.union(element));
 }

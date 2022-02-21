@@ -413,7 +413,14 @@ class DataSampleFilter extends FilterBuilder<DataSample> {
       _byIds?.let((v) => DataSampleByIdsFilter(ids: v)),
       _byIdentifiers?.let((v) => DataSampleByHcPartyIdentifiersFilter(healthcarePartyId: hp.id!, identifiers: v.toList())),
       _byTagCodeDateFilter?.let((v) => v.healthcarePartyId = hp.id!),
-      await _forPatients?.let((v) async => DataSampleBySecretForeignKeys(healthcarePartyId: hp.id!, patientSecretForeignKeys: (await Future.wait(v.item2.map((p) => v.item1.decryptEncryptionKeys(hp.id!, (p.systemMetaData?.delegations ?? {}).map((k,v) => MapEntry(k, v.map((d)=> d.toDelegationDto()).toSet())))))).toSet().flatten())),
+      await _forPatients?.let((v) async {
+        var localCrypto = v.item1;
+        Set<String> secretForeignKeys = (await Future.wait(v.item2.map((p) {
+          var delegations = (p.systemMetaData?.delegations ?? {}).map((k,v) => MapEntry(k, v.map((d)=> d.toDelegationDto()).toSet()));
+          return localCrypto.decryptEncryptionKeys(hp.id!, delegations);
+        }))).toSet().flatten();
+        return DataSampleBySecretForeignKeys(healthcarePartyId: hp.id!, patientSecretForeignKeys: secretForeignKeys);
+      }),
       await _union?.let((v) async => UnionFilter<DataSample>(filters:await Future.wait(v.map((f) async => await f.forHcp(f.hcp ?? hp).build()).toList()))),
       await _intersection?.let((v) async => IntersectionFilter<DataSample>(filters:await Future.wait(v.map((f) async => await f.forHcp(f.hcp ?? hp).build()).toList())))
     ].whereType<Filter<DataSample>>().toList();

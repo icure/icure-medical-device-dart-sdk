@@ -105,6 +105,30 @@ void main() {
       assert(createdDataSample.author == gotDataSample!.author);
     });
 
+    test('test filterDataSample', () async {
+      // Init
+      final MedTechApi api = await medtechApi();
+      final DataSampleApi dataSampleApi = DataSampleApiImpl(api);
+      final PatientApi patientApi = PatientApiImpl(api);
+      final DataSample weight = getWeightDataSample();
+      final Patient patient = getPatient();
+
+      // When
+      final createdPatient = await patientApi.createOrModifyPatient(patient);
+      final createdDataSample = (await dataSampleApi.createOrModifyDataSampleFor(createdPatient!.id!, weight))!;
+      var paginatedListDataSample = await dataSampleApi.filterDataSample(
+          await DataSampleFilter()
+          .forHcp(HealthcareProfessional(id:(await api.userApi.getLoggedUser())!.healthcarePartyId!))
+          .forPatients(api.localCrypto, [createdPatient]).build()
+      );
+      final gotDataSample = (paginatedListDataSample)!.rows[0];
+
+      // Then
+      assert(gotDataSample!.id != null && gotDataSample.id == createdDataSample.id);
+      assert(createdDataSample.batchId == gotDataSample!.batchId);
+      assert(createdDataSample.author == gotDataSample!.author);
+    });
+
     test('test deleteDataSample', () async {
       // Init
       final MedTechApi api = await medtechApi();
