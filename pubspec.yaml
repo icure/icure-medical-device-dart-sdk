@@ -12,7 +12,12 @@ dependencies:
   intl: '^0.17.0'
   meta: '^1.7.0'
   uuid: ^3.0.5
-  icure_dart_sdk: ^1.0.17
+  icure_dart_sdk:
+  # ^1.0.17
+    git:
+      url: https://github.com/icure-io/icure-dart-sdk.git
+      ref: 2a006c857bdbb154cdbdb50f1e132c99e486ebc7
+
 
   pointycastle: ^3.5.1
   crypton: ^2.0.3
