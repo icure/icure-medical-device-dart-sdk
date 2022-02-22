@@ -57,6 +57,7 @@ void main() {
       // When
       final createdPatient = await patientApi.createOrModifyPatient(patient);
       final createdDataSamples = await dataSampleApi.createOrModifyDataSamplesFor(createdPatient!.id!, dataSamples);
+      print(createdDataSamples?.map((e) => e.id));
 
       // Then
       expect(dataSamples.length, createdDataSamples!.length);

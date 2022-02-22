@@ -88,7 +88,19 @@ abstract class UserApi {
   ///
   /// * [String] userId (required):
   ///   The UUID that identifies the user uniquely
-  Future<User?> getUser(String userId,);
+  Future<User?> getUser(
+    String userId,
+  );
+
+  /// Get a User by email.
+  ///
+  /// Each user is uniquely identified by an email.
+  ///
+  /// Parameters:
+  ///
+  /// * [String] email (required):
+  ///   The email that identifies the user uniquely
+  Future<User?> getUserByEmail(String email);
 
   /// Load user ids from the database by filtering them using the provided Filter.
   ///
@@ -98,5 +110,7 @@ abstract class UserApi {
   ///
   /// * [Filter] filter (required):
   ///   The Filter object that describes which condition(s) the elements whose the ids should be returned must fulfill
-  Future<List<String>?> matchUsers(Filter filter,);
+  Future<List<String>?> matchUsers(
+    Filter filter,
+  );
 }

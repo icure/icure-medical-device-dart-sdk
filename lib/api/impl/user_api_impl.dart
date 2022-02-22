@@ -33,7 +33,8 @@ class UserApiImpl extends UserApi {
     String? nextUserId,
     int? limit,
   }) async {
-    return (await api.baseUserApi.filterUsersBy(base_api.FilterChain<base_api.UserDto>(filter.toAbstractFilterDto()), startDocumentId: nextUserId, limit: limit))
+    return (await api.baseUserApi
+            .filterUsersBy(base_api.FilterChain<base_api.UserDto>(filter.toAbstractFilterDto()), startDocumentId: nextUserId, limit: limit))
         ?.toPaginatedListUser();
   }
 
@@ -42,6 +43,9 @@ class UserApiImpl extends UserApi {
 
   @override
   Future<User?> getUser(String userId) async => (await api.baseUserApi.getUser(userId))?.toUser();
+
+  @override
+  Future<User?> getUserByEmail(String email) async => (await api.baseUserApi.getUserByEmail(email))?.toUser();
 
   @override
   Future<List<String>?> matchUsers(Filter filter) => api.baseUserApi.matchUsersBy(filter.toAbstractFilterDto());
