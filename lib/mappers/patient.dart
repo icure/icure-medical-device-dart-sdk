@@ -78,6 +78,7 @@ extension PatientDtoMapper on DecryptedPatientDto {
           ethnicity: this.ethnicity,
           picture: this.picture,
           externalId: this.externalId,
+          publicKey: this.publicKey,
           systemMetaData: SystemMetaDataOwnerEncrypted(
             hcPartyKeys: this.hcPartyKeys,
             privateKeyShamirPartitions: this.privateKeyShamirPartitions,
@@ -157,6 +158,7 @@ extension PatientMapper on Patient {
         ethnicity: this.ethnicity,
         picture: this.picture,
         externalId: this.externalId,
+        publicKey: this.publicKey,
         hcPartyKeys: this.systemMetaData?.hcPartyKeys ?? const {},
         privateKeyShamirPartitions: this.systemMetaData?.privateKeyShamirPartitions ?? const {},
         secretForeignKeys: this.systemMetaData?.secretForeignKeys.toSet() ?? {},

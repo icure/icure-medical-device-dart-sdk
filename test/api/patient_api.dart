@@ -3,9 +3,11 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:icure_dart_sdk/api.dart' as rapi;
+import 'package:icure_dart_sdk/crypto/crypto.dart';
 import 'package:icure_dart_sdk/util/binary_utils.dart';
 import 'package:icure_medical_device_dart_sdk/api.dart';
 import 'package:icure_medical_device_dart_sdk/mappers/patient.dart';
+import 'package:icure_medical_device_dart_sdk/utils/net_utils.dart';
 import "package:test/test.dart";
 import 'package:uuid/uuid.dart';
 import 'package:uuid/uuid_util.dart';
@@ -83,6 +85,56 @@ void main() {
 
       // Then
     });
+
+    test('test createPatient with crypto', () async {
+      // Init
+      final MedTechApi api = await medtechApi();
+
+      final PatientApi patientApi = api.patientApi;
+      final UserApi userApi = api.userApi;
+
+      final rapi.DecryptedPatientDto patient = rapi.DecryptedPatientDto(id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}), firstName: 'John', lastName: 'Doe');
+
+      // When
+      final Patient? createdPatient = await patientApi.createOrModifyPatient(PatientDtoMapper(patient).toPatient());
+      var idUser = uuid.v4(options: {'rng': UuidUtil.cryptoRNG});
+      var passwordUser = uuid.v4(options: {'rng': UuidUtil.cryptoRNG});
+      final User? createdUser = await userApi.createOrModifyUser(new User(id: idUser, login: idUser.substring(0, 8), patientId: createdPatient!.id, passwordHash: passwordUser));
+
+      var patMedtechApi = MedTechApiBuilder()
+          .withICureBasePath('https://kraken.icure.dev')
+          .withUserName(createdUser!.login!)
+          .withPassword(passwordUser)
+          .build();
+
+      final patUser = await retry(() => patMedtechApi.userApi.getLoggedUser());
+      final keyPair = generateRandomPrivateAndPublicKeyPair();
+      final pat = await patMedtechApi.patientApi.getPatient(patUser!.patientId!);
+
+      pat!.publicKey = keyPair.item2;
+
+      final modPat = await patMedtechApi.patientApi.createOrModifyPatient(pat);
+      patMedtechApi = MedTechApiBuilder()
+          .withICureBasePath('http://127.0.0.1:16043')
+          .withUserName(createdUser.login!)
+          .withPassword(passwordUser)
+          .addKeyPair(pat.id!, keyPair.item1.toPrivateKey())
+          .build();
+
+
+      final pat2 = await patMedtechApi.patientApi.getPatient(patUser.patientId!);
+      pat2!.note = "Secret";
+      pat2.systemMetaData!.delegations = {};
+      pat2.systemMetaData!.encryptionKeys = {};
+      final modPat2 = await patMedtechApi.patientApi.createOrModifyPatient(pat2);
+
+      // Then
+      expect(createdPatient.id, patient.id);
+      expect(createdPatient.firstName, patient.firstName);
+      expect(createdPatient.lastName, patient.lastName);
+      expect(createdPatient.note, patient.note);
+    });
+
 
   });
 }

@@ -1,3 +1,7 @@
+## 1.1.5
+
+- Update dependencies & add signup test
+
 ## 1.1.4
 
 - Update dependencies
