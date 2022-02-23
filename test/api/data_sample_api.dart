@@ -119,7 +119,7 @@ void main() {
       final createdDataSample = (await dataSampleApi.createOrModifyDataSampleFor(createdPatient!.id!, weight))!;
       var paginatedListDataSample = await dataSampleApi.filterDataSample(
           await DataSampleFilter()
-          .forHcp(HealthcareProfessional(id:(await api.userApi.getLoggedUser())!.healthcarePartyId!))
+          .forDataOwner((await api.userApi.getLoggedUser())!.healthcarePartyId!)
           .forPatients(api.localCrypto, [createdPatient]).build()
       );
       final gotDataSample = (paginatedListDataSample)!.rows[0];

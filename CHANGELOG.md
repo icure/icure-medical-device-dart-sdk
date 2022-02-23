@@ -1,3 +1,7 @@
+## 1.2.4
+
+- Changed forHcp to forDataOwner in filter_dsl
+
 ## 1.2.3
 
 - Added simplified calls for registration

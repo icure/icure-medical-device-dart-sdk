@@ -350,8 +350,9 @@ class CodingFilter extends FilterBuilder<Coding> {
 
 
 class DataSampleFilter extends FilterBuilder<DataSample> {
-  HealthcareProfessional? _forHcp;
-  HealthcareProfessional? get hcp => this._forHcp;
+  String? _dataOwnerId;
+
+  String? get dataOwnerId => this._dataOwnerId;
 
   Set<String>? _byIds;
   Set<Identifier>? _byIdentifiers;
@@ -360,8 +361,8 @@ class DataSampleFilter extends FilterBuilder<DataSample> {
   List<DataSampleFilter>? _union;
   List<DataSampleFilter>? _intersection;
 
-  DataSampleFilter forHcp(HealthcareProfessional hcp) {
-    this._forHcp = hcp;
+  DataSampleFilter forDataOwner(String dataOwnerId) {
+    this._dataOwnerId = dataOwnerId;
     return this;
   }
 
@@ -404,29 +405,33 @@ class DataSampleFilter extends FilterBuilder<DataSample> {
 
   @override
   Future<Filter<DataSample>> build() async {
-    if (_forHcp == null) {
+    if (_dataOwnerId == null) {
       throw FormatException("Hcp must be set for patient filter.");
     }
-    final HealthcareProfessional hp = _forHcp!;
+    final String dataOwnerId = _dataOwnerId!;
 
     List<Filter<DataSample>> filters = [
       _byIds?.let((v) => DataSampleByIdsFilter(ids: v)),
-      _byIdentifiers?.let((v) => DataSampleByHcPartyIdentifiersFilter(healthcarePartyId: hp.id!, identifiers: v.toList())),
-      _byTagCodeDateFilter?.let((v) => v.healthcarePartyId = hp.id!),
+      _byIdentifiers?.let((v) => DataSampleByHcPartyIdentifiersFilter(dataOwnerId: dataOwnerId, identifiers: v.toList())),
+      _byTagCodeDateFilter?.let((v) => v.healthcarePartyId = dataOwnerId),
       await _forPatients?.let((v) async {
         var localCrypto = v.item1;
         Set<String> secretForeignKeys = (await Future.wait(v.item2.map((p) {
-          var delegations = (p.systemMetaData?.delegations ?? {}).map((k,v) => MapEntry(k, v.map((d)=> d.toDelegationDto()).toSet()));
-          return localCrypto.decryptEncryptionKeys(hp.id!, delegations);
-        }))).toSet().flatten();
-        return DataSampleBySecretForeignKeys(healthcarePartyId: hp.id!, patientSecretForeignKeys: secretForeignKeys);
+          var delegations = (p.systemMetaData?.delegations ?? {}).map((k, v) => MapEntry(k, v.map((d) => d.toDelegationDto()).toSet()));
+          return localCrypto.decryptEncryptionKeys(dataOwnerId, delegations);
+        })))
+            .toSet()
+            .flatten();
+        return DataSampleBySecretForeignKeys(healthcarePartyId: dataOwnerId, patientSecretForeignKeys: secretForeignKeys);
       }),
-      await _union?.let((v) async => UnionFilter<DataSample>(filters:await Future.wait(v.map((f) async => await f.forHcp(f.hcp ?? hp).build()).toList()))),
-      await _intersection?.let((v) async => IntersectionFilter<DataSample>(filters:await Future.wait(v.map((f) async => await f.forHcp(f.hcp ?? hp).build()).toList())))
+      await _union?.let((v) async => UnionFilter<DataSample>(
+          filters: await Future.wait(v.map((f) async => await f.forDataOwner(f.dataOwnerId ?? dataOwnerId).build()).toList()))),
+      await _intersection?.let((v) async => IntersectionFilter<DataSample>(
+          filters: await Future.wait(v.map((f) async => await f.forDataOwner(f.dataOwnerId ?? dataOwnerId).build()).toList())))
     ].whereType<Filter<DataSample>>().toList();
 
     if (filters.isEmpty) {
-      return DataSampleByHcPartyFilter(hcpId: hp.id!);
+      return DataSampleByHcPartyFilter(hcpId: dataOwnerId);
     } else if (filters.length == 1) {
       return filters[0];
     } else {

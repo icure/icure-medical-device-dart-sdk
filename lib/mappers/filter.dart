@@ -152,8 +152,7 @@ extension DataSampleByHcPartyFilterMapper on DataSampleByHcPartyFilter {
 extension DataSampleByHcPartyIdentifiersFilterMapper on DataSampleByHcPartyIdentifiersFilter {
   api.ServiceByHcPartyIdentifiersFilter toServiceByHcPartyIdentifiersFilterDto() =>
       api.ServiceByHcPartyIdentifiersFilter(
-          desc: this.description, healthcarePartyId: this.healthcarePartyId, identifiers: this.identifiers.map((it) => it.toIdentifierDto()).toList()
-      );
+          desc: this.description, healthcarePartyId: this.dataOwnerId, identifiers: this.identifiers.map((it) => it.toIdentifierDto()).toList());
 }
 extension DataSampleByHcPartyTagCodeDateFilterMapper on DataSampleByHcPartyTagCodeDateFilter {
   api.ServiceByHcPartyTagCodeDateFilter toServiceByHcPartyTagCodeDateFilterDto() =>
