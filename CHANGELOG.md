@@ -1,3 +1,7 @@
+## 1.2.2
+
+- Exported crypto from icure-dart-sdk
+
 ## 1.2.1
 
 - Update dependencies

@@ -58,6 +58,7 @@ import 'mappers/service_data_sample.dart';
 import 'mappers/time_series.dart';
 import 'mappers/typed_value_object.dart';
 import 'mappers/user.dart';
+export 'package:icure_dart_sdk/crypto/crypto.dart';
 
 part 'medtech_api.dart';
 
