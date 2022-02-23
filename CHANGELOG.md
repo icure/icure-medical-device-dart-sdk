@@ -1,3 +1,7 @@
+## 1.2.0
+
+- Added getUserByEmail
+
 ## 1.1.5
 
 - Update dependencies & add signup test

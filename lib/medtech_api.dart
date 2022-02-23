@@ -17,9 +17,10 @@ class MedTechApi {
   final base_api.ContactApi baseContactApi;
   final LocalCrypto localCrypto;
   final base_api.DocumentApi baseDocumentApi;
+  final base_api.AuthApi baseAuthApi;
 
-  MedTechApi(this.baseCodeApi, this.baseUserApi, this.basePatientApi, this.baseHealthElementApi, this.baseDeviceApi, this.baseHealthcarePartyApi, this.baseContactApi,
-      this.localCrypto, this.baseDocumentApi);
+  MedTechApi(this.baseCodeApi, this.baseUserApi, this.basePatientApi, this.baseHealthElementApi, this.baseDeviceApi, this.baseHealthcarePartyApi,
+      this.baseContactApi, this.localCrypto, this.baseDocumentApi, this.baseAuthApi);
 
   CodingApi? _codingApi;
   PatientApi? _patientApi;
@@ -89,7 +90,16 @@ class MedTechApiBuilder {
     final patientApi = base_api.PatientApi(client);
     final deviceApi = base_api.DeviceApi(client);
 
-    return MedTechApi(base_api.CodeApi(client), base_api.UserApi(client), patientApi, base_api.HealthElementApi(client), deviceApi, hcpApi,
-        base_api.ContactApi(client), LocalCrypto(DataOwnerResolver(hcpApi, patientApi, deviceApi), rsaKeyPairs), base_api.DocumentApi(client));
+    return MedTechApi(
+        base_api.CodeApi(client),
+        base_api.UserApi(client),
+        patientApi,
+        base_api.HealthElementApi(client),
+        deviceApi,
+        hcpApi,
+        base_api.ContactApi(client),
+        LocalCrypto(DataOwnerResolver(hcpApi, patientApi, deviceApi), rsaKeyPairs),
+        base_api.DocumentApi(client),
+        base_api.AuthApi(client));
   }
 }
