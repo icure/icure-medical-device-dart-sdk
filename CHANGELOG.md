@@ -1,3 +1,7 @@
+## 1.2.3
+
+- Added simplified calls for registration
+
 ## 1.2.2
 
 - Exported crypto from icure-dart-sdk
