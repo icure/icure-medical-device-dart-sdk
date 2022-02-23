@@ -33,6 +33,7 @@ import 'utils/functional_utils.dart';
 import 'utils/iterable_utils.dart';
 import 'utils/cached_map.dart';
 import 'utils/uti_detector.dart';
+import 'utils/net_utils.dart';
 
 export 'package:icure_dart_sdk/crypto/crypto.dart' show Crypto;
 
@@ -86,7 +87,7 @@ part 'api/impl/healthcare_professional_api_impl.dart';
 part 'api/impl/medical_device_api_impl.dart';
 part 'api/impl/patient_api_impl.dart';
 part 'api/impl/user_api_impl.dart';
-
+part 'api/registration_api.dart';
 
 part 'model/address.dart';
 part 'model/authentication_token.dart';
@@ -116,6 +117,8 @@ part 'model/patient_health_care_party.dart';
 part 'model/person_name.dart';
 part 'model/property.dart';
 part 'model/property_type.dart';
+part 'model/registration_process.dart';
+part 'model/registration_result.dart';
 part 'model/system_meta_data_encrypted.dart';
 part 'model/system_meta_data_owner.dart';
 part 'model/system_meta_data_owner_encrypted.dart';

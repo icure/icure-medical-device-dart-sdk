@@ -47,7 +47,7 @@ abstract class UserApi {
   ///
   /// * [String] userId (required):
   ///   The UUID that identifies the user uniquely
-  Future<String?> createToken(String userId,);
+  Future<String?> createToken(String userId, {Duration validity,});
 
   /// Delete an existing user.
   ///

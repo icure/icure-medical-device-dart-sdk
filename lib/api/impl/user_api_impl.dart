@@ -11,6 +11,7 @@ class UserApiImpl extends UserApi {
   UserApiImpl(this.api);
 
   final MedTechApi api;
+
   final uuid = Uuid();
 
   @override
@@ -21,8 +22,8 @@ class UserApiImpl extends UserApi {
       (await (user.rev?.let((it) => api.baseUserApi.modifyUser(user.toUserDto())) ?? api.baseUserApi.createUser(user.toUserDto())))?.toUser();
 
   @override
-  Future<String?> createToken(String userId) =>
-      api.baseUserApi.getToken(userId, uuid.v4(options: {'rng': UuidUtil.cryptoRNG}), tokenValidity: 3600 * 24 * 30);
+  Future<String?> createToken(String userId, {Duration validity = const Duration(days: 30), }) =>
+      api.baseUserApi.getToken(userId, uuid.v4(options: {'rng': UuidUtil.cryptoRNG}), tokenValidity: validity.inSeconds);
 
   @override
   Future<String?> deleteUser(String userId) async => (await api.baseUserApi.deleteUser(userId))?.rev ?? throwFormatException("Invalid user id");
