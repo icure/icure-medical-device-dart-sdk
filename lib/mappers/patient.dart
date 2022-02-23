@@ -9,6 +9,7 @@
 // ignore_for_file: lines_longer_than_80_chars
 
 import 'package:icure_dart_sdk/api.dart';
+import 'package:icure_dart_sdk/extended_api/data_owner_api.dart';
 import 'package:icure_medical_device_dart_sdk/api.dart';
 import 'package:icure_medical_device_dart_sdk/utils/functional_utils.dart';
 import 'package:icure_medical_device_dart_sdk/utils/iterable_utils.dart';
@@ -162,10 +163,14 @@ extension PatientMapper on Patient {
         hcPartyKeys: this.systemMetaData?.hcPartyKeys ?? const {},
         privateKeyShamirPartitions: this.systemMetaData?.privateKeyShamirPartitions ?? const {},
         secretForeignKeys: this.systemMetaData?.secretForeignKeys.toSet() ?? {},
-        cryptedForeignKeys: this.systemMetaData?.cryptedForeignKeys.map((k, v) => MapEntry(k, v.map((it) => it.toDelegationDto()).toSet())) ?? const {},
+        cryptedForeignKeys:
+            this.systemMetaData?.cryptedForeignKeys.map((k, v) => MapEntry(k, v.map((it) => it.toDelegationDto()).toSet())) ?? const {},
         delegations: this.systemMetaData?.delegations.map((k, v) => MapEntry(k, v.map((it) => it.toDelegationDto()).toSet())) ?? const {},
         encryptionKeys: this.systemMetaData?.encryptionKeys.map((k, v) => MapEntry(k, v.map((it) => it.toDelegationDto()).toSet())) ?? const {},
       );
+
+  DataOwnerDto toDataOwnerDto() =>
+      DataOwnerDto(DataOwnerType.patient, this.id!, this.systemMetaData?.hcPartyKeys ?? const {}, publicKey: this.publicKey, rev: this.rev);
 }
 
 extension PatientDeactivationReasonEnumMapper on PatientDeactivationReasonEnum {
