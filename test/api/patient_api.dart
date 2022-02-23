@@ -121,18 +121,17 @@ void main() {
           .addKeyPair(pat.id!, keyPair.item1.toPrivateKey())
           .build();
 
-
       final pat2 = await patMedtechApi.patientApi.getPatient(patUser.patientId!);
       pat2!.note = "Secret";
       pat2.systemMetaData!.delegations = {};
       pat2.systemMetaData!.encryptionKeys = {};
-      final modPat2 = await patMedtechApi.patientApi.createOrModifyPatient(pat2);
+      final modPat2 = (await patMedtechApi.patientApi.createOrModifyPatient(pat2))!;
 
       // Then
-      expect(createdPatient.id, patient.id);
-      expect(createdPatient.firstName, patient.firstName);
-      expect(createdPatient.lastName, patient.lastName);
-      expect(createdPatient.note, patient.note);
+      expect(modPat2.id, pat2.id);
+      expect(modPat2.firstName, pat2.firstName);
+      expect(modPat2.lastName, pat2.lastName);
+      expect(modPat2.note, pat2.note);
     });
 
 
