@@ -1,3 +1,6 @@
+## 1.2.5
+- Fix jsonEncode error when calling registration api
+
 ## 1.2.4
 
 - Changed forHcp to forDataOwner in filter_dsl
