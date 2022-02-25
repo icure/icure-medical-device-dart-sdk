@@ -18,13 +18,13 @@ class RegistrationApi {
     final processId = uuid.v4(options: {'rng': UuidUtil.cryptoRNG});
     final Response res = await client.post(Uri.parse('${registrationServer}/process/${processId}'), headers: {
       'Content-Type': 'application/json'
-    }, body: {
+    }, body: await serializeAsync({
       'g-recaptcha-response': recaptcha,
       'firstName': firstName,
       'lastName': lastName,
       'from': email,
       'mobilePhone': mobilePhone
-    });
+    }));
 
     if (res.statusCode < 400) {
       return RegistrationProcess(processId, email);
