@@ -1,3 +1,6 @@
+## 1.2.6
+- Registration API Use Client Process ID
+
 ## 1.2.5
 - Fix jsonEncode error when calling registration api
 
