@@ -4,19 +4,16 @@
 part of icure_medical_device_dart_sdk.api;
 
 class RegistrationApi {
-  RegistrationApi(this.registrationServer);
+  RegistrationApi(this.registrationServer, this.signUpProcessId);
 
   final String registrationServer;
+  final String signUpProcessId;
 
-  Future<RegistrationProcess?> registerUserForPatient(String healthcareProfessionalId, String firstName, String lastName, String email, String recaptcha, {String? mobilePhone}) async  {
-    if (registrationServer == null) {
-      throw FormatException("No registration server has been set");
-    }
+  Future<RegistrationProcess?> registerUserForPatient(String healthcareProfessionalId,
+      String firstName, String lastName, String email, String recaptcha, {String? mobilePhone}) async  {
 
     var client = Client();
-    final Uuid uuid = Uuid();
-    final processId = uuid.v4(options: {'rng': UuidUtil.cryptoRNG});
-    final Response res = await client.post(Uri.parse('${registrationServer}/process/${processId}'), headers: {
+    final Response res = await client.post(Uri.parse('${registrationServer}/process/${signUpProcessId}'), headers: {
       'Content-Type': 'application/json'
     }, body: await serializeAsync({
       'g-recaptcha-response': recaptcha,
@@ -27,7 +24,7 @@ class RegistrationApi {
     }));
 
     if (res.statusCode < 400) {
-      return RegistrationProcess(processId, email);
+      return RegistrationProcess(signUpProcessId, email);
     }
 
     return null;
@@ -35,7 +32,6 @@ class RegistrationApi {
 
   Future<RegistrationResult> completeRegistration(String basePath, RegistrationProcess process, String validationCode) async {
     var client = Client();
-    final Uuid uuid = Uuid();
     final Response res = await client.get(Uri.parse('${registrationServer}/process/validate/${process.processId}-${validationCode}'), headers: {
       'Content-Type': 'application/json'
     });

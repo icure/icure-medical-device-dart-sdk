@@ -8,6 +8,8 @@
 part of icure_medical_device_dart_sdk.api;
 
 class MedTechApi {
+  final String msgGtwUrl;
+  final String signUpProcessId;
   final base_api.CodeApi baseCodeApi;
   final base_api.UserApi baseUserApi;
   final base_api.PatientApi basePatientApi;
@@ -19,8 +21,9 @@ class MedTechApi {
   final base_api.DocumentApi baseDocumentApi;
   final base_api.AuthApi baseAuthApi;
 
-  MedTechApi(this.baseCodeApi, this.baseUserApi, this.basePatientApi, this.baseHealthElementApi, this.baseDeviceApi, this.baseHealthcarePartyApi,
-      this.baseContactApi, this.localCrypto, this.baseDocumentApi, this.baseAuthApi);
+  MedTechApi(this.msgGtwUrl, this.signUpProcessId, this.baseCodeApi, this.baseUserApi, this.basePatientApi, this.baseHealthElementApi, this.baseDeviceApi, this.baseHealthcarePartyApi,
+      this.baseContactApi, this.localCrypto, this.baseDocumentApi, this.baseAuthApi) {
+  }
 
   CodingApi? _codingApi;
   PatientApi? _patientApi;
@@ -29,6 +32,7 @@ class MedTechApi {
   MedicalDeviceApi? _medicalDeviceApi;
   DataSampleApi? _dataSampleApi;
   HealthcareProfessionalApi? _healthcareProfessionalApi;
+  RegistrationApi? _registrationApi;
 
   CodingApi get codingApi => _codingApi ?? (_codingApi = CodingApiImpl(this));
   PatientApi get patientApi => _patientApi ?? (_patientApi = PatientApiImpl(this));
@@ -37,6 +41,7 @@ class MedTechApi {
   MedicalDeviceApi get medicalDeviceApi => _medicalDeviceApi ?? (_medicalDeviceApi = MedicalDeviceApiImpl(this));
   DataSampleApi get dataSampleApi => _dataSampleApi ?? (_dataSampleApi = DataSampleApiImpl(this));
   HealthcareProfessionalApi get healthcareProfessionalApi => _healthcareProfessionalApi ?? (_healthcareProfessionalApi = HealthcareProfessionalApiImpl(this));
+  RegistrationApi get registrationApi => _registrationApi ?? (_registrationApi = RegistrationApi(this.msgGtwUrl, this.signUpProcessId));
 }
 
 class MedTechApiBuilder {
@@ -44,6 +49,9 @@ class MedTechApiBuilder {
   late String _userName;
   late String _password;
   Map<String, RSAKeypair> rsaKeyPairs = Map();
+
+  late String _msgGtwUrl;
+  late String _signUpProcessId;
 
   String get iCureBasePath => _iCureBasePath;
 
@@ -84,6 +92,17 @@ class MedTechApiBuilder {
     return this;
   }
 
+  MedTechApiBuilder withMsgGtwUrl(String msgGtwUrl) {
+    _msgGtwUrl = msgGtwUrl;
+    return this;
+  }
+
+  MedTechApiBuilder withSignUpProcessId(String signUpProcessId) {
+    _signUpProcessId = signUpProcessId;
+    return this;
+  }
+
+
   MedTechApi build() {
     final base_api.ApiClient client = base_api.ApiClient.basic(iCureBasePath, userName, password);
     final hcpApi = base_api.HealthcarePartyApi(client);
@@ -91,6 +110,8 @@ class MedTechApiBuilder {
     final deviceApi = base_api.DeviceApi(client);
 
     return MedTechApi(
+        _msgGtwUrl,
+        _signUpProcessId,
         base_api.CodeApi(client),
         base_api.UserApi(client),
         patientApi,
@@ -100,6 +121,7 @@ class MedTechApiBuilder {
         base_api.ContactApi(client),
         LocalCrypto(DataOwnerResolver(hcpApi, patientApi, deviceApi), rsaKeyPairs),
         base_api.DocumentApi(client),
-        base_api.AuthApi(client));
+        base_api.AuthApi(client)
+    );
   }
 }
