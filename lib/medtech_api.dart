@@ -86,8 +86,8 @@ class MedTechApiBuilder {
     return this;
   }
 
-  MedTechApiBuilder addKeyPair(String keyId, RSAPrivateKey privateKey) {
-    var keyPair = RSAKeypair(privateKey);
+  MedTechApiBuilder addKeyPair(String keyId, Uint8List privateKey) {
+    var keyPair = RSAKeypair(RSAPrivateKey.fromString(base64.encoder.convert(privateKey)));
     rsaKeyPairs[keyId] = keyPair;
     return this;
   }

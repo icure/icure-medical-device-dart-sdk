@@ -13,6 +13,7 @@ library icure_medical_device_dart_sdk.api;
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:http/http.dart';
 import 'package:tuple/tuple.dart';
@@ -60,6 +61,7 @@ import 'mappers/time_series.dart';
 import 'mappers/typed_value_object.dart';
 import 'mappers/user.dart';
 export 'package:icure_dart_sdk/crypto/crypto.dart';
+export 'package:icure_dart_sdk/util/binary_utils.dart';
 
 part 'medtech_api.dart';
 
