@@ -1,3 +1,7 @@
+## 1.2.8
+
+- Fixed issues in Filters DSL
+
 ## 1.2.7
 
 - Exported binary_utils
