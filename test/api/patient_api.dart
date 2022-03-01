@@ -21,11 +21,13 @@ void main() {
 
 
     return MedTechApiBuilder()
-        .withICureBasePath('https://kraken.icure.dev')
-        .withUserName('abdemotst2')
-        .withPassword('27b90f6e-6847-44bf-b90f-6e6847b4bf1c')
-        .addKeyPair("782f1bcd-9f3f-408a-af1b-cd9f3f908a98", (await hcpKeyFile.readAsString(encoding: utf8)).toPrivateKey())
-    .build();
+        .withICureBasePath("https://kraken.icure.dev")
+        .withUserName("abdemotst2")
+        .withPassword("27b90f6e-6847-44bf-b90f-6e6847b4bf1c")
+        .withMsgGtwUrl("https://msg-gw.icure.cloud/km")
+        .withSignUpProcessId("f0ced6c6-d7cb-4f78-841e-2674ad09621e")
+        .addKeyPair("782f1bcd-9f3f-408a-af1b-cd9f3f908a98", (await hcpKeyFile.readAsString(encoding: utf8)).keyFromHexString())
+        .build();
   }
 
   rapi.DecryptedPatientDto getPatient() => rapi.DecryptedPatientDto(
@@ -105,6 +107,8 @@ void main() {
           .withICureBasePath('https://kraken.icure.dev')
           .withUserName(createdUser!.login!)
           .withPassword(passwordUser)
+          .withMsgGtwUrl("https://msg-gw.icure.cloud/km")
+          .withSignUpProcessId("f0ced6c6-d7cb-4f78-841e-2674ad09621e")
           .build();
 
       final patUser = await retry(() => patMedtechApi.userApi.getLoggedUser());
@@ -115,10 +119,12 @@ void main() {
 
       final modPat = await patMedtechApi.patientApi.createOrModifyPatient(pat);
       patMedtechApi = MedTechApiBuilder()
-          .withICureBasePath('http://127.0.0.1:16043')
+          .withICureBasePath('https://kraken.icure.dev')
           .withUserName(createdUser.login!)
           .withPassword(passwordUser)
-          .addKeyPair(pat.id!, keyPair.item1.toPrivateKey())
+          .addKeyPair(pat.id!, keyPair.item1.keyFromHexString())
+          .withMsgGtwUrl("https://msg-gw.icure.cloud/km")
+          .withSignUpProcessId("f0ced6c6-d7cb-4f78-841e-2674ad09621e")
           .build();
 
       final pat2 = await patMedtechApi.patientApi.getPatient(patUser.patientId!);
