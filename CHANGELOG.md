@@ -1,3 +1,7 @@
+## 1.2.9
+
+- Added the possibility to provide a validationCode for the signUp
+
 ## 1.2.8
 
 - Fixed issues in Filters DSL
