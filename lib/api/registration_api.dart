@@ -9,19 +9,20 @@ class RegistrationApi {
   final String registrationServer;
   final String signUpProcessId;
 
-  Future<RegistrationProcess?> registerUserForPatient(String healthcareProfessionalId,
-      String firstName, String lastName, String email, String recaptcha, {String? mobilePhone}) async  {
-
+  Future<RegistrationProcess?> registerUserForPatient(
+      String healthcareProfessionalId, String firstName, String lastName, String email, String recaptcha, String validationCode,
+      {String? mobilePhone}) async {
     var client = Client();
-    final Response res = await client.post(Uri.parse('${registrationServer}/process/${signUpProcessId}'), headers: {
-      'Content-Type': 'application/json'
-    }, body: await serializeAsync({
-      'g-recaptcha-response': recaptcha,
-      'firstName': firstName,
-      'lastName': lastName,
-      'from': email,
-      'mobilePhone': mobilePhone
-    }));
+    final Response res = await client.post(Uri.parse('${registrationServer}/process/${signUpProcessId}'),
+        headers: {'Content-Type': 'application/json'},
+        body: await serializeAsync({
+          'g-recaptcha-response': recaptcha,
+          'firstName': firstName,
+          'lastName': lastName,
+          'from': email,
+          'mobilePhone': mobilePhone,
+          'validationCode': validationCode
+        }));
 
     if (res.statusCode < 400) {
       return RegistrationProcess(signUpProcessId, email);
