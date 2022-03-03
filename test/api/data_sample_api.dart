@@ -1,30 +1,26 @@
 @Timeout(Duration(hours: 1))
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:icure_dart_sdk/util/binary_utils.dart';
 import 'package:icure_medical_device_dart_sdk/api.dart';
 import 'package:icure_medical_device_dart_sdk/utils/iterable_utils.dart';
 import "package:test/test.dart";
 import 'package:uuid/uuid.dart';
 import 'package:uuid/uuid_util.dart';
 
+import '../utils/test_utils.dart';
+
 void main() {
   final Uuid uuid = Uuid();
 
   Future<MedTechApi> medtechApi() async {
-    var fileUri = Uri.file("test/resources/keys/a37e0a71-07d2-4414-9b2b-2120ae9a16fc-icc-priv.2048.key", windows: false);
-    var hcpKeyFile = File.fromUri(fileUri);
+    final creds = await TestUtils.credentials(credentialsFilePath: ".hkPatientCredentials");
 
-    final MedTechApiBuilder builder = MedTechApiBuilder()
+    return MedTechApiBuilder()
         .withICureBasePath("https://kraken.icure.dev")
-        .withUserName("XXX")
-        .withPassword("XXX")
+        .withUserName(creds.username)
+        .withPassword(creds.password)
         .withMsgGtwUrl("https://msg-gw.icure.cloud/km")
         .withSignUpProcessId("f0ced6c6-d7cb-4f78-841e-2674ad09621e")
-        .addKeyPair("a37e0a71-07d2-4414-9b2b-2120ae9a16fc", (await hcpKeyFile.readAsString(encoding: utf8)).keyFromHexString());
-
-    return builder.build();
+        .addKeyPair("782f1bcd-9f3f-408a-af1b-cd9f3f908a98", await TestUtils.keyFromFile(keyFileName: "a37e0a71-07d2-4414-9b2b-2120ae9a16fc-icc-priv.2048.key"))
+        .build();
   }
 
   DataSample getHeightDataSample() => DataSample(

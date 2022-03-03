@@ -1,7 +1,4 @@
 @Timeout(Duration(hours: 1))
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:icure_dart_sdk/api.dart' as rapi;
 import 'package:icure_dart_sdk/crypto/crypto.dart';
 import 'package:icure_dart_sdk/util/binary_utils.dart';
@@ -12,22 +9,13 @@ import "package:test/test.dart";
 import 'package:uuid/uuid.dart';
 import 'package:uuid/uuid_util.dart';
 
+import '../utils/test_utils.dart';
+
 void main() {
   final Uuid uuid = Uuid();
 
   Future<MedTechApi> medtechApi() async {
-    var fileUri = Uri.file("test/resources/keys/782f1bcd-9f3f-408a-af1b-cd9f3f908a98-icc-priv.2048.key", windows: false);
-    var hcpKeyFile = File.fromUri(fileUri);
-
-
-    return MedTechApiBuilder()
-        .withICureBasePath("https://kraken.icure.dev")
-        .withUserName("abdemotst2")
-        .withPassword("27b90f6e-6847-44bf-b90f-6e6847b4bf1c")
-        .withMsgGtwUrl("https://msg-gw.icure.cloud/km")
-        .withSignUpProcessId("f0ced6c6-d7cb-4f78-841e-2674ad09621e")
-        .addKeyPair("782f1bcd-9f3f-408a-af1b-cd9f3f908a98", (await hcpKeyFile.readAsString(encoding: utf8)).keyFromHexString())
-        .build();
+    return await TestUtils.medtechApi();
   }
 
   rapi.DecryptedPatientDto getPatient() => rapi.DecryptedPatientDto(
