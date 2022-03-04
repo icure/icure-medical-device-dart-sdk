@@ -42,6 +42,19 @@ class MedTechApi {
   DataSampleApi get dataSampleApi => _dataSampleApi ?? (_dataSampleApi = DataSampleApiImpl(this));
   HealthcareProfessionalApi get healthcareProfessionalApi => _healthcareProfessionalApi ?? (_healthcareProfessionalApi = HealthcareProfessionalApiImpl(this));
   RegistrationApi get registrationApi => _registrationApi ?? (_registrationApi = RegistrationApi(this.msgGtwUrl, this.signUpProcessId));
+
+  MedTechApi addNewKeyPair(String keyId, Uint8List privateKey) {
+    var newKeyPair = RSAKeypair(RSAPrivateKey.fromString(base64.encoder.convert(privateKey)));
+    final newLocalCrypto = LocalCrypto(
+        DataOwnerResolver(baseHealthcarePartyApi, basePatientApi, baseDeviceApi),
+        this.localCrypto.rsaKeyPairs..addEntries([MapEntry(keyId, newKeyPair)])
+    );
+
+    return MedTechApi(
+        this.msgGtwUrl, this.signUpProcessId, this.baseCodeApi, this.baseUserApi, this.basePatientApi, this.baseHealthElementApi, this.baseDeviceApi, this.baseHealthcarePartyApi,
+        this.baseContactApi, newLocalCrypto, this.baseDocumentApi, this.baseAuthApi
+    );
+  }
 }
 
 class MedTechApiBuilder {

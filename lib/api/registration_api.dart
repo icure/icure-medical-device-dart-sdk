@@ -10,10 +10,10 @@ class RegistrationApi {
   final String signUpProcessId;
 
   Future<RegistrationProcess?> registerUserForPatient(
-      String healthcareProfessionalId, String firstName, String lastName, String email, String recaptcha, String validationCode,
-      {String? mobilePhone}) async {
+      String healthcareProfessionalId, String firstName, String lastName, String email, String recaptcha, {String? mobilePhone}) async {
+    final requestId = Uuid().v4(options: {'rng': UuidUtil.cryptoRNG});
     var client = Client();
-    final Response res = await client.post(Uri.parse('${registrationServer}/process/${signUpProcessId}'),
+    final Response res = await client.post(Uri.parse('${registrationServer}/process/${signUpProcessId}/${requestId}'),
         headers: {'Content-Type': 'application/json'},
         body: await serializeAsync({
           'g-recaptcha-response': recaptcha,
@@ -21,11 +21,11 @@ class RegistrationApi {
           'lastName': lastName,
           'from': email,
           'mobilePhone': mobilePhone,
-          'validationCode': validationCode
+          'hcpId': healthcareProfessionalId
         }));
 
     if (res.statusCode < 400) {
-      return RegistrationProcess(signUpProcessId, email);
+      return RegistrationProcess(requestId, email);
     }
 
     return null;
@@ -39,7 +39,13 @@ class RegistrationApi {
 
     if (res.statusCode < 400) {
       return retry(() async {
-        final api = MedTechApiBuilder().withICureBasePath(basePath).withUserName(process.login).withPassword(validationCode).build();
+        final api = MedTechApiBuilder()
+            .withICureBasePath(basePath)
+            .withUserName(process.login)
+            .withPassword(validationCode)
+            .withMsgGtwUrl(this.registrationServer)
+            .withSignUpProcessId(this.signUpProcessId)
+            .build();
         try {
           final user = await api.userApi.getLoggedUser();
           if (user == null) {
@@ -51,7 +57,13 @@ class RegistrationApi {
             throw FormatException("Your validation code is expired");
           }
 
-          return RegistrationResult(MedTechApiBuilder().withICureBasePath(basePath).withUserName(user.id!).withPassword(token).build(), token, user.id!);
+          return RegistrationResult(MedTechApiBuilder()
+              .withICureBasePath(basePath)
+              .withUserName(user.id!)
+              .withPassword(token)
+              .withMsgGtwUrl(this.registrationServer)
+              .withSignUpProcessId(this.signUpProcessId)
+              .build(), token, user.id!);
         } catch (e) {
           throw FormatException("Your validation code is expired");
         }
