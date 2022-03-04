@@ -1,3 +1,7 @@
+## 1.2.10
+
+- Fix registration process
+- 
 ## 1.2.9
 
 - Added the possibility to provide a validationCode for the signUp
