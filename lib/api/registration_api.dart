@@ -56,6 +56,7 @@ class RegistrationApi {
           if (token == null) {
             throw FormatException("Your validation code is expired");
           }
+          print("User Token is : $token");
 
           return RegistrationResult(MedTechApiBuilder()
               .withICureBasePath(basePath)

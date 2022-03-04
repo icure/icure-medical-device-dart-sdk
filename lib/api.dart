@@ -161,6 +161,8 @@ part 'filter/union_filter.dart';
 
 part 'filter/filter_dsl.dart';
 
+part 'model/extended/patient_extended.dart';
+
 const _delimiters = {'csv': ',', 'ssv': ' ', 'tsv': '\t', 'pipes': '|'};
 const _dateEpochMarker = 'epoch';
 final _dateFormatter = DateFormat('yyyy-MM-dd');
