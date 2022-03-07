@@ -1,4 +1,9 @@
+## 1.2.12
+
+- Updated icure dart sdk
+
 ## 1.2.11
+
 - Fix createOrModifyHealthcareElements method
 - Add missing methods in healthcare professional API and delete unrelated documentation
 - Simplify MedTechApiBuilder
@@ -6,7 +11,8 @@
 ## 1.2.10
 
 - Fix registration process
-- 
+-
+
 ## 1.2.9
 
 - Added the possibility to provide a validationCode for the signUp
