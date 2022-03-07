@@ -1,3 +1,8 @@
+## 1.2.11
+- Fix createOrModifyHealthcareElements method
+- Add missing methods in healthcare professional API and delete unrelated documentation
+- Simplify MedTechApiBuilder
+
 ## 1.2.10
 
 - Fix registration process
