@@ -9,7 +9,7 @@ class TestUtils {
   static Future<MedTechApi> medtechApi() async {
     final creds = await TestUtils.credentials();
 
-    return MedTechApiBuilder()
+    return MedTechApiBuilder.newBuilder()
         .withICureBasePath("https://kraken.icure.dev")
         .withUserName(creds.username)
         .withPassword(creds.password)

@@ -65,7 +65,7 @@ void main() {
     final validationCode = userValidationCode;
 
     // When
-    final registrationResult = await registrationApi.completeRegistration("https://kraken.icure.dev", registrationProcess, validationCode);
+    final registrationResult = await registrationApi.completeRegistration(registrationProcess, validationCode);
 
     // Init
     var patMedtechApi = registrationResult.medTechApi;
@@ -83,9 +83,11 @@ void main() {
     pat.dateOfBirth = 19921028;
 
     final modPat = await patMedtechApi.patientApi.createOrModifyPatient(pat);
-    patMedtechApi = patMedtechApi.addNewKeyPair(patUser.patientId!, keyPair.item1.keyFromHexString());
+    patMedtechApi = MedTechApiBuilder.from(patMedtechApi)
+        .addKeyPair(patUser.patientId!, keyPair.item1.keyFromHexString())
+        .build();
 
-    final pat2 = await modPat!.initDelegations(patUser, patMedtechApi.localCrypto);
+    final pat2 = await modPat!.initDelegations(patUser, patMedtechApi.crypto);
     pat2.note = "Secret";
 
     final modPat3 = (await patMedtechApi.patientApi.createOrModifyPatient(pat2))!;

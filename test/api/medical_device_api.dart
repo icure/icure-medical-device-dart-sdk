@@ -20,12 +20,10 @@ void main() {
     test('test createDevice CREATE', () async {
       // Init
       final MedTechApi api = await medtechApi();
-      final MedicalDeviceApi deviceApi = MedicalDeviceApiImpl(api);
-
       final MedicalDevice device = getMedicalDevice();
 
       // When
-      final MedicalDevice? createdDevice = await deviceApi.createOrModifyMedicalDevice(device);
+      final MedicalDevice? createdDevice = await api.medicalDeviceApi.createOrModifyMedicalDevice(device);
 
       // Then
       expect(createdDevice!.id, device.id);
@@ -37,13 +35,11 @@ void main() {
     test('test getDevice', () async {
       // Init
       final MedTechApi api = await medtechApi();
-      final MedicalDeviceApi deviceApi = MedicalDeviceApiImpl(api);
-
       final MedicalDevice device = getMedicalDevice();
 
       // When
-      final MedicalDevice? createdDevice = await deviceApi.createOrModifyMedicalDevice(device);
-      final MedicalDevice? gotDevice = await deviceApi.getMedicalDevice(createdDevice!.id!);
+      final MedicalDevice? createdDevice = await api.medicalDeviceApi.createOrModifyMedicalDevice(device);
+      final MedicalDevice? gotDevice = await api.medicalDeviceApi.getMedicalDevice(createdDevice!.id!);
 
       // Then
       expect(createdDevice.id, gotDevice!.id);
@@ -55,7 +51,6 @@ void main() {
     test('test createDevice UPDATE', () async {
       // Init
       final MedTechApi api = await medtechApi();
-      final MedicalDeviceApi deviceApi = MedicalDeviceApiImpl(api);
       final updateModel = "14";
 
       final MedicalDevice device = MedicalDevice(
@@ -66,9 +61,9 @@ void main() {
       );
 
       // When
-      final MedicalDevice? createdDevice = await deviceApi.createOrModifyMedicalDevice(device);
+      final MedicalDevice? createdDevice = await api.medicalDeviceApi.createOrModifyMedicalDevice(device);
       createdDevice!.model = updateModel;
-      final MedicalDevice? updatedDevice = await deviceApi.createOrModifyMedicalDevice(createdDevice);
+      final MedicalDevice? updatedDevice = await api.medicalDeviceApi.createOrModifyMedicalDevice(createdDevice);
 
       // Then
       expect(createdDevice.id, device.id);
@@ -82,13 +77,11 @@ void main() {
     test('test deleteDevice', () async {
       // Init
       final MedTechApi api = await medtechApi();
-      final MedicalDeviceApi deviceApi = MedicalDeviceApiImpl(api);
-
       final MedicalDevice device = getMedicalDevice();
 
       // When
-      final MedicalDevice? createdDevice = await deviceApi.createOrModifyMedicalDevice(device);
-      final String? deletedDeviceRev = await deviceApi.deleteMedicalDevice(createdDevice!.id!);
+      final MedicalDevice? createdDevice = await api.medicalDeviceApi.createOrModifyMedicalDevice(device);
+      final String? deletedDeviceRev = await api.medicalDeviceApi.deleteMedicalDevice(createdDevice!.id!);
 
       // Then
       assert(deletedDeviceRev != null);

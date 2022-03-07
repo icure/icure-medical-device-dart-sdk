@@ -14,7 +14,7 @@ class PatientApiImpl extends PatientApi {
 
   @override
   Future<Patient?> createOrModifyPatient(Patient patient) async {
-    final localCrypto = api.localCrypto;
+    final localCrypto = api.crypto;
     final currentUser = await api.baseUserApi.getCurrentUser();
     final ccPatient = patientCryptoConfig(localCrypto);
 
@@ -42,7 +42,7 @@ class PatientApiImpl extends PatientApi {
 
   @override
   Future<PaginatedListPatient?> filterPatients(Filter<Patient> filter, {String? nextPatientId, int? limit, String? startKey}) async {
-    final localCrypto = api.localCrypto;
+    final localCrypto = api.crypto;
     final currentUser = await api.baseUserApi.getCurrentUser();
     final ccPatient = patientCryptoConfig(localCrypto);
 
@@ -52,7 +52,7 @@ class PatientApiImpl extends PatientApi {
 
   @override
   Future<Patient?> getPatient(String patientId) async => await PatientDtoMapper(await api.basePatientApi.getPatient(
-          (await api.baseUserApi.getCurrentUser() ?? (throw StateError("Couldn't get current user"))), patientId, patientCryptoConfig(api.localCrypto)))
+          (await api.baseUserApi.getCurrentUser() ?? (throw StateError("Couldn't get current user"))), patientId, patientCryptoConfig(api.crypto)))
       ?.toPatient();
 
   @override

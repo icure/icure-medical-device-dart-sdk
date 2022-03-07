@@ -20,10 +20,9 @@ void main() {
     test('test createOrModifyCoding CREATE', () async {
       // Init
       final MedTechApi api = await medtechApi();
-      final CodingApi codingApi = CodingApiImpl(api);
       final Coding coding = getCoding();
 
-      final createdCoding = await codingApi.createOrModifyCoding(coding);
+      final createdCoding = await api.codingApi.createOrModifyCoding(coding);
 
       expect("${coding.type}|${coding.code}|${coding.version}", createdCoding!.id);
       expect(coding.description, createdCoding.description);
@@ -32,12 +31,11 @@ void main() {
     test('test getCoding', () async {
       // Init
       final MedTechApi api = await medtechApi();
-      final CodingApi codingApi = CodingApiImpl(api);
       final Coding coding = getCoding();
 
       // When
-      final createdCoding = await codingApi.createOrModifyCoding(coding);
-      final gotCoding = await codingApi.getCoding(createdCoding!.id!);
+      final createdCoding = await api.codingApi.createOrModifyCoding(coding);
+      final gotCoding = await api.codingApi.getCoding(createdCoding!.id!);
 
       // Then
       expect(createdCoding.id, gotCoding!.id);
@@ -50,14 +48,13 @@ void main() {
     test('test createOrModifyCoding UPDATE', () async {
       // Init
       final MedTechApi api = await medtechApi();
-      final CodingApi codingApi = CodingApiImpl(api);
       final Coding coding = getCoding();
       final updateVersion = "2";
 
       // When
-      final createdCoding = await codingApi.createOrModifyCoding(coding);
+      final createdCoding = await api.codingApi.createOrModifyCoding(coding);
       createdCoding!.version = updateVersion;
-      final updatedCoding = await codingApi.createOrModifyCoding(createdCoding);
+      final updatedCoding = await api.codingApi.createOrModifyCoding(createdCoding);
 
       // Then
       expect(createdCoding.id, updatedCoding!.id);

@@ -4,8 +4,9 @@
 part of icure_medical_device_dart_sdk.api;
 
 class RegistrationApi {
-  RegistrationApi(this.registrationServer, this.signUpProcessId);
+  RegistrationApi(this.iCureBasePath, this.registrationServer, this.signUpProcessId);
 
+  final String iCureBasePath;
   final String registrationServer;
   final String signUpProcessId;
 
@@ -31,7 +32,7 @@ class RegistrationApi {
     return null;
   }
 
-  Future<RegistrationResult> completeRegistration(String basePath, RegistrationProcess process, String validationCode) async {
+  Future<RegistrationResult> completeRegistration(RegistrationProcess process, String validationCode) async {
     var client = Client();
     final Response res = await client.get(Uri.parse('${registrationServer}/process/validate/${process.processId}-${validationCode}'), headers: {
       'Content-Type': 'application/json'
@@ -39,8 +40,8 @@ class RegistrationApi {
 
     if (res.statusCode < 400) {
       return retry(() async {
-        final api = MedTechApiBuilder()
-            .withICureBasePath(basePath)
+        final api = MedTechApiBuilder.newBuilder()
+            .withICureBasePath(this.iCureBasePath)
             .withUserName(process.login)
             .withPassword(validationCode)
             .withMsgGtwUrl(this.registrationServer)
@@ -58,8 +59,8 @@ class RegistrationApi {
           }
           print("User Token is : $token");
 
-          return RegistrationResult(MedTechApiBuilder()
-              .withICureBasePath(basePath)
+          return RegistrationResult(MedTechApiBuilder.newBuilder()
+              .withICureBasePath(this.iCureBasePath)
               .withUserName(user.id!)
               .withPassword(token)
               .withMsgGtwUrl(this.registrationServer)

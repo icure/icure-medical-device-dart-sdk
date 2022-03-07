@@ -25,13 +25,10 @@ void main() {
     test('test createPatient', () async {
       // Init
       final MedTechApi api = await medtechApi();
-
-      final PatientApi patientApi = api.patientApi;
-
       final rapi.DecryptedPatientDto patient = getPatient();
 
       // When
-      final Patient? createdPatient = await patientApi.createOrModifyPatient(PatientDtoMapper(patient).toPatient());
+      final Patient? createdPatient = await api.patientApi.createOrModifyPatient(PatientDtoMapper(patient).toPatient());
 
       // Then
       expect(createdPatient!.id, patient.id);
@@ -43,13 +40,11 @@ void main() {
     test('test getPatient', () async {
       // Init
       final MedTechApi api = await medtechApi();
-      final PatientApiImpl patientApi = PatientApiImpl(api);
-
       final rapi.DecryptedPatientDto patient = getPatient();
 
       // When
-      final Patient? createdPatient = await patientApi.createOrModifyPatient(PatientDtoMapper(patient).toPatient());
-      final Patient? gotPatient = await patientApi.getPatient(createdPatient!.id!);
+      final Patient? createdPatient = await api.patientApi.createOrModifyPatient(PatientDtoMapper(patient).toPatient());
+      final Patient? gotPatient = await api.patientApi.getPatient(createdPatient!.id!);
 
       // Then
       expect(createdPatient.id, gotPatient!.id);
@@ -61,13 +56,11 @@ void main() {
     test('test filterPatient', () async {
       // Init
       final MedTechApi api = await medtechApi();
-      final PatientApiImpl patientApi = PatientApiImpl(api);
-      final UserApiImpl userApi = UserApiImpl(api);
 
       // When
-      var patients = (await patientApi.filterPatients(
+      var patients = (await api.patientApi.filterPatients(
           PatientByHcPartyNameContainsFuzzyFilter(
-              healthcarePartyId: (await userApi.getLoggedUser())!.healthcarePartyId!,
+              healthcarePartyId: (await api.userApi.getLoggedUser())!.healthcarePartyId!,
               searchString: "maes")
       ))?.rows ?? [];
 
@@ -79,17 +72,13 @@ void main() {
     test('test createPatient with crypto', () async {
       // Init
       final MedTechApi api = await medtechApi();
-
-      final PatientApi patientApi = api.patientApi;
-      final UserApi userApi = api.userApi;
-
       final rapi.DecryptedPatientDto patient = rapi.DecryptedPatientDto(id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}), firstName: 'John', lastName: 'Doe');
 
       // When
-      final Patient? createdPatient = await patientApi.createOrModifyPatient(PatientDtoMapper(patient).toPatient());
+      final Patient? createdPatient = await api.patientApi.createOrModifyPatient(PatientDtoMapper(patient).toPatient());
       var idUser = uuid.v4(options: {'rng': UuidUtil.cryptoRNG});
       var passwordUser = uuid.v4(options: {'rng': UuidUtil.cryptoRNG});
-      final User? createdUser = await userApi.createOrModifyUser(new User(id: idUser, login: idUser.substring(0, 8), patientId: createdPatient!.id, passwordHash: passwordUser));
+      final User? createdUser = await api.userApi.createOrModifyUser(new User(id: idUser, login: idUser.substring(0, 8), patientId: createdPatient!.id, passwordHash: passwordUser));
 
       var patMedtechApi = MedTechApiBuilder()
           .withICureBasePath('https://kraken.icure.dev')

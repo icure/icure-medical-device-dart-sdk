@@ -20,12 +20,10 @@ void main() {
     test('test createOrModifyHealthcareProfessional', () async {
       // Init
       final MedTechApi api = await medtechApi();
-      final HealthcareProfessionalApi healthcareProfessionalApi = HealthcareProfessionalApiImpl(api);
-
       final HealthcareProfessional healthcareProfessional = getHcp();
 
       // When
-      final HealthcareProfessional? createdHcp = await healthcareProfessionalApi.createOrModifyHealthcareProfessional(healthcareProfessional);
+      final HealthcareProfessional? createdHcp = await api.healthcareProfessionalApi.createOrModifyHealthcareProfessional(healthcareProfessional);
 
       // Then
       expect(createdHcp!.id, healthcareProfessional.id);
@@ -37,13 +35,11 @@ void main() {
     test('test getHealthcareProfessional', () async {
       // Init
       final MedTechApi api = await medtechApi();
-      final HealthcareProfessionalApi healthcareProfessionalApi = HealthcareProfessionalApiImpl(api);
-
       final HealthcareProfessional healthcareProfessional = getHcp();
 
       // When
-      final HealthcareProfessional? createdHcp = await healthcareProfessionalApi.createOrModifyHealthcareProfessional(healthcareProfessional);
-      final HealthcareProfessional? gotHcp = await healthcareProfessionalApi.getHealthcareProfessional(createdHcp!.id!);
+      final HealthcareProfessional? createdHcp = await api.healthcareProfessionalApi.createOrModifyHealthcareProfessional(healthcareProfessional);
+      final HealthcareProfessional? gotHcp = await api.healthcareProfessionalApi.getHealthcareProfessional(createdHcp!.id!);
 
       // Then
       expect(createdHcp.id, gotHcp!.id);
@@ -56,15 +52,13 @@ void main() {
   test('test createOrModifyHealthcareProfessional UPDATE', () async {
     // Init
     final MedTechApi api = await medtechApi();
-    final HealthcareProfessionalApi healthcareProfessionalApi = HealthcareProfessionalApiImpl(api);
     final updateFirstname = "Johnny";
-
     final HealthcareProfessional healthcareProfessional = getHcp();
 
     // When
-    final HealthcareProfessional? createdHcp = await healthcareProfessionalApi.createOrModifyHealthcareProfessional(healthcareProfessional);
+    final HealthcareProfessional? createdHcp = await api.healthcareProfessionalApi.createOrModifyHealthcareProfessional(healthcareProfessional);
     createdHcp!.firstName = updateFirstname;
-    final HealthcareProfessional? updatedHcp = await healthcareProfessionalApi.createOrModifyHealthcareProfessional(createdHcp);
+    final HealthcareProfessional? updatedHcp = await api.healthcareProfessionalApi.createOrModifyHealthcareProfessional(createdHcp);
 
     // Then
     expect(createdHcp.id, updatedHcp!.id);
@@ -76,13 +70,11 @@ void main() {
   test('test deleteHealthcareElement', () async {
     // Init
     final MedTechApi api = await medtechApi();
-    final HealthcareProfessionalApi healthcareProfessionalApi = HealthcareProfessionalApiImpl(api);
-
     final HealthcareProfessional healthcareProfessional = getHcp();
 
     // When
-    final HealthcareProfessional? createdHcp = await healthcareProfessionalApi.createOrModifyHealthcareProfessional(healthcareProfessional);
-    final String? deletedHcpRev = await healthcareProfessionalApi.deleteHealthcareProfessional(createdHcp!.id!);
+    final HealthcareProfessional? createdHcp = await api.healthcareProfessionalApi.createOrModifyHealthcareProfessional(healthcareProfessional);
+    final String? deletedHcpRev = await api.healthcareProfessionalApi.deleteHealthcareProfessional(createdHcp!.id!);
 
     // Then
     assert(deletedHcpRev != null);

@@ -22,13 +22,12 @@ void main() {
     test('test createHealthcareElement', () async {
       // Init
       final MedTechApi api = await medtechApi();
-      final HealthcareElementApi healthcareElementApi = HealthcareElementApiImpl(api);
 
       final DecryptedHealthElementDto healthElementDto = getHealthElementDto();
 
       // When
       final HealthcareElement? createdHealthElement =
-          await healthcareElementApi.createOrModifyHealthcareElement(HealthElementDtoMapper(healthElementDto).toHealthcareElement());
+          await api.healthcareElementApi.createOrModifyHealthcareElement(HealthElementDtoMapper(healthElementDto).toHealthcareElement());
 
       // Then
       expect(createdHealthElement!.id, healthElementDto.id);
@@ -38,14 +37,12 @@ void main() {
     test('test getHealthcareElement', () async {
       // Init
       final MedTechApi api = await medtechApi();
-      final HealthcareElementApi healthcareElementApi = HealthcareElementApiImpl(api);
-
       final DecryptedHealthElementDto healthElementDto = getHealthElementDto();
 
       // When
       final HealthcareElement? createdHealthElement =
-      await healthcareElementApi.createOrModifyHealthcareElement(HealthElementDtoMapper(healthElementDto).toHealthcareElement());
-      final HealthcareElement? gotHealthElement = await healthcareElementApi.getHealthcareElement(createdHealthElement!.id!);
+      await api.healthcareElementApi.createOrModifyHealthcareElement(HealthElementDtoMapper(healthElementDto).toHealthcareElement());
+      final HealthcareElement? gotHealthElement = await api.healthcareElementApi.getHealthcareElement(createdHealthElement!.id!);
 
       // Then
       expect(createdHealthElement.id, gotHealthElement!.id);
@@ -57,7 +54,6 @@ void main() {
   test('test createHealthcareElement UPDATE', () async {
     // Init
     final MedTechApi api = await medtechApi();
-    final HealthcareElementApi healthcareElementApi = HealthcareElementApiImpl(api);
     final updateNote = 'Premature optimization is not the root of all evil';
 
     final DecryptedHealthElementDto healthElementDto = getHealthElementDto();
@@ -65,9 +61,9 @@ void main() {
     final healthElementTocreate = HealthElementDtoMapper(healthElementDto).toHealthcareElement();
 
     // When
-    final HealthcareElement? createdHealthcareElement = await healthcareElementApi.createOrModifyHealthcareElement(healthElementTocreate);
+    final HealthcareElement? createdHealthcareElement = await api.healthcareElementApi.createOrModifyHealthcareElement(healthElementTocreate);
     createdHealthcareElement!.note = updateNote;
-    final HealthcareElement? updatedHealthcareElement = await healthcareElementApi.createOrModifyHealthcareElement(createdHealthcareElement);
+    final HealthcareElement? updatedHealthcareElement = await api.healthcareElementApi.createOrModifyHealthcareElement(createdHealthcareElement);
 
     // Then
     expect(createdHealthcareElement.id, updatedHealthcareElement!.id);
@@ -79,13 +75,12 @@ void main() {
   test('test deleteHealthcareElement', () async {
     // Init
     final MedTechApi api = await medtechApi();
-    final HealthcareElementApi healthcareElementApi = HealthcareElementApiImpl(api);
-
     final DecryptedHealthElementDto healthElementDto = getHealthElementDto();
+
     // When
     final HealthcareElement? createdHealthElement =
-    await healthcareElementApi.createOrModifyHealthcareElement(HealthElementDtoMapper(healthElementDto).toHealthcareElement());
-    final String? deletedHealthcareElementRev = await healthcareElementApi.deleteHealthcareElement(createdHealthElement!.id!);
+    await api.healthcareElementApi.createOrModifyHealthcareElement(HealthElementDtoMapper(healthElementDto).toHealthcareElement());
+    final String? deletedHealthcareElementRev = await api.healthcareElementApi.deleteHealthcareElement(createdHealthElement!.id!);
 
     // Then
     assert(deletedHealthcareElementRev != null);
