@@ -14,7 +14,7 @@ class HealthcareElementApiImpl extends HealthcareElementApi {
 
   @override
   Future<HealthcareElement?> createOrModifyHealthcareElement(HealthcareElement healthcareElement) async {
-    final localCrypto = api.localCrypto;
+    final localCrypto = api.crypto;
     final currentUser = await api.baseUserApi.getCurrentUser();
     final ccHealthElement = healthElementCryptoConfig(localCrypto);
 
@@ -37,12 +37,12 @@ class HealthcareElementApiImpl extends HealthcareElementApi {
 
   @override
   Future<List<HealthcareElement>?> createOrModifyHealthcareElements(String patientId, List<HealthcareElement> healthcareElement) async {
-    final localCrypto = api.localCrypto;
+    final localCrypto = api.crypto;
     final currentUser = await api.baseUserApi.getCurrentUser();
     final ccHealthElement = healthElementCryptoConfig(localCrypto);
     final ccPatient = patientCryptoConfig(localCrypto);
 
-    final healthElementToCreate = healthcareElement.where((element) => element.rev != null).toSet();
+    final healthElementToCreate = healthcareElement.where((element) => element.rev == null).toSet();
     final healthElementToUpdate = healthcareElement.toSet().difference(healthElementToCreate).toSet();
 
     if (healthElementToUpdate.any((element) => element.id == null || !Uuid.isValidUUID(fromString: element.id!))) {
@@ -72,7 +72,7 @@ class HealthcareElementApiImpl extends HealthcareElementApi {
     String? nextHealthElementId,
     int? limit,
   }) async {
-    final localCrypto = api.localCrypto;
+    final localCrypto = api.crypto;
     final currentUser = await api.baseUserApi.getCurrentUser();
     final ccHealthElement = healthElementCryptoConfig(localCrypto);
 
@@ -83,7 +83,7 @@ class HealthcareElementApiImpl extends HealthcareElementApi {
 
   @override
   Future<HealthcareElement?> getHealthcareElement(String id) async {
-    final localCrypto = api.localCrypto;
+    final localCrypto = api.crypto;
     final currentUser = await api.baseUserApi.getCurrentUser();
     final ccHealthElement = healthElementCryptoConfig(localCrypto);
 
