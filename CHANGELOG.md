@@ -1,3 +1,7 @@
+## 1.2.13
+
+- Updated icure dart sdk
+
 ## 1.2.12
 
 - Updated icure dart sdk
