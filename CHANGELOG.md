@@ -1,3 +1,8 @@
+## 1.2.14
+- FIX Could not manage data samples when user is a patient
+- FIX Could not filter patients and healthcare elements for a patient data owner
+- FIX HealthcareElementByHcPartyIdentifiersFilter mapping
+
 ## 1.2.13
 
 - Updated icure dart sdk
