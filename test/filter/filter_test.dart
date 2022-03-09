@@ -14,7 +14,7 @@ void main() {
     });
 
     test('test patient filter dsl', () async {
-      var filter = await PatientFilter().forHcp(HealthcareProfessional(id: '123')).byGenderEducationProfession(PatientGenderEnum.male).intersection([
+      var filter = await PatientFilter().forDataOwner('123').byGenderEducationProfession(PatientGenderEnum.male).intersection([
         PatientFilter().containsFuzzy("lisa"),
         PatientFilter().ofAge(28),
       ]).build();
