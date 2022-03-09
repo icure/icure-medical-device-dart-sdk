@@ -339,7 +339,7 @@ extension HealthcareElementByHcPartyIdentifiersFilterMapper on HealthcareElement
   api.HealthElementByHcPartyIdentifiersFilter toHealthElementByHcPartyIdentifiersFilterDto() =>
       api.HealthElementByHcPartyIdentifiersFilter(
           desc: this.description,
-          healthcarePartyId: this.healthcarePartyId,
+          hcPartyId: this.hcPartyId,
           identifiers: this.identifiers.map((it) => it.toIdentifierDto()).toList()
       );
 }

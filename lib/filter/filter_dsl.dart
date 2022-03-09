@@ -275,7 +275,7 @@ class HealthcareElementFilter extends FilterBuilder<HealthcareElement> {
 
     List<Filter<HealthcareElement>> filters = [
       _byIds?.let((v) => HealthcareElementByIdsFilter(ids: v)),
-      _byIdentifiers?.let((v) => HealthcareElementByHcPartyIdentifiersFilter(healthcarePartyId: _dataOwnerId!, identifiers: v.toList())),
+      _byIdentifiers?.let((v) => HealthcareElementByHcPartyIdentifiersFilter(hcPartyId: _dataOwnerId!, identifiers: v.toList())),
       _byTagCodeFilter?.let((v) {
         v.healthcarePartyId = _dataOwnerId!;
         return v;
