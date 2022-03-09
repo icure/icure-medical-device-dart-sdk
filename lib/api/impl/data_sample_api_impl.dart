@@ -244,7 +244,7 @@ class DataSampleApiImpl extends DataSampleApi {
   }
 
   Future<String?> _getPatientIdOfContact(Crypto localCrypto, base_api.UserDto currentUser, base_api.DecryptedContactDto contactDto) async =>
-      (await localCrypto.decryptEncryptionKeys(currentUser.healthcarePartyId!, contactDto.cryptedForeignKeys)).single;
+      (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, contactDto.cryptedForeignKeys)).single;
 
   base_api.DecryptedContactDto _createContactDtoBasedOn(List<DataSample> dataSamples, [base_api.DecryptedContactDto? existingContact = null]) {
     final servicesToCreate = dataSamples.map((e) => e.toServiceDto(e.batchId)).map((e) {
