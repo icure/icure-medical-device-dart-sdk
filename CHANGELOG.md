@@ -1,4 +1,10 @@
+# 1.2.15
+
+- Fixed creation of DataSamples that contains "content" value
+- Updated icure-dart-sdk to 1.0.32
+
 ## 1.2.14
+
 - FIX Could not manage data samples when user is a patient
 - FIX Could not filter patients and healthcare elements for a patient data owner
 - FIX HealthcareElementByHcPartyIdentifiersFilter mapping
