@@ -2,6 +2,7 @@
 import 'package:icure_dart_sdk/api.dart';
 import 'package:icure_medical_device_dart_sdk/api.dart';
 import 'package:icure_medical_device_dart_sdk/mappers/healthcare_element.dart';
+import 'package:icure_medical_device_dart_sdk/mappers/patient.dart';
 import "package:test/test.dart";
 import 'package:uuid/uuid.dart';
 import 'package:uuid/uuid_util.dart';
@@ -24,10 +25,12 @@ void main() {
       final MedTechApi api = await medtechApi();
 
       final DecryptedHealthElementDto healthElementDto = getHealthElementDto();
+      final DecryptedPatientDto patient = DecryptedPatientDto(id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}), firstName: 'John', lastName: 'Doe');
+      final Patient? createdPatient = await api.patientApi.createOrModifyPatient(PatientDtoMapper(patient).toPatient());
 
       // When
       final HealthcareElement? createdHealthElement =
-          await api.healthcareElementApi.createOrModifyHealthcareElement(HealthElementDtoMapper(healthElementDto).toHealthcareElement());
+          await api.healthcareElementApi.createOrModifyHealthcareElement(createdPatient!.id!, HealthElementDtoMapper(healthElementDto).toHealthcareElement());
 
       // Then
       expect(createdHealthElement!.id, healthElementDto.id);
@@ -38,10 +41,12 @@ void main() {
       // Init
       final MedTechApi api = await medtechApi();
       final DecryptedHealthElementDto healthElementDto = getHealthElementDto();
+      final DecryptedPatientDto patient = DecryptedPatientDto(id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}), firstName: 'John', lastName: 'Doe');
+      final Patient? createdPatient = await api.patientApi.createOrModifyPatient(PatientDtoMapper(patient).toPatient());
 
       // When
       final HealthcareElement? createdHealthElement =
-      await api.healthcareElementApi.createOrModifyHealthcareElement(HealthElementDtoMapper(healthElementDto).toHealthcareElement());
+      await api.healthcareElementApi.createOrModifyHealthcareElement(createdPatient!.id!, HealthElementDtoMapper(healthElementDto).toHealthcareElement());
       final HealthcareElement? gotHealthElement = await api.healthcareElementApi.getHealthcareElement(createdHealthElement!.id!);
 
       // Then
@@ -57,13 +62,14 @@ void main() {
     final updateNote = 'Premature optimization is not the root of all evil';
 
     final DecryptedHealthElementDto healthElementDto = getHealthElementDto();
-
     final healthElementTocreate = HealthElementDtoMapper(healthElementDto).toHealthcareElement();
+    final DecryptedPatientDto patient = DecryptedPatientDto(id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}), firstName: 'John', lastName: 'Doe');
+    final Patient? createdPatient = await api.patientApi.createOrModifyPatient(PatientDtoMapper(patient).toPatient());
 
     // When
-    final HealthcareElement? createdHealthcareElement = await api.healthcareElementApi.createOrModifyHealthcareElement(healthElementTocreate);
+    final HealthcareElement? createdHealthcareElement = await api.healthcareElementApi.createOrModifyHealthcareElement(createdPatient!.id!, healthElementTocreate);
     createdHealthcareElement!.note = updateNote;
-    final HealthcareElement? updatedHealthcareElement = await api.healthcareElementApi.createOrModifyHealthcareElement(createdHealthcareElement);
+    final HealthcareElement? updatedHealthcareElement = await api.healthcareElementApi.createOrModifyHealthcareElement(createdPatient!.id!, createdHealthcareElement);
 
     // Then
     expect(createdHealthcareElement.id, updatedHealthcareElement!.id);
@@ -76,10 +82,12 @@ void main() {
     // Init
     final MedTechApi api = await medtechApi();
     final DecryptedHealthElementDto healthElementDto = getHealthElementDto();
+    final DecryptedPatientDto patient = DecryptedPatientDto(id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}), firstName: 'John', lastName: 'Doe');
+    final Patient? createdPatient = await api.patientApi.createOrModifyPatient(PatientDtoMapper(patient).toPatient());
 
     // When
     final HealthcareElement? createdHealthElement =
-    await api.healthcareElementApi.createOrModifyHealthcareElement(HealthElementDtoMapper(healthElementDto).toHealthcareElement());
+    await api.healthcareElementApi.createOrModifyHealthcareElement(createdPatient!.id!, HealthElementDtoMapper(healthElementDto).toHealthcareElement());
     final String? deletedHealthcareElementRev = await api.healthcareElementApi.deleteHealthcareElement(createdHealthElement!.id!);
 
     // Then

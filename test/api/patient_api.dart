@@ -18,6 +18,8 @@ void main() {
     return await TestUtils.medtechApi();
   }
 
+  HealthcareElement getHealthElementDto() => HealthcareElement(note: 'Premature optimization is the root of all evil');
+
   rapi.DecryptedPatientDto getPatient() => rapi.DecryptedPatientDto(
       id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}), firstName: 'John', lastName: 'Doe', note: 'Premature optimization is the root of all evil');
 
@@ -104,10 +106,8 @@ void main() {
           .withSignUpProcessId("f0ced6c6-d7cb-4f78-841e-2674ad09621e")
           .build();
 
-      final pat2 = await patMedtechApi.patientApi.getPatient(patUser.patientId!);
-      pat2!.note = "Secret";
-      pat2.systemMetaData!.delegations = {};
-      pat2.systemMetaData!.encryptionKeys = {};
+      final pat2 = await modPat!.initDelegations(patUser, patMedtechApi.crypto);
+      pat2.note = "Secret";
       final modPat2 = (await patMedtechApi.patientApi.createOrModifyPatient(pat2))!;
 
       // Then
@@ -115,8 +115,14 @@ void main() {
       expect(modPat2.firstName, pat2.firstName);
       expect(modPat2.lastName, pat2.lastName);
       expect(modPat2.note, pat2.note);
+
+      // Init
+      final HealthcareElement hE = getHealthElementDto();
+      final createdHealthElement = await patMedtechApi.healthcareElementApi.createOrModifyHealthcareElement(modPat2.id!, hE);
+
+      final filteredHealthElement = await patMedtechApi.healthcareElementApi.filterHealthcareElement(HealthcareElementByIdsFilter(ids: {createdHealthElement!.id!}));
+
+      assert(filteredHealthElement!.rows.length == 1);
     });
-
-
   });
 }
