@@ -1,3 +1,7 @@
+# 1.2.17
+- FEATURE Support AesExchangeKeys, transferKeys and lostHcPartyKeys in data owners
+- Updating icure_dart_sdk dependency to 1.0.34
+
 # 1.2.16
 - FIX Add patientId in createOrModifyHealthElement API service
 - Updating icure_dart_sdk dependency to 1.0.33
