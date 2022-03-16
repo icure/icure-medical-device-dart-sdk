@@ -16,6 +16,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:http/http.dart';
+import 'package:icure_dart_sdk/api.dart';
 import 'package:tuple/tuple.dart';
 import 'package:intl/intl.dart';
 import 'package:meta/meta.dart';

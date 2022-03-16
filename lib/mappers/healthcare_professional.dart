@@ -47,6 +47,9 @@ extension HealthcarePartyDtoMapper on HealthcarePartyDto {
       systemMetaData: SystemMetaDataOwner(
         hcPartyKeys: this.hcPartyKeys,
         privateKeyShamirPartitions: this.privateKeyShamirPartitions,
+        aesExchangeKeys: this.aesExchangeKeys,
+        transferKeys: this.transferKeys,
+        lostHcPartyKeys: this.lostHcPartyKeys.toList(),
       ));
 }
 
@@ -57,31 +60,34 @@ extension HealthcarePartyDtoGenderEnumMapper on HealthcarePartyDtoGenderEnum {
 
 extension HealthcareProfessionalMapper on HealthcareProfessional {
   HealthcarePartyDto toHealthcarePartyDto() => HealthcarePartyDto(
-        id: this.id?.also((it) {
-              if (!Uuid.isValidUUID(fromString: it)) {
-                throw FormatException("Invalid id, id must be a valid UUID");
-              }
-            }) ??
-            uuid.v4(options: {'rng': UuidUtil.cryptoRNG}),
-        names: this.names.map((it) => it.toPersonNameDto()).toList(),
-        addresses: this.addresses.map((it) => it.toAddressDto()).toList(),
-        languages: this.languages,
-        specialityCodes: this.specialityCodes.map((it) => it.toCodeStubDto()).toSet(),
-        properties: this.properties.map((it) => it.toPropertyStubDto()).toSet(),
-        rev: this.rev,
-        deletionDate: this.deletionDate,
-        name: this.name,
-        lastName: this.lastName,
-        firstName: this.firstName,
-        gender: this.gender?.toHealthcarePartyDtoGender(),
-        civility: this.civility,
-        speciality: this.speciality,
-        parentId: this.parentId,
-        picture: this.picture,
-        notes: this.notes,
-        hcPartyKeys: this.systemMetaData?.hcPartyKeys ?? const {},
-        privateKeyShamirPartitions: this.systemMetaData?.privateKeyShamirPartitions ?? const {},
-      );
+    id: this.id?.also((it) {
+      if (!Uuid.isValidUUID(fromString: it)) {
+        throw FormatException("Invalid id, id must be a valid UUID");
+      }
+    }) ??
+        uuid.v4(options: {'rng': UuidUtil.cryptoRNG}),
+    names: this.names.map((it) => it.toPersonNameDto()).toList(),
+    addresses: this.addresses.map((it) => it.toAddressDto()).toList(),
+    languages: this.languages,
+    specialityCodes: this.specialityCodes.map((it) => it.toCodeStubDto()).toSet(),
+    properties: this.properties.map((it) => it.toPropertyStubDto()).toSet(),
+    rev: this.rev,
+    deletionDate: this.deletionDate,
+    name: this.name,
+    lastName: this.lastName,
+    firstName: this.firstName,
+    gender: this.gender?.toHealthcarePartyDtoGender(),
+    civility: this.civility,
+    speciality: this.speciality,
+    parentId: this.parentId,
+    picture: this.picture,
+    notes: this.notes,
+    hcPartyKeys: this.systemMetaData?.hcPartyKeys ?? const {},
+    privateKeyShamirPartitions: this.systemMetaData?.privateKeyShamirPartitions ?? const {},
+    aesExchangeKeys: this.systemMetaData?.aesExchangeKeys ?? const {},
+    transferKeys: this.systemMetaData?.transferKeys ?? const {},
+    lostHcPartyKeys: this.systemMetaData?.lostHcPartyKeys.toSet() ?? {},
+  );
 }
 
 extension HealthcareProfessionalGenderEnumMapper on HealthcareProfessionalGenderEnum {
