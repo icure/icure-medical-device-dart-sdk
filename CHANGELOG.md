@@ -1,3 +1,7 @@
+# 1.2.16
+- FIX Add patientId in createOrModifyHealthElement API service
+- Updating icure_dart_sdk dependency to 1.0.33
+
 # 1.2.15
 
 - Fixed creation of DataSamples that contains "content" value
