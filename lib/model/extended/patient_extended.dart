@@ -96,4 +96,24 @@ extension PatientExtended on Patient {
 
     return this;
   }
+
+  Future<Patient> lostRSAKeyAndReplacedItBy(Tuple2<String, String> newKeyPair) async {
+    this.systemMetaData!.aesExchangeKeys = {...this.systemMetaData!.aesExchangeKeys}..addEntries([
+      MapEntry(this.publicKey!, this.systemMetaData!.hcPartyKeys)
+    ]);
+
+    final encryptedNewKey = await encryptRSAKeyUsing(this.publicKey!, newKeyPair.item1);
+    this.systemMetaData!.transferKeys = {...this.systemMetaData!.transferKeys}..addEntries([
+      MapEntry(this.publicKey!, { newKeyPair.item2 : encryptedNewKey })
+    ]);
+
+    this.systemMetaData!.lostHcPartyKeys = [...this.systemMetaData!.lostHcPartyKeys]..addAll(
+      this.systemMetaData!.hcPartyKeys.values.map((hcPartyKeys) => hcPartyKeys[0])
+    );
+
+    this.publicKey = newKeyPair.item2;
+    //new hcpKeys
+
+    return this;
+  }
 }

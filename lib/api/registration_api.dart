@@ -4,13 +4,14 @@
 part of icure_medical_device_dart_sdk.api;
 
 class RegistrationApi {
-  RegistrationApi(this.iCureBasePath, this.registrationServer, this.signUpProcessId);
+  RegistrationApi(this.iCureBasePath, this.registrationServer, this.signUpProcessId, this.loginProcessId);
 
   final String iCureBasePath;
   final String registrationServer;
   final String signUpProcessId;
+  final String loginProcessId;
 
-  Future<RegistrationProcess?> registerUserForPatient(
+  Future<RegistrationProcess?> startUserRegistrationProcess(
       String healthcareProfessionalId, String firstName, String lastName, String email, String recaptcha, {String? mobilePhone}) async {
     final requestId = Uuid().v4(options: {'rng': UuidUtil.cryptoRNG});
     var client = Client();
@@ -32,7 +33,7 @@ class RegistrationApi {
     return null;
   }
 
-  Future<RegistrationResult> completeRegistration(RegistrationProcess process, String validationCode) async {
+  Future<RegistrationResult> completeProcess(RegistrationProcess process, String validationCode) async {
     var client = Client();
     final Response res = await client.get(Uri.parse('${registrationServer}/process/validate/${process.processId}-${validationCode}'), headers: {
       'Content-Type': 'application/json'
@@ -75,4 +76,20 @@ class RegistrationApi {
     throw FormatException("Invalid validation code");
   }
 
+  Future<RegistrationProcess?> startLoginProcess(String email, String recaptcha, {String? mobilePhone}) async {
+    final requestId = Uuid().v4(options: {'rng': UuidUtil.cryptoRNG});
+    var client = Client();
+    final Response res = await client.post(Uri.parse('${registrationServer}/process/${loginProcessId}/${requestId}'),
+        headers: {'Content-Type': 'application/json'},
+        body: await serializeAsync({
+          'g-recaptcha-response': recaptcha,
+          'from': email,
+          'mobilePhone': mobilePhone
+        }));
+
+    if (res.statusCode < 400) {
+      return RegistrationProcess(requestId, email);
+    }
+    return null;
+  }
 }

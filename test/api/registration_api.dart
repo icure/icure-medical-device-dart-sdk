@@ -10,9 +10,9 @@ import '../utils/test_utils.dart';
 void main() {
   final Uuid uuid = Uuid();
 
-  final String userEmail = "large-practice@bxzzdcq0.mailosaur.net";
-  final String processId = "320ac00b-8820-4432-ac66-e30ca5c0baea";
-  final String userValidationCode = "790517";
+  final String userEmail = "various-phrase@bxzzdcq0.mailosaur.net";
+  final String processId = "d8c2959f-8b42-494b-920f-14f963471b34";
+  final String userValidationCode = "204887";
 
   Future<MedTechApi> medtechApi() async {
     final creds = await TestUtils.credentials(credentialsFilePath: ".hkcredentials");
@@ -23,6 +23,7 @@ void main() {
         .withPassword(creds.password)
         .withMsgGtwUrl("https://msg-gw.icure.cloud/km")
         .withSignUpProcessId("f0ced6c6-d7cb-4f78-841e-2674ad09621e")
+        .withLoginProcessId("24df5258-a52c-11ec-b188-4f164bde4270")
         .addKeyPair("171f186a-7a2a-40f0-b842-b486428c771b", await TestUtils.keyFromFile(keyFileName: "171f186a-7a2a-40f0-b842-b486428c771b.2048.key"))
         .build();
   }
@@ -49,7 +50,7 @@ void main() {
       final RegistrationApi registrationApi = api.registrationApi;
 
       // When
-      final registrationProcess = await registrationApi.registerUserForPatient(
+      final registrationProcess = await registrationApi.startUserRegistrationProcess(
           "171f186a-7a2a-40f0-b842-b486428c771b", "justin_th", "", userEmail, "a58afe0e-02dc-431b-8155-0351140099e4");
 
       // Then
@@ -65,7 +66,7 @@ void main() {
     final validationCode = userValidationCode;
 
     // When
-    final registrationResult = await registrationApi.completeRegistration(registrationProcess, validationCode);
+    final registrationResult = await registrationApi.completeProcess(registrationProcess, validationCode);
 
     // Init
     var patMedtechApi = registrationResult.medTechApi;
@@ -81,6 +82,64 @@ void main() {
     pat.lastName = "Smith";
     pat.gender = PatientGenderEnum.male;
     pat.dateOfBirth = 19921028;
+
+    final modPat = await patMedtechApi.patientApi.createOrModifyPatient(pat);
+    patMedtechApi = MedTechApiBuilder.from(patMedtechApi)
+        .addKeyPair(patUser.patientId!, keyPair.item1.keyFromHexString())
+        .build();
+
+    final pat2 = await modPat!.initDelegations(patUser, patMedtechApi.crypto);
+    pat2.note = "Secret";
+
+    final modPat3 = (await patMedtechApi.patientApi.createOrModifyPatient(pat2))!;
+
+    // Then
+    expect(modPat3.id, pat2.id);
+    expect(modPat3.firstName, pat2.firstName);
+    expect(modPat3.lastName, pat2.lastName);
+    expect(modPat3.note, pat2.note);
+
+    // Init
+    final DataSample weight = getWeightDataSample();
+    final DataSample height = getHeightDataSample();
+    final dataSamples = [weight, height];
+
+    final patDataSamples = await patMedtechApi.dataSampleApi.createOrModifyDataSamplesFor(modPat3.id!, dataSamples);
+
+    assert(patDataSamples != null);
+  });
+
+  test('test start login without password', () async {
+    final MedTechApi api = await medtechApi();
+    final RegistrationApi registrationApi = api.registrationApi;
+
+    // When
+    final loginProcess = await registrationApi.startLoginProcess(userEmail, "a58afe0e-02dc-431b-8155-0351140099e4");
+
+    // Then
+    print("Login : ${loginProcess!.login}");
+    print("Process ID : ${loginProcess.processId}");
+  });
+
+  test('test complete login on new device', () async {
+    final MedTechApi api = await medtechApi();
+    final RegistrationApi registrationApi = api.registrationApi;
+    final registrationProcess = RegistrationProcess(processId, userEmail);
+    final validationCode = userValidationCode;
+
+    // When
+    final registrationResult = await registrationApi.completeProcess(registrationProcess, validationCode);
+
+    // Init
+    var patMedtechApi = registrationResult.medTechApi;
+    final patUser = await retry(() => patMedtechApi.userApi.getLoggedUser());
+    final keyPair = generateRandomPrivateAndPublicKeyPair();
+    print("User New Private Key is : ${keyPair.item1}");
+    print("User New Public Key is : ${keyPair.item2}");
+
+    // When
+    final pat = await patMedtechApi.patientApi.getPatient(patUser!.patientId!);
+    pat!.lostRSAKeyAndReplacedItBy(keyPair);
 
     final modPat = await patMedtechApi.patientApi.createOrModifyPatient(pat);
     patMedtechApi = MedTechApiBuilder.from(patMedtechApi)

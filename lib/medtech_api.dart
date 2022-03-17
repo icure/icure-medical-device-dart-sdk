@@ -14,6 +14,7 @@ class MedTechApi {
 
   final String? msgGtwUrl;
   final String? signUpProcessId;
+  final String? loginProcessId;
 
   late final base_api.CodeApi baseCodeApi;
   late final base_api.UserApi baseUserApi;
@@ -26,7 +27,7 @@ class MedTechApi {
   late final base_api.DocumentApi baseDocumentApi;
   late final base_api.AuthApi baseAuthApi;
 
-  MedTechApi(this.iCureBasePath, this.userName, this.password, Map<String, RSAKeypair> rsaKeyPairs, this.msgGtwUrl, this.signUpProcessId) {
+  MedTechApi(this.iCureBasePath, this.userName, this.password, Map<String, RSAKeypair> rsaKeyPairs, this.msgGtwUrl, this.signUpProcessId, this.loginProcessId) {
     final base_api.ApiClient client = base_api.ApiClient.basic(iCureBasePath, userName, password);
 
     this.baseHealthcarePartyApi = base_api.HealthcarePartyApi(client);
@@ -62,11 +63,11 @@ class MedTechApi {
       return _registrationApi!;
     }
 
-    if (this.msgGtwUrl == null || this.signUpProcessId == null) {
-      throw FormatException("To use RegistrationApi, you need to provide the msgGtwUrl and your signUpProcessId !");
+    if (this.msgGtwUrl == null || this.signUpProcessId == null || this.loginProcessId == null) {
+      throw FormatException("To use RegistrationApi, you need to provide the msgGtwUrl, your signUpProcessId and your loginProcessId !");
     }
 
-    _registrationApi = RegistrationApi(this.iCureBasePath, this.msgGtwUrl!, this.signUpProcessId!);
+    _registrationApi = RegistrationApi(this.iCureBasePath, this.msgGtwUrl!, this.signUpProcessId!, this.loginProcessId!);
     return _registrationApi!;
   }
 
@@ -80,6 +81,7 @@ class MedTechApiBuilder {
 
   String? _msgGtwUrl = "https://msg-gw.icure.cloud/km";
   String? _signUpProcessId;
+  String? _loginProcessId;
 
   static MedTechApiBuilder newBuilder() {
     return MedTechApiBuilder();
@@ -124,6 +126,11 @@ class MedTechApiBuilder {
     _signUpProcessId = signUpProcessId;
     return this;
   }
+  
+  MedTechApiBuilder withLoginProcessId(String? loginProcessId) {
+    _loginProcessId = loginProcessId;
+    return this;
+  }
 
 
   MedTechApi build() {
@@ -137,7 +144,8 @@ class MedTechApiBuilder {
         _password!,
         _rsaKeyPairs,
         _msgGtwUrl,
-        _signUpProcessId
+        _signUpProcessId,
+        _loginProcessId
     );
   }
 }
