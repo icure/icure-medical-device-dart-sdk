@@ -1,3 +1,7 @@
+# 1.3.1
+
+- Implement authentication login with user still having access to its key
+
 # 1.3.0
 
 - Added login process methods
