@@ -48,7 +48,7 @@ class MedTechApi {
   MedicalDeviceApi? _medicalDeviceApi;
   DataSampleApi? _dataSampleApi;
   HealthcareProfessionalApi? _healthcareProfessionalApi;
-  RegistrationApi? _registrationApi;
+  AuthenticationApi? _registrationApi;
 
   CodingApi get codingApi => _codingApi ?? (_codingApi = CodingApiImpl(this));
   PatientApi get patientApi => _patientApi ?? (_patientApi = PatientApiImpl(this));
@@ -57,7 +57,7 @@ class MedTechApi {
   MedicalDeviceApi get medicalDeviceApi => _medicalDeviceApi ?? (_medicalDeviceApi = MedicalDeviceApiImpl(this));
   DataSampleApi get dataSampleApi => _dataSampleApi ?? (_dataSampleApi = DataSampleApiImpl(this));
   HealthcareProfessionalApi get healthcareProfessionalApi => _healthcareProfessionalApi ?? (_healthcareProfessionalApi = HealthcareProfessionalApiImpl(this));
-  RegistrationApi get registrationApi {
+  AuthenticationApi get registrationApi {
     if (_registrationApi != null) {
       return _registrationApi!;
     }
@@ -66,7 +66,7 @@ class MedTechApi {
       throw FormatException("To use RegistrationApi, you need to provide the msgGtwUrl, your signUpProcessId and your loginProcessId !");
     }
 
-    _registrationApi = RegistrationApi(this.iCureBasePath, this.authServerUrl!, this.authProcessId!, 
+    _registrationApi = AuthenticationApi(this.iCureBasePath, this.authServerUrl!, this.authProcessId!,
         DataOwnerApiFactory.fromExistingApis(this.baseHealthcarePartyApi, this.basePatientApi, this.baseDeviceApi));
     return _registrationApi!;
   }

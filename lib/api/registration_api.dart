@@ -3,8 +3,8 @@
 
 part of icure_medical_device_dart_sdk.api;
 
-class RegistrationApi {
-  RegistrationApi(
+class AuthenticationApi {
+  AuthenticationApi(
       this.iCureBasePath,
       this.authServerUrl,
       this.authProcessId,
@@ -15,7 +15,7 @@ class RegistrationApi {
   final String authProcessId;
   final DataOwnerApiFactory dataOwnerApiFactory;
 
-  Future<RegistrationProcess?> startAuthentication(
+  Future<AuthenticationProcess?> startAuthentication(
       String healthcareProfessionalId, String firstName, String lastName, String email, String recaptcha, {String? mobilePhone}) async {
     final requestId = Uuid().v4(options: {'rng': UuidUtil.cryptoRNG});
     var client = Client();
@@ -31,13 +31,13 @@ class RegistrationApi {
         }));
 
     if (res.statusCode < 400) {
-      return RegistrationProcess(requestId, email);
+      return AuthenticationProcess(requestId, email);
     }
 
     return null;
   }
 
-  Future<RegistrationResult> completeAuthentication(RegistrationProcess process, String validationCode, Tuple2<String, String> patientKeyPair) async {
+  Future<AuthenticationResult> completeAuthentication(AuthenticationProcess process, String validationCode, Tuple2<String, String> patientKeyPair) async {
     var client = Client();
     final Response res = await client.get(Uri.parse('${authServerUrl}/process/validate/${process.processId}-${validationCode}'), headers: {
       'Content-Type': 'application/json'
@@ -51,13 +51,13 @@ class RegistrationApi {
 
       MedTechApi authenticatedApi = await initUserCrypto(initInfo.item1, initInfo.item3, initInfo.item2, patientKeyPair);
 
-      return RegistrationResult(authenticatedApi, initInfo.item3, initInfo.item2.id);
+      return AuthenticationResult(authenticatedApi, initInfo.item3, initInfo.item2.id);
     }
 
     throw FormatException("Invalid validation code");
   }
 
-  Future<Tuple3<MedTechApi, UserDto, String>> createUserAuthenticationToken(RegistrationProcess process, String validationCode) async {
+  Future<Tuple3<MedTechApi, UserDto, String>> createUserAuthenticationToken(AuthenticationProcess process, String validationCode) async {
     final api = MedTechApiBuilder.newBuilder()
         .withICureBasePath(this.iCureBasePath)
         .withUserName(process.login)
