@@ -46,7 +46,7 @@ void main() {
     test('test signup', () async {
       // Init
       final MedTechApi api = await medtechApi();
-      final RegistrationApi registrationApi = api.registrationApi;
+      final AuthenticationApi registrationApi = api.registrationApi;
 
       // When
       final registrationProcess = await registrationApi.startAuthentication(
@@ -60,8 +60,8 @@ void main() {
 
   test('test complete signUp', () async {
     final MedTechApi api = await medtechApi();
-    final RegistrationApi registrationApi = api.registrationApi;
-    final registrationProcess = RegistrationProcess(processId, userEmail);
+    final AuthenticationApi registrationApi = api.registrationApi;
+    final registrationProcess = AuthenticationProcess(processId, userEmail);
     final validationCode = userValidationCode;
 
     final keyPair = generateRandomPrivateAndPublicKeyPair();
@@ -103,7 +103,7 @@ void main() {
 
   test('test start login without password', () async {
     final MedTechApi api = await medtechApi();
-    final RegistrationApi registrationApi = api.registrationApi;
+    final AuthenticationApi registrationApi = api.registrationApi;
 
     // When
     final loginProcess = await registrationApi.startAuthentication("171f186a-7a2a-40f0-b842-b486428c771b", "justin_th", "", userEmail, "a58afe0e-02dc-431b-8155-0351140099e4");
@@ -115,8 +115,8 @@ void main() {
 
   test('test complete login on new device', () async {
     final MedTechApi api = await medtechApi();
-    final RegistrationApi registrationApi = api.registrationApi;
-    final registrationProcess = RegistrationProcess(processId, userEmail);
+    final AuthenticationApi registrationApi = api.registrationApi;
+    final registrationProcess = AuthenticationProcess(processId, userEmail);
     final validationCode = userValidationCode;
 
     final keyPair = generateRandomPrivateAndPublicKeyPair();
