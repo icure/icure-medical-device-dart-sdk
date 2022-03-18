@@ -12,9 +12,8 @@ class MedTechApi {
   final String userName;
   final String password;
 
-  final String? msgGtwUrl;
-  final String? signUpProcessId;
-  final String? loginProcessId;
+  final String? authServerUrl;
+  final String? authProcessId;
 
   late final base_api.CodeApi baseCodeApi;
   late final base_api.UserApi baseUserApi;
@@ -27,7 +26,7 @@ class MedTechApi {
   late final base_api.DocumentApi baseDocumentApi;
   late final base_api.AuthApi baseAuthApi;
 
-  MedTechApi(this.iCureBasePath, this.userName, this.password, Map<String, RSAKeypair> rsaKeyPairs, this.msgGtwUrl, this.signUpProcessId, this.loginProcessId) {
+  MedTechApi(this.iCureBasePath, this.userName, this.password, Map<String, RSAKeypair> rsaKeyPairs, this.authServerUrl, this.authProcessId) {
     final base_api.ApiClient client = base_api.ApiClient.basic(iCureBasePath, userName, password);
 
     this.baseHealthcarePartyApi = base_api.HealthcarePartyApi(client);
@@ -37,7 +36,7 @@ class MedTechApi {
     this.baseUserApi = base_api.UserApi(client);
     this.baseHealthElementApi = base_api.HealthElementApi(client);
     this.baseContactApi = base_api.ContactApi(client);
-    this.crypto = LocalCrypto(DataOwnerResolver(this.baseHealthcarePartyApi, this.basePatientApi, this.baseDeviceApi), rsaKeyPairs);
+    this.crypto = LocalCrypto(DataOwnerResolver.withExistingApis(this.baseHealthcarePartyApi, this.basePatientApi, this.baseDeviceApi), rsaKeyPairs);
     this.baseDocumentApi = base_api.DocumentApi(client);
     this.baseAuthApi = base_api.AuthApi(client);
   }
@@ -63,11 +62,12 @@ class MedTechApi {
       return _registrationApi!;
     }
 
-    if (this.msgGtwUrl == null || this.signUpProcessId == null || this.loginProcessId == null) {
+    if (this.authServerUrl == null || this.authProcessId == null) {
       throw FormatException("To use RegistrationApi, you need to provide the msgGtwUrl, your signUpProcessId and your loginProcessId !");
     }
 
-    _registrationApi = RegistrationApi(this.iCureBasePath, this.msgGtwUrl!, this.signUpProcessId!, this.loginProcessId!);
+    _registrationApi = RegistrationApi(this.iCureBasePath, this.authServerUrl!, this.authProcessId!, 
+        DataOwnerApiFactory.fromExistingApis(this.baseHealthcarePartyApi, this.basePatientApi, this.baseDeviceApi));
     return _registrationApi!;
   }
 
@@ -79,9 +79,8 @@ class MedTechApiBuilder {
   String? _password;
   Map<String, RSAKeypair> _rsaKeyPairs = Map();
 
-  String? _msgGtwUrl = "https://msg-gw.icure.cloud/km";
-  String? _signUpProcessId;
-  String? _loginProcessId;
+  String? _authServerUrl = "https://msg-gw.icure.cloud/km";
+  String? _authProcessId;
 
   static MedTechApiBuilder newBuilder() {
     return MedTechApiBuilder();
@@ -92,8 +91,8 @@ class MedTechApiBuilder {
         .withICureBasePath(previousApi.iCureBasePath)
         .withUserName(previousApi.userName)
         .withPassword(previousApi.password)
-        .withMsgGtwUrl(previousApi.msgGtwUrl)
-        .withSignUpProcessId(previousApi.signUpProcessId);
+        .withAuthServerUrl(previousApi.authServerUrl)
+        .withAuthProcessId(previousApi.authProcessId);
   }
 
   MedTechApiBuilder withICureBasePath(String newICureBasePath) {
@@ -117,18 +116,13 @@ class MedTechApiBuilder {
     return this;
   }
 
-  MedTechApiBuilder withMsgGtwUrl(String? msgGtwUrl) {
-    _msgGtwUrl = msgGtwUrl;
+  MedTechApiBuilder withAuthServerUrl(String? msgGtwUrl) {
+    _authServerUrl = msgGtwUrl;
     return this;
   }
 
-  MedTechApiBuilder withSignUpProcessId(String? signUpProcessId) {
-    _signUpProcessId = signUpProcessId;
-    return this;
-  }
-  
-  MedTechApiBuilder withLoginProcessId(String? loginProcessId) {
-    _loginProcessId = loginProcessId;
+  MedTechApiBuilder withAuthProcessId(String? signUpProcessId) {
+    _authProcessId = signUpProcessId;
     return this;
   }
 
@@ -143,9 +137,8 @@ class MedTechApiBuilder {
         _userName!,
         _password!,
         _rsaKeyPairs,
-        _msgGtwUrl,
-        _signUpProcessId,
-        _loginProcessId
+        _authServerUrl,
+        _authProcessId
     );
   }
 }

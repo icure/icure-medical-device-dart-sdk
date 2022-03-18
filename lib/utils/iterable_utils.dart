@@ -9,8 +9,6 @@ extension IterableExtension<T> on Iterable<T> {
     });
   }
 
-  T? firstOrNull() => this.isNotEmpty ? this.first : null;
-
   int sumOf(int selector(T input)) {
     int sum = 0;
     this.forEach((element) {

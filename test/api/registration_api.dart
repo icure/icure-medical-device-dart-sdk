@@ -10,9 +10,9 @@ import '../utils/test_utils.dart';
 void main() {
   final Uuid uuid = Uuid();
 
-  final String userEmail = "various-phrase@bxzzdcq0.mailosaur.net";
-  final String processId = "d8c2959f-8b42-494b-920f-14f963471b34";
-  final String userValidationCode = "204887";
+  final String userEmail = "original-so@bxzzdcq0.mailosaur.net";
+  final String processId = "bdc0a635-8d72-4343-bead-1f771072f00c";
+  final String userValidationCode = "377443";
 
   Future<MedTechApi> medtechApi() async {
     final creds = await TestUtils.credentials(credentialsFilePath: ".hkcredentials");
@@ -21,9 +21,8 @@ void main() {
         .withICureBasePath("https://kraken.icure.dev")
         .withUserName(creds.username)
         .withPassword(creds.password)
-        .withMsgGtwUrl("https://msg-gw.icure.cloud/km")
-        .withSignUpProcessId("f0ced6c6-d7cb-4f78-841e-2674ad09621e")
-        .withLoginProcessId("24df5258-a52c-11ec-b188-4f164bde4270")
+        .withAuthServerUrl("https://msg-gw.icure.cloud/km")
+        .withAuthProcessId("f0ced6c6-d7cb-4f78-841e-2674ad09621e")
         .addKeyPair("171f186a-7a2a-40f0-b842-b486428c771b", await TestUtils.keyFromFile(keyFileName: "171f186a-7a2a-40f0-b842-b486428c771b.2048.key"))
         .build();
   }
@@ -50,7 +49,7 @@ void main() {
       final RegistrationApi registrationApi = api.registrationApi;
 
       // When
-      final registrationProcess = await registrationApi.startUserRegistrationProcess(
+      final registrationProcess = await registrationApi.startAuthentication(
           "171f186a-7a2a-40f0-b842-b486428c771b", "justin_th", "", userEmail, "a58afe0e-02dc-431b-8155-0351140099e4");
 
       // Then
@@ -65,46 +64,39 @@ void main() {
     final registrationProcess = RegistrationProcess(processId, userEmail);
     final validationCode = userValidationCode;
 
-    // When
-    final registrationResult = await registrationApi.completeProcess(registrationProcess, validationCode);
-
-    // Init
-    var patMedtechApi = registrationResult.medTechApi;
-    final patUser = await retry(() => patMedtechApi.userApi.getLoggedUser());
     final keyPair = generateRandomPrivateAndPublicKeyPair();
     print("User Private Key is : ${keyPair.item1}");
     print("User Public Key is : ${keyPair.item2}");
 
     // When
+    final registrationResult = await registrationApi.completeAuthentication(registrationProcess, validationCode, keyPair);
+
+    // Init
+    var patMedtechApi = registrationResult.medTechApi;
+    final patUser = await retry(() => patMedtechApi.userApi.getLoggedUser());
     final pat = await patMedtechApi.patientApi.getPatient(patUser!.patientId!);
-    pat!.publicKey = keyPair.item2;
-    pat.firstName = "John";
+
+    // When
+    pat!.firstName = "John";
     pat.lastName = "Smith";
     pat.gender = PatientGenderEnum.male;
     pat.dateOfBirth = 19921028;
+    pat.note = "Secret";
 
     final modPat = await patMedtechApi.patientApi.createOrModifyPatient(pat);
-    patMedtechApi = MedTechApiBuilder.from(patMedtechApi)
-        .addKeyPair(patUser.patientId!, keyPair.item1.keyFromHexString())
-        .build();
-
-    final pat2 = await modPat!.initDelegations(patUser, patMedtechApi.crypto);
-    pat2.note = "Secret";
-
-    final modPat3 = (await patMedtechApi.patientApi.createOrModifyPatient(pat2))!;
 
     // Then
-    expect(modPat3.id, pat2.id);
-    expect(modPat3.firstName, pat2.firstName);
-    expect(modPat3.lastName, pat2.lastName);
-    expect(modPat3.note, pat2.note);
+    expect(modPat!.id, pat.id);
+    expect(modPat.firstName, pat.firstName);
+    expect(modPat.lastName, pat.lastName);
+    expect(modPat.note, pat.note);
 
     // Init
     final DataSample weight = getWeightDataSample();
     final DataSample height = getHeightDataSample();
     final dataSamples = [weight, height];
 
-    final patDataSamples = await patMedtechApi.dataSampleApi.createOrModifyDataSamplesFor(modPat3.id!, dataSamples);
+    final patDataSamples = await patMedtechApi.dataSampleApi.createOrModifyDataSamplesFor(modPat.id!, dataSamples);
 
     assert(patDataSamples != null);
   });
@@ -114,7 +106,7 @@ void main() {
     final RegistrationApi registrationApi = api.registrationApi;
 
     // When
-    final loginProcess = await registrationApi.startLoginProcess(userEmail, "a58afe0e-02dc-431b-8155-0351140099e4");
+    final loginProcess = await registrationApi.startAuthentication("171f186a-7a2a-40f0-b842-b486428c771b", "justin_th", "", userEmail, "a58afe0e-02dc-431b-8155-0351140099e4");
 
     // Then
     print("Login : ${loginProcess!.login}");
@@ -127,42 +119,40 @@ void main() {
     final registrationProcess = RegistrationProcess(processId, userEmail);
     final validationCode = userValidationCode;
 
-    // When
-    final registrationResult = await registrationApi.completeProcess(registrationProcess, validationCode);
-
-    // Init
-    var patMedtechApi = registrationResult.medTechApi;
-    final patUser = await retry(() => patMedtechApi.userApi.getLoggedUser());
     final keyPair = generateRandomPrivateAndPublicKeyPair();
     print("User New Private Key is : ${keyPair.item1}");
     print("User New Public Key is : ${keyPair.item2}");
 
     // When
+    final registrationResult = await registrationApi.completeAuthentication(registrationProcess, validationCode, keyPair);
+
+    // Init
+    var patMedtechApi = registrationResult.medTechApi;
+    final patUser = await retry(() => patMedtechApi.userApi.getLoggedUser());
+
+    // Can not decrypt protected data, as key has been lost
     final pat = await patMedtechApi.patientApi.getPatient(patUser!.patientId!);
-    pat!.lostRSAKeyAndReplacedItBy(keyPair);
 
-    final modPat = await patMedtechApi.patientApi.createOrModifyPatient(pat);
-    patMedtechApi = MedTechApiBuilder.from(patMedtechApi)
-        .addKeyPair(patUser.patientId!, keyPair.item1.keyFromHexString())
-        .build();
-
-    final pat2 = await modPat!.initDelegations(patUser, patMedtechApi.crypto);
-    pat2.note = "Secret";
-
-    final modPat3 = (await patMedtechApi.patientApi.createOrModifyPatient(pat2))!;
+    // When
+    pat!.note = "Other";
 
     // Then
-    expect(modPat3.id, pat2.id);
-    expect(modPat3.firstName, pat2.firstName);
-    expect(modPat3.lastName, pat2.lastName);
-    expect(modPat3.note, pat2.note);
+    // If we do this, we loose previous data
+    final modPat = await patMedtechApi.patientApi.createOrModifyPatient(pat);
+
+    // Then
+    expect(modPat!.id, pat.id);
+    expect(modPat.firstName, pat.firstName);
+    expect(modPat.lastName, pat.lastName);
+    expect(modPat.note, pat.note);
 
     // Init
     final DataSample weight = getWeightDataSample();
     final DataSample height = getHeightDataSample();
     final dataSamples = [weight, height];
 
-    final patDataSamples = await patMedtechApi.dataSampleApi.createOrModifyDataSamplesFor(modPat3.id!, dataSamples);
+    // As new delegation has been created for Patient, should be able to create new data
+    final patDataSamples = await patMedtechApi.dataSampleApi.createOrModifyDataSamplesFor(modPat.id!, dataSamples);
 
     assert(patDataSamples != null);
   });

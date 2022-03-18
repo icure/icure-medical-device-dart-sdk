@@ -13,8 +13,8 @@ class TestUtils {
         .withICureBasePath("https://kraken.icure.dev")
         .withUserName(creds.username)
         .withPassword(creds.password)
-        .withMsgGtwUrl("https://msg-gw.icure.cloud/km")
-        .withSignUpProcessId("f0ced6c6-d7cb-4f78-841e-2674ad09621e")
+        .withAuthServerUrl("https://msg-gw.icure.cloud/km")
+        .withAuthProcessId("f0ced6c6-d7cb-4f78-841e-2674ad09621e")
         .addKeyPair("782f1bcd-9f3f-408a-af1b-cd9f3f908a98", await TestUtils.keyFromFile())
         .build();
   }

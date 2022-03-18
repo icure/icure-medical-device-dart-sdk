@@ -9,7 +9,7 @@
 // ignore_for_file: lines_longer_than_80_chars
 
 import 'package:icure_dart_sdk/api.dart';
-import 'package:icure_dart_sdk/extended_api/data_owner_api.dart';
+import 'package:icure_dart_sdk/extended_api/data_owner_resolver.dart';
 import 'package:icure_medical_device_dart_sdk/api.dart';
 import 'package:icure_medical_device_dart_sdk/utils/functional_utils.dart';
 import 'package:uuid/uuid.dart';

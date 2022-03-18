@@ -4,18 +4,22 @@
 part of icure_medical_device_dart_sdk.api;
 
 class RegistrationApi {
-  RegistrationApi(this.iCureBasePath, this.registrationServer, this.signUpProcessId, this.loginProcessId);
+  RegistrationApi(
+      this.iCureBasePath,
+      this.authServerUrl,
+      this.authProcessId,
+      this.dataOwnerApiFactory);
 
   final String iCureBasePath;
-  final String registrationServer;
-  final String signUpProcessId;
-  final String loginProcessId;
+  final String authServerUrl;
+  final String authProcessId;
+  final DataOwnerApiFactory dataOwnerApiFactory;
 
-  Future<RegistrationProcess?> startUserRegistrationProcess(
+  Future<RegistrationProcess?> startAuthentication(
       String healthcareProfessionalId, String firstName, String lastName, String email, String recaptcha, {String? mobilePhone}) async {
     final requestId = Uuid().v4(options: {'rng': UuidUtil.cryptoRNG});
     var client = Client();
-    final Response res = await client.post(Uri.parse('${registrationServer}/process/${signUpProcessId}/${requestId}'),
+    final Response res = await client.post(Uri.parse('${authServerUrl}/process/${authProcessId}/${requestId}'),
         headers: {'Content-Type': 'application/json'},
         body: await serializeAsync({
           'g-recaptcha-response': recaptcha,
@@ -33,63 +37,87 @@ class RegistrationApi {
     return null;
   }
 
-  Future<RegistrationResult> completeProcess(RegistrationProcess process, String validationCode) async {
+  Future<RegistrationResult> completeAuthentication(RegistrationProcess process, String validationCode, Tuple2<String, String> patientKeyPair) async {
     var client = Client();
-    final Response res = await client.get(Uri.parse('${registrationServer}/process/validate/${process.processId}-${validationCode}'), headers: {
+    final Response res = await client.get(Uri.parse('${authServerUrl}/process/validate/${process.processId}-${validationCode}'), headers: {
       'Content-Type': 'application/json'
     });
 
     if (res.statusCode < 400) {
-      return retry(() async {
-        final api = MedTechApiBuilder.newBuilder()
-            .withICureBasePath(this.iCureBasePath)
-            .withUserName(process.login)
-            .withPassword(validationCode)
-            .withMsgGtwUrl(this.registrationServer)
-            .withSignUpProcessId(this.signUpProcessId)
-            .build();
-        try {
-          final user = await api.userApi.getLoggedUser();
-          if (user == null) {
-            throw FormatException("Your validation code is expired");
-          }
+      final Tuple3<MedTechApi, UserDto, String> initInfo = await retry(
+              () async => await createUserAuthenticationToken(process, validationCode),
+          trials: 5, delay: 1000
+      );
 
-          final token = await api.userApi.createToken(user.id!, validity: Duration(days: 3653));
-          if (token == null) {
-            throw FormatException("Your validation code is expired");
-          }
-          print("User Token is : $token");
+      MedTechApi authenticatedApi = await initUserCrypto(initInfo.item1, initInfo.item3, initInfo.item2, patientKeyPair);
 
-          return RegistrationResult(MedTechApiBuilder.newBuilder()
-              .withICureBasePath(this.iCureBasePath)
-              .withUserName(user.id!)
-              .withPassword(token)
-              .withMsgGtwUrl(this.registrationServer)
-              .withSignUpProcessId(this.signUpProcessId)
-              .build(), token, user.id!);
-        } catch (e) {
-          throw FormatException("Your validation code is expired");
-        }
-      }, trials: 5, delay: 1000);
+      return RegistrationResult(authenticatedApi, initInfo.item3, initInfo.item2.id);
     }
 
     throw FormatException("Invalid validation code");
   }
 
-  Future<RegistrationProcess?> startLoginProcess(String email, String recaptcha, {String? mobilePhone}) async {
-    final requestId = Uuid().v4(options: {'rng': UuidUtil.cryptoRNG});
-    var client = Client();
-    final Response res = await client.post(Uri.parse('${registrationServer}/process/${loginProcessId}/${requestId}'),
-        headers: {'Content-Type': 'application/json'},
-        body: await serializeAsync({
-          'g-recaptcha-response': recaptcha,
-          'from': email,
-          'mobilePhone': mobilePhone
-        }));
+  Future<Tuple3<MedTechApi, UserDto, String>> createUserAuthenticationToken(RegistrationProcess process, String validationCode) async {
+    final api = MedTechApiBuilder.newBuilder()
+        .withICureBasePath(this.iCureBasePath)
+        .withUserName(process.login)
+        .withPassword(validationCode)
+        .withAuthServerUrl(this.authServerUrl)
+        .withAuthProcessId(this.authProcessId)
+        .build();
+    try {
+      final user = await api.baseUserApi.getCurrentUser();
+      if (user == null) {
+        throw FormatException("Your validation code is expired");
+      }
 
-    if (res.statusCode < 400) {
-      return RegistrationProcess(requestId, email);
+      final token = await api.userApi.createToken(user.id, validity: Duration(days: 3653));
+      if (token == null) {
+        throw FormatException("Your validation code is expired");
+      }
+      print("User Token is : $token");
+
+      return Tuple3(api, user, token);
+
+    } catch (e) {
+      throw FormatException("Your validation code is expired");
     }
-    return null;
+  }
+
+  Future<MedTechApi> initUserCrypto(MedTechApi api, String token, UserDto user, Tuple2<String, String> patientKeyPair) async {
+    final authenticatedApi = MedTechApiBuilder.from(api)
+        .withPassword(token)
+        .addKeyPair(user.dataOwnerId()!, patientKeyPair.item1.keyFromHexString())
+        .build();
+
+    final dataOwnerApi = await DataOwnerApiFactory.fromExistingApis(
+      authenticatedApi.baseHealthcarePartyApi,
+      authenticatedApi.basePatientApi,
+      authenticatedApi.baseDeviceApi,
+    ).getDataOwnerApiFor(user);
+
+    final dataOwner = await dataOwnerApi.getDataOwner(user.dataOwnerId()!);
+    if (dataOwner == null) {
+      throw FormatException("Your user is not a patient");
+    }
+    dataOwner.publicKey = patientKeyPair.item2;
+    final modDataOwner = await dataOwnerApi.modifyDataOwner(dataOwner);
+
+    if (user.patientId != null) {
+      await initPatientDelegationsAndSave(authenticatedApi, modDataOwner as PatientDto, user, dataOwnerApi);
+    }
+
+    return authenticatedApi;
+  }
+
+  Future<void> initPatientDelegationsAndSave(MedTechApi apiWithNewKeyPair, PatientDto modPat, UserDto user, DataOwnerApi<dynamic> dataOwnerApi) async {
+    final ccPatient = patientCryptoConfig(apiWithNewKeyPair.crypto);
+    final dataOwnerWithDelegations = await DecryptedPatientDto.fromJson(toJsonDeep(modPat))
+        .let((that) => that!.initDelegations(user, ccPatient));
+
+    final initialisedDataOwner = await apiWithNewKeyPair.basePatientApi.modifyPatient(user, dataOwnerWithDelegations, ccPatient);
+    if (initialisedDataOwner == null) {
+      throw FormatException("An error occurred while initializing your user");
+    }
   }
 }

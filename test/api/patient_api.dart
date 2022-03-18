@@ -86,8 +86,8 @@ void main() {
           .withICureBasePath('https://kraken.icure.dev')
           .withUserName(createdUser!.login!)
           .withPassword(passwordUser)
-          .withMsgGtwUrl("https://msg-gw.icure.cloud/km")
-          .withSignUpProcessId("f0ced6c6-d7cb-4f78-841e-2674ad09621e")
+          .withAuthServerUrl("https://msg-gw.icure.cloud/km")
+          .withAuthProcessId("f0ced6c6-d7cb-4f78-841e-2674ad09621e")
           .build();
 
       final patUser = await retry(() => patMedtechApi.userApi.getLoggedUser());
@@ -102,11 +102,11 @@ void main() {
           .withUserName(createdUser.login!)
           .withPassword(passwordUser)
           .addKeyPair(pat.id!, keyPair.item1.keyFromHexString())
-          .withMsgGtwUrl("https://msg-gw.icure.cloud/km")
-          .withSignUpProcessId("f0ced6c6-d7cb-4f78-841e-2674ad09621e")
+          .withAuthServerUrl("https://msg-gw.icure.cloud/km")
+          .withAuthProcessId("f0ced6c6-d7cb-4f78-841e-2674ad09621e")
           .build();
 
-      final pat2 = await modPat!.initDelegations(patUser, patMedtechApi.crypto);
+      final pat2 = await modPat!.giveAccessToItself(patMedtechApi.crypto);
       pat2.note = "Secret";
       final modPat2 = (await patMedtechApi.patientApi.createOrModifyPatient(pat2))!;
 
