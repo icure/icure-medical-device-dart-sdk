@@ -100,11 +100,17 @@ class RegistrationApi {
     if (dataOwner == null) {
       throw FormatException("Your user is not a patient");
     }
-    dataOwner.publicKey = patientKeyPair.item2;
-    final modDataOwner = await dataOwnerApi.modifyDataOwner(dataOwner);
 
-    if (user.patientId != null) {
-      await initPatientDelegationsAndSave(authenticatedApi, modDataOwner as PatientDto, user, dataOwnerApi);
+    if (dataOwner.publicKey == null) {
+      dataOwner.publicKey = patientKeyPair.item2;
+      final modDataOwner = await dataOwnerApi.modifyDataOwner(dataOwner);
+
+      if (user.patientId != null) {
+        await initPatientDelegationsAndSave(authenticatedApi, modDataOwner as PatientDto, user, dataOwnerApi);
+      }
+
+    } else if (dataOwner.publicKey != patientKeyPair.item2) {
+      //TODO User lost his key
     }
 
     return authenticatedApi;
