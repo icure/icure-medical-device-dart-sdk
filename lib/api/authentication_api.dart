@@ -13,7 +13,7 @@ class AuthenticationApi {
   final String iCureBasePath;
   final String authServerUrl;
   final String authProcessId;
-  final DataOwnerApiFactory dataOwnerApiFactory;
+  final DataOwnerApiFactory? dataOwnerApiFactory;
 
   Future<AuthenticationProcess?> startAuthentication(
       String healthcareProfessionalId, String firstName, String lastName, String email, String recaptcha, {String? mobilePhone}) async {

@@ -1,3 +1,7 @@
+# 1.3.3
+
+- Add AnonymousMedtechApi for initialisation of users
+
 # 1.3.2
 
 - Renamed registrationApi -> authenticationApi

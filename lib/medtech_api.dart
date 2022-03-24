@@ -6,6 +6,32 @@
 // ignore_for_file: lines_longer_than_80_chars
 
 part of icure_medical_device_dart_sdk.api;
+class AnonymousMedTechApi {
+  final String iCureBasePath;
+  final String? authServerUrl;
+  final String? authProcessId;
+
+  late final base_api.AuthApi baseAuthApi;
+
+  AnonymousMedTechApi(this.iCureBasePath, this.authServerUrl, this.authProcessId) {
+    final base_api.ApiClient client = base_api.ApiClient(basePath: this.iCureBasePath);
+    this.baseAuthApi = base_api.AuthApi(client);
+  }
+
+  AuthenticationApi? _authenticationApi;
+
+  AuthenticationApi get authenticationApi {
+    if (_authenticationApi != null) {
+      return _authenticationApi!;
+    }
+
+    if (this.authServerUrl == null || this.authProcessId == null) {
+      throw FormatException("To use RegistrationApi, you need to provide the msgGtwUrl, your signUpProcessId and your loginProcessId !");
+    }
+    _authenticationApi = AuthenticationApi(this.iCureBasePath, this.authServerUrl!, this.authProcessId!, null);
+    return _authenticationApi!;
+  }
+}
 
 class MedTechApi {
   final String iCureBasePath;
