@@ -48,29 +48,36 @@ class MedTechApi {
   MedicalDeviceApi? _medicalDeviceApi;
   DataSampleApi? _dataSampleApi;
   HealthcareProfessionalApi? _healthcareProfessionalApi;
-  AuthenticationApi? _registrationApi;
+  AuthenticationApi? _authenticationApi;
 
   CodingApi get codingApi => _codingApi ?? (_codingApi = CodingApiImpl(this));
+
   PatientApi get patientApi => _patientApi ?? (_patientApi = PatientApiImpl(this));
+
   UserApi get userApi => _userApi ?? (_userApi = UserApiImpl(this));
+
   HealthcareElementApi get healthcareElementApi => _healthcareElementApi ?? (_healthcareElementApi = HealthcareElementApiImpl(this));
+
   MedicalDeviceApi get medicalDeviceApi => _medicalDeviceApi ?? (_medicalDeviceApi = MedicalDeviceApiImpl(this));
+
   DataSampleApi get dataSampleApi => _dataSampleApi ?? (_dataSampleApi = DataSampleApiImpl(this));
-  HealthcareProfessionalApi get healthcareProfessionalApi => _healthcareProfessionalApi ?? (_healthcareProfessionalApi = HealthcareProfessionalApiImpl(this));
-  AuthenticationApi get registrationApi {
-    if (_registrationApi != null) {
-      return _registrationApi!;
+
+  HealthcareProfessionalApi get healthcareProfessionalApi =>
+      _healthcareProfessionalApi ?? (_healthcareProfessionalApi = HealthcareProfessionalApiImpl(this));
+
+  AuthenticationApi get authenticationApi {
+    if (_authenticationApi != null) {
+      return _authenticationApi!;
     }
 
     if (this.authServerUrl == null || this.authProcessId == null) {
       throw FormatException("To use RegistrationApi, you need to provide the msgGtwUrl, your signUpProcessId and your loginProcessId !");
     }
 
-    _registrationApi = AuthenticationApi(this.iCureBasePath, this.authServerUrl!, this.authProcessId!,
+    _authenticationApi = AuthenticationApi(this.iCureBasePath, this.authServerUrl!, this.authProcessId!,
         DataOwnerApiFactory.fromExistingApis(this.baseHealthcarePartyApi, this.basePatientApi, this.baseDeviceApi));
-    return _registrationApi!;
+    return _authenticationApi!;
   }
-
 }
 
 class MedTechApiBuilder {

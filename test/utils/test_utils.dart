@@ -23,7 +23,7 @@ class TestUtils {
     var fileUri = Uri.file("test/resources/keys/${keyFileName}", windows: false);
     var keyFile = File.fromUri(fileUri);
 
-    return (await keyFile.readAsString(encoding: utf8)).keyFromHexString();
+    return (await keyFile.readAsString(encoding: utf8)).trim().keyFromHexString();
   }
 
   static Future<UsernamePassword> credentials({String credentialsFilePath = ".credentials"}) async {

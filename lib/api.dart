@@ -89,7 +89,7 @@ part 'api/medical_device_api.dart';
 
 part 'api/patient_api.dart';
 
-part 'api/registration_api.dart';
+part 'api/authentication_api.dart';
 
 part 'api/user_api.dart';
 
