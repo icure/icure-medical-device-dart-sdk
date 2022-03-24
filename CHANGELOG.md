@@ -1,3 +1,80 @@
+# 1.3.2
+
+- Renamed registrationApi -> authenticationApi
+
+# 1.3.1
+
+- Implement authentication login with user still having access to its key
+
+# 1.3.0
+
+- Added login process methods
+
+# 1.2.17
+
+- FEATURE Support AesExchangeKeys, transferKeys and lostHcPartyKeys in data owners
+- Updating icure_dart_sdk dependency to 1.0.34
+
+# 1.2.16
+
+- FIX Add patientId in createOrModifyHealthElement API service
+- Updating icure_dart_sdk dependency to 1.0.33
+
+# 1.2.15
+
+- Fixed creation of DataSamples that contains "content" value
+- Updated icure-dart-sdk to 1.0.32
+
+## 1.2.14
+
+- FIX Could not manage data samples when user is a patient
+- FIX Could not filter patients and healthcare elements for a patient data owner
+- FIX HealthcareElementByHcPartyIdentifiersFilter mapping
+
+## 1.2.13
+
+- Updated icure dart sdk
+
+## 1.2.12
+
+- Updated icure dart sdk
+
+## 1.2.11
+
+- Fix createOrModifyHealthcareElements method
+- Add missing methods in healthcare professional API and delete unrelated documentation
+- Simplify MedTechApiBuilder
+
+## 1.2.10
+
+- Fix registration process
+-
+
+## 1.2.9
+
+- Added the possibility to provide a validationCode for the signUp
+
+## 1.2.8
+
+- Fixed issues in Filters DSL
+
+## 1.2.7
+
+- Exported binary_utils
+- Changed addKeyPair signature
+
+## 1.2.6
+
+- Registration API Use Client Process ID
+
+## 1.2.5
+
+- Fix jsonEncode error when calling registration api
+
+## 1.2.4
+
+- Changed forHcp to forDataOwner in filter_dsl
+
 ## 1.2.3
 
 - Added simplified calls for registration

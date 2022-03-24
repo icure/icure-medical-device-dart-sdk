@@ -21,7 +21,7 @@ abstract class HealthcareElementApi {
   /// Parameters:
   ///
   /// * [HealthcareElement] healthcareElement (required):
-  Future<HealthcareElement?> createOrModifyHealthcareElement(HealthcareElement healthcareElement,);
+  Future<HealthcareElement?> createOrModifyHealthcareElement(String patientId, HealthcareElement healthcareElement,);
 
   /// Create a Healthcare Element
   ///

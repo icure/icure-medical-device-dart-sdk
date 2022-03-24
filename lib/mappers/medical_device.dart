@@ -9,7 +9,7 @@
 // ignore_for_file: lines_longer_than_80_chars
 
 import 'package:icure_dart_sdk/api.dart';
-import 'package:icure_dart_sdk/extended_api/data_owner_api.dart';
+import 'package:icure_dart_sdk/extended_api/data_owner_resolver.dart';
 import 'package:icure_medical_device_dart_sdk/api.dart';
 import 'package:icure_medical_device_dart_sdk/utils/functional_utils.dart';
 import 'package:uuid/uuid.dart';
@@ -45,33 +45,39 @@ extension DeviceDtoMapper on DeviceDto {
       systemMetaData: SystemMetaDataOwner(
         hcPartyKeys: this.hcPartyKeys,
         privateKeyShamirPartitions: this.privateKeyShamirPartitions,
+        aesExchangeKeys: this.aesExchangeKeys,
+        transferKeys: this.transferKeys,
+        lostHcPartyKeys: this.lostHcPartyKeys.toList(),
       ));
 }
 
 extension MedicalDeviceMapper on MedicalDevice {
   DeviceDto toDeviceDto() => DeviceDto(
-        id: this.id?.also((it) {
-              if (!Uuid.isValidUUID(fromString: it)) {
-                throw FormatException("Invalid id, id must be a valid UUID");
-              }
-            }) ??
-            uuid.v4(options: {'rng': UuidUtil.cryptoRNG}),
-        tags: this.labels.map((it) => it.toCodeStubDto()).toSet(),
-        codes: this.codes.map((it) => it.toCodeStubDto()).toSet(),
-        properties: this.properties.map((it) => it.toPropertyStubDto()).toSet(),
-        rev: this.rev,
-        deletionDate: this.deletionDate,
-        name: this.name,
-        externalId: this.externalId,
-        parentId: this.parentId,
-        picture: this.picture,
-        type: this.type,
-        brand: this.brand,
-        model: this.model,
-        serialNumber: this.serialNumber,
-        hcPartyKeys: this.systemMetaData?.hcPartyKeys ?? const {},
-        privateKeyShamirPartitions: this.systemMetaData?.privateKeyShamirPartitions ?? const {},
-      );
+    id: this.id?.also((it) {
+      if (!Uuid.isValidUUID(fromString: it)) {
+        throw FormatException("Invalid id, id must be a valid UUID");
+      }
+    }) ??
+        uuid.v4(options: {'rng': UuidUtil.cryptoRNG}),
+    tags: this.labels.map((it) => it.toCodeStubDto()).toSet(),
+    codes: this.codes.map((it) => it.toCodeStubDto()).toSet(),
+    properties: this.properties.map((it) => it.toPropertyStubDto()).toSet(),
+    rev: this.rev,
+    deletionDate: this.deletionDate,
+    name: this.name,
+    externalId: this.externalId,
+    parentId: this.parentId,
+    picture: this.picture,
+    type: this.type,
+    brand: this.brand,
+    model: this.model,
+    serialNumber: this.serialNumber,
+    hcPartyKeys: this.systemMetaData?.hcPartyKeys ?? const {},
+    privateKeyShamirPartitions: this.systemMetaData?.privateKeyShamirPartitions ?? const {},
+    aesExchangeKeys: this.systemMetaData?.aesExchangeKeys ?? const {},
+    transferKeys: this.systemMetaData?.transferKeys ?? const {},
+    lostHcPartyKeys: this.systemMetaData?.lostHcPartyKeys.toSet() ?? {},
+  );
 
   DataOwnerDto toDataOwnerDto() => DataOwnerDto(DataOwnerType.device, this.id!, this.systemMetaData?.hcPartyKeys ?? const {},
       publicKey: this.publicKey!, parentId: this.parentId, rev: this.rev);

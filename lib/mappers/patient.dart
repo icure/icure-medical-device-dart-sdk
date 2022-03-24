@@ -9,7 +9,7 @@
 // ignore_for_file: lines_longer_than_80_chars
 
 import 'package:icure_dart_sdk/api.dart';
-import 'package:icure_dart_sdk/extended_api/data_owner_api.dart';
+import 'package:icure_dart_sdk/extended_api/data_owner_resolver.dart';
 import 'package:icure_medical_device_dart_sdk/api.dart';
 import 'package:icure_medical_device_dart_sdk/utils/functional_utils.dart';
 import 'package:icure_medical_device_dart_sdk/utils/iterable_utils.dart';
@@ -87,6 +87,9 @@ extension PatientDtoMapper on DecryptedPatientDto {
             cryptedForeignKeys: this.cryptedForeignKeys.map((k, v) => MapEntry(k, v.map((it) => it.toDelegation()).toList())) ,
             delegations: this.delegations.map((k, v) => MapEntry(k, v.map((it) => it.toDelegation()).toList())),
             encryptionKeys: this.encryptionKeys.map((k, v) => MapEntry(k, v.map((it) => it.toDelegation()).toList())),
+            aesExchangeKeys: this.aesExchangeKeys,
+            transferKeys: this.transferKeys,
+            lostHcPartyKeys: this.lostHcPartyKeys.toList(),
           )
       );
 }
@@ -167,6 +170,9 @@ extension PatientMapper on Patient {
             this.systemMetaData?.cryptedForeignKeys.map((k, v) => MapEntry(k, v.map((it) => it.toDelegationDto()).toSet())) ?? const {},
         delegations: this.systemMetaData?.delegations.map((k, v) => MapEntry(k, v.map((it) => it.toDelegationDto()).toSet())) ?? const {},
         encryptionKeys: this.systemMetaData?.encryptionKeys.map((k, v) => MapEntry(k, v.map((it) => it.toDelegationDto()).toSet())) ?? const {},
+        aesExchangeKeys: this.systemMetaData?.aesExchangeKeys ?? const {},
+        transferKeys: this.systemMetaData?.transferKeys ?? const {},
+        lostHcPartyKeys: this.systemMetaData?.lostHcPartyKeys.toSet() ?? {},
       );
 
   DataOwnerDto toDataOwnerDto() =>

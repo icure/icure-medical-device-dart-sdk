@@ -16,27 +16,44 @@ abstract class HealthcareProfessionalApi {
 
   final ApiClient apiClient;
 
-  /// Create a newhealthcare professional or modify an existing one.
+  /// Creates a new healthcare professional or modify an existing one.
   ///
-  /// Ahealthcare professional must have a login, an email or a mobilePhone defined, ahealthcare professional should be linked to either a Healthcare Professional, a Patient or a Device. When modifying an healthcare professional, you must ensure that the rev obtained when getting or creating thehealthcare professional is present as the rev is used to guarantee that thehealthcare professional has not been modified by a third party.
   ///
   /// Parameters:
   ///
   /// * [HealthcareProfessional] healthcareProfessional (required):
-  ///   Thehealthcare professional that must be created in the database.
+  ///   The healthcare professional that must be created in the database.
   Future<HealthcareProfessional?> createOrModifyHealthcareProfessional(HealthcareProfessional healthcareProfessional,);
 
-  /// Delete an existing healthcare professional.
+  /// Creates new healthcare professionals or modify a list of existing ones.
   ///
-  /// Deletes thehealthcare professional identified by the provided unique hcpId.
+  /// Parameters:
+  ///
+  /// * [List] healthcareProfessionals (required):
+  ///   The list of healthcare professionals that must be created / updated in the database.
+  Future<List<HealthcareProfessional>?> createOrModifyHealthcareProfessionals(List<HealthcareProfessional> healthcareProfessionals);
+
+  /// Deletes an existing healthcare professional.
+  ///
+  /// Deletes the healthcare professional identified by the provided unique hcpId.
   ///
   /// Parameters:
   ///
   /// * [String] hcpId (required):
-  ///   The UUID that uniquely identifies thehealthcare professional to be deleted.
+  ///   The UUID that uniquely identifies the healthcare professional to be deleted.
   Future<String?> deleteHealthcareProfessional(String hcpId,);
 
-  /// Load healthcare professionals from the database by filtering them using the provided Filter.
+  /// Deletes a list of existing healthcare professionals.
+  ///
+  /// Deletes the healthcare professionals identified by the provided unique hcpIds.
+  ///
+  /// Parameters:
+  ///
+  /// * [List] hcpIds (required):
+  ///   The list of UUIDs that uniquely identify the healthcare professionals to be deleted.
+  Future<List<String>?> deleteHealthcareProfessionals(List<String> hcpIds);
+
+  /// Loads healthcare professionals from the database by filtering them using the provided Filter.
   ///
   /// Filters are complex selectors that are built by combining basic building blocks. Examples of filters available for Healthcare professionals are AllHealthcareProfessionalsFilter and HealthcarProfessionalsByIdsFilter. This method returns a paginated list of healthcare professionals (with a cursor that lets you query the following items).
   ///

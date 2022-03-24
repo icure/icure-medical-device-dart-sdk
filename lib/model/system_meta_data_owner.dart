@@ -15,29 +15,50 @@ class SystemMetaDataOwner {
   SystemMetaDataOwner({
     this.hcPartyKeys = const {},
     this.privateKeyShamirPartitions = const {},
+    this.aesExchangeKeys = const {},
+    this.transferKeys = const {},
+    this.lostHcPartyKeys = const []
   });
 
   Map<String, List<String>> hcPartyKeys;
 
   Map<String, String> privateKeyShamirPartitions;
 
+  Map<String, Map<String, List<String>>> aesExchangeKeys;
+
+  Map<String, Map<String, String>> transferKeys;
+
+  List<String> lostHcPartyKeys;
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is SystemMetaDataOwner && other.hcPartyKeys == hcPartyKeys && other.privateKeyShamirPartitions == privateKeyShamirPartitions;
+          other is SystemMetaDataOwner &&
+              other.hcPartyKeys == hcPartyKeys &&
+              other.privateKeyShamirPartitions == privateKeyShamirPartitions &&
+              other.aesExchangeKeys == aesExchangeKeys &&
+              other.transferKeys == transferKeys &&
+              other.lostHcPartyKeys == lostHcPartyKeys;
 
   @override
   int get hashCode =>
       // ignore: unnecessary_parenthesis
-      (hcPartyKeys.hashCode) + (privateKeyShamirPartitions.hashCode);
+      (hcPartyKeys.hashCode) +
+      (privateKeyShamirPartitions.hashCode) +
+      (aesExchangeKeys.hashCode) +
+      (transferKeys.hashCode) +
+      (lostHcPartyKeys.hashCode);
 
   @override
-  String toString() => 'SystemMetaDataOwner[hcPartyKeys=$hcPartyKeys, privateKeyShamirPartitions=$privateKeyShamirPartitions]';
+  String toString() => 'SystemMetaDataOwner[hcPartyKeys=$hcPartyKeys, privateKeyShamirPartitions=$privateKeyShamirPartitions, aesExchangeKeys=$aesExchangeKeys, transferKeys=$transferKeys, lostHcPartyKeys=$lostHcPartyKeys]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
     json[r'hcPartyKeys'] = hcPartyKeys;
     json[r'privateKeyShamirPartitions'] = privateKeyShamirPartitions;
+    json[r'aesExchangeKeys'] = aesExchangeKeys;
+    json[r'transferKeys'] = transferKeys;
+    json[r'lostHcPartyKeys'] = lostHcPartyKeys;
     return json;
   }
 
@@ -62,15 +83,18 @@ class SystemMetaDataOwner {
       return SystemMetaDataOwner(
         hcPartyKeys: json[r'hcPartyKeys'] == null ? const {} : mapWithListOfStringsFromJson(json[r'hcPartyKeys']),
         privateKeyShamirPartitions: mapCastOfType<String, String>(json, r'privateKeyShamirPartitions')!,
+        lostHcPartyKeys: json[r'lostHcPartyKeys'] == null ? const [] : (json[r'lostHcPartyKeys'] as List).cast<String>(),
+        aesExchangeKeys: json[r'aesExchangeKeys'] == null ? const {} : mapOf(json[r'aesExchangeKeys'], (el) => mapWithListOfStringsFromJson(el)),
+        transferKeys: json[r'transferKeys'] == null ? const {} : mapWithMapOfStringsFromJson(json[r'transferKeys']),
       );
     }
     return null;
   }
 
   static List<SystemMetaDataOwner>? listFromJson(
-    dynamic json, {
-    bool growable = false,
-  }) {
+      dynamic json, {
+        bool growable = false,
+      }) {
     final result = <SystemMetaDataOwner>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
@@ -99,9 +123,9 @@ class SystemMetaDataOwner {
 
   // maps a json object with a list of SystemMetaDataOwner-objects as value to a dart map
   static Map<String, List<SystemMetaDataOwner>> mapListFromJson(
-    dynamic json, {
-    bool growable = false,
-  }) {
+      dynamic json, {
+        bool growable = false,
+      }) {
     final map = <String, List<SystemMetaDataOwner>>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
@@ -122,5 +146,8 @@ class SystemMetaDataOwner {
   static const requiredKeys = <String>{
     'hcPartyKeys',
     'privateKeyShamirPartitions',
+    'aesExchangeKeys',
+    'transferKeys',
+    'lostHcPartyKeys'
   };
 }

@@ -30,8 +30,8 @@ class HealthcareProfessionalApiImpl extends HealthcareProfessionalApi {
       (await this.deleteHealthcareProfessionals([healthcareProfessionalId]))?.first;
 
   @override
-  Future<List<String>?> deleteHealthcareProfessionals(List<String> requestBody) async {
-    return (await api.baseHealthcarePartyApi.deleteHealthcareParties(base_api.ListOfIdsDto(ids: requestBody)))?.map((e) => e.rev!).toList();
+  Future<List<String>?> deleteHealthcareProfessionals(List<String> hcpIds) async {
+    return (await api.baseHealthcarePartyApi.deleteHealthcareParties(base_api.ListOfIdsDto(ids: hcpIds)))?.map((e) => e.rev!).toList();
   }
 
   @override

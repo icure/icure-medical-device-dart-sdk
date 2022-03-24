@@ -8,14 +8,14 @@
 part of icure_medical_device_dart_sdk.api;
 
 class PatientApiImpl extends PatientApi {
-  final MedTechApi api;
+  final MedTechApi _api;
 
-  PatientApiImpl(this.api);
+  PatientApiImpl(this._api);
 
   @override
   Future<Patient?> createOrModifyPatient(Patient patient) async {
-    final localCrypto = api.localCrypto;
-    final currentUser = await api.baseUserApi.getCurrentUser();
+    final localCrypto = _api.crypto;
+    final currentUser = await _api.baseUserApi.getCurrentUser();
     final ccPatient = patientCryptoConfig(localCrypto);
 
     if (currentUser == null) {
@@ -27,11 +27,11 @@ class PatientApiImpl extends PatientApi {
         throw ArgumentError("Update id should be provided as an UUID");
       }
       final modifiedPatientDto =
-          await base_api.PatientApiCrypto(api.basePatientApi).modifyPatient(currentUser, PatientMapper(patient).toPatientDto(), ccPatient);
+          await base_api.PatientApiCrypto(_api.basePatientApi).modifyPatient(currentUser, PatientMapper(patient).toPatientDto(), ccPatient);
       return modifiedPatientDto != null ? PatientDtoMapper(modifiedPatientDto).toPatient() : null;
     }
     final createdPatientDto =
-        await base_api.PatientApiCrypto(api.basePatientApi).createPatient(currentUser, PatientMapper(patient).toPatientDto(), ccPatient);
+        await base_api.PatientApiCrypto(_api.basePatientApi).createPatient(currentUser, PatientMapper(patient).toPatientDto(), ccPatient);
     return createdPatientDto != null ? PatientDtoMapper(createdPatientDto).toPatient() : null;
   }
 
@@ -42,21 +42,22 @@ class PatientApiImpl extends PatientApi {
 
   @override
   Future<PaginatedListPatient?> filterPatients(Filter<Patient> filter, {String? nextPatientId, int? limit, String? startKey}) async {
-    final localCrypto = api.localCrypto;
-    final currentUser = await api.baseUserApi.getCurrentUser();
+    final localCrypto = _api.crypto;
+    final currentUser = await _api.baseUserApi.getCurrentUser();
     final ccPatient = patientCryptoConfig(localCrypto);
 
-    return (await base_api.PatientApiCrypto(api.basePatientApi).filterPatientsBy(currentUser!, base_api.FilterChain<base_api.PatientDto>(filter.toAbstractFilterDto()), startKey, nextPatientId, limit, ccPatient))
+    return (await base_api.PatientApiCrypto(_api.basePatientApi).filterPatientsBy(
+            currentUser!, base_api.FilterChain<base_api.PatientDto>(filter.toAbstractFilterDto()), startKey, nextPatientId, limit, ccPatient))
         ?.toPaginatedListPatient();
   }
 
   @override
-  Future<Patient?> getPatient(String patientId) async => await PatientDtoMapper(await api.basePatientApi.getPatient(
-          (await api.baseUserApi.getCurrentUser() ?? (throw StateError("Couldn't get current user"))), patientId, patientCryptoConfig(api.localCrypto)))
+  Future<Patient?> getPatient(String patientId) async => await PatientDtoMapper(await _api.basePatientApi.getPatient(
+          (await _api.baseUserApi.getCurrentUser() ?? (throw StateError("Couldn't get current user"))), patientId, patientCryptoConfig(_api.crypto)))
       ?.toPatient();
 
   @override
   Future<List<String>?> matchPatients(Filter filter) {
-    return api.basePatientApi.rawMatchPatientsBy(filter.toAbstractFilterDto());
+    return _api.basePatientApi.rawMatchPatientsBy(filter.toAbstractFilterDto());
   }
 }
