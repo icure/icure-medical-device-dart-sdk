@@ -1,3 +1,7 @@
+# 1.3.2
+
+- Renamed registrationApi -> authenticationApi
+
 # 1.3.1
 
 - Implement authentication login with user still having access to its key
