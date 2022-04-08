@@ -2,6 +2,7 @@
 import 'package:icure_medical_device_dart_sdk/api.dart';
 import 'package:icure_medical_device_dart_sdk/utils/net_utils.dart';
 import "package:test/test.dart";
+import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
 import 'package:uuid/uuid_util.dart';
 
@@ -68,8 +69,10 @@ void main() {
     print("User Private Key is : ${keyPair.item1}");
     print("User Public Key is : ${keyPair.item2}");
 
+    Future<Tuple3<String, String, String>?> Function(String, String) tokenAndKeyPairProvider = (String groupId, String userId) async => null;
+
     // When
-    final registrationResult = await registrationApi.completeAuthentication(registrationProcess, validationCode, keyPair);
+    final registrationResult = await registrationApi.completeAuthentication(registrationProcess, validationCode, keyPair, tokenAndKeyPairProvider);
 
     // Init
     var patMedtechApi = registrationResult.medTechApi;
@@ -124,8 +127,10 @@ void main() {
     print("User New Private Key is : ${keyPair.item1}");
     print("User New Public Key is : ${keyPair.item2}");
 
+    Future<Tuple3<String, String, String>?> Function(String, String) tokenAndKeyPairProvider = (String groupId, String userId) async => null;
+
     // When
-    final registrationResult = await registrationApi.completeAuthentication(registrationProcess, validationCode, keyPair);
+    final registrationResult = await registrationApi.completeAuthentication(registrationProcess, validationCode, keyPair, tokenAndKeyPairProvider);
 
     // Init
     var patMedtechApi = registrationResult.medTechApi;

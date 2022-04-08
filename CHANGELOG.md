@@ -1,3 +1,7 @@
+# 1.3.4
+
+- Add parameter to provide keys and tokens using a Keystore
+
 # 1.3.3
 
 - Add AnonymousMedtechApi for initialisation of users

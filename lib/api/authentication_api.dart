@@ -3,6 +3,14 @@
 
 part of icure_medical_device_dart_sdk.api;
 
+class ApiInitialisationResult {
+  final UserDto user;
+  final String token;
+  final Tuple2<String, String>? keyPair;
+
+  ApiInitialisationResult(this.user, this.token, this.keyPair);
+}
+
 class AuthenticationApi {
   AuthenticationApi(
       this.iCureBasePath,
@@ -37,27 +45,28 @@ class AuthenticationApi {
     return null;
   }
 
-  Future<AuthenticationResult> completeAuthentication(AuthenticationProcess process, String validationCode, Tuple2<String, String> patientKeyPair) async {
+  Future<AuthenticationResult> completeAuthentication(AuthenticationProcess process, String validationCode, Tuple2<String, String> patientKeyPair, Future<Tuple3<String, String, String>?> Function(String, String) tokenAndKeyPairProvider) async {
     var client = Client();
     final Response res = await client.get(Uri.parse('${authServerUrl}/process/validate/${process.processId}-${validationCode}'), headers: {
       'Content-Type': 'application/json'
     });
 
     if (res.statusCode < 400) {
-      final Tuple3<MedTechApi, UserDto, String> initInfo = await retry(
-              () async => await createUserAuthenticationToken(process, validationCode),
+      final Tuple2<MedTechApi, ApiInitialisationResult> initInfo = await retry(
+              () async => await initApiAndUserAuthenticationToken(process, validationCode, tokenAndKeyPairProvider),
           trials: 5, delay: 1000
       );
 
-      MedTechApi authenticatedApi = await initUserCrypto(initInfo.item1, initInfo.item3, initInfo.item2, patientKeyPair);
 
-      return AuthenticationResult(authenticatedApi, initInfo.item3, initInfo.item2.id);
+      MedTechApi authenticatedApi = await initUserCrypto(initInfo.item1, initInfo.item2.token, initInfo.item2.user, initInfo.item2.keyPair ?? patientKeyPair);
+
+      return AuthenticationResult(authenticatedApi, initInfo.item2.keyPair ?? patientKeyPair, initInfo.item2.token, initInfo.item2.user.groupId!, initInfo.item2.user.id);
     }
 
     throw FormatException("Invalid validation code");
   }
 
-  Future<Tuple3<MedTechApi, UserDto, String>> createUserAuthenticationToken(AuthenticationProcess process, String validationCode) async {
+  Future<Tuple2<MedTechApi, ApiInitialisationResult>> initApiAndUserAuthenticationToken(AuthenticationProcess process, String validationCode, Future<Tuple3<String, String, String>?> Function(String, String) tokenAndKeyPairProvider) async {
     final api = MedTechApiBuilder.newBuilder()
         .withICureBasePath(this.iCureBasePath)
         .withUserName(process.login)
@@ -71,13 +80,15 @@ class AuthenticationApi {
         throw FormatException("Your validation code is expired");
       }
 
-      final token = await api.userApi.createToken(user.id, validity: Duration(days: 3653));
+      final Tuple3<String, String, String>? fromProvider = await tokenAndKeyPairProvider(user.groupId!, user.id);
+
+      final token = fromProvider != null ? fromProvider.item1 : await api.userApi.createToken(user.id, validity: Duration(days: 3653));
       if (token == null) {
         throw FormatException("Your validation code is expired");
       }
       print("User Token is : $token");
 
-      return Tuple3(api, user, token);
+      return Tuple2(api, ApiInitialisationResult(user, token, fromProvider?.let((it) => Tuple2(it.item2, it.item3))));
 
     } catch (e) {
       throw FormatException("Your validation code is expired");
@@ -108,7 +119,6 @@ class AuthenticationApi {
       if (user.patientId != null) {
         await initPatientDelegationsAndSave(authenticatedApi, modDataOwner as PatientDto, user, dataOwnerApi);
       }
-
     } else if (dataOwner.publicKey != patientKeyPair.item2) {
       //TODO User lost his key
     }
