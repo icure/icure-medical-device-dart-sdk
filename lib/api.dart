@@ -189,6 +189,8 @@ part 'model/delegation.dart';
 
 part 'model/document.dart';
 
+part 'model/extended/user_extended.dart';
+
 part 'model/extended/patient_extended.dart';
 
 part 'model/healthcare_element.dart';
