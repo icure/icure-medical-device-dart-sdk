@@ -67,5 +67,10 @@ abstract class PatientApi {
   ///
   /// * [Filter] filter (required):
   ///   The Filter object that describes which condition(s) the elements whose the ids should be returned must fulfill
-  Future<List<String>?> matchPatients(Filter filter,);
+  Future<List<String>?> matchPatients(
+    Filter filter,
+  );
+
+  /// Give access to another user to the patient
+  Future<Patient> giveAccessTo(Patient patient, String delegatedTo);
 }

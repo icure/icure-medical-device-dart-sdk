@@ -60,4 +60,48 @@ class PatientApiImpl extends PatientApi {
   Future<List<String>?> matchPatients(Filter filter) {
     return _api.basePatientApi.rawMatchPatientsBy(filter.toAbstractFilterDto());
   }
+
+  @override
+  Future<Patient> giveAccessTo(Patient patient, String delegatedTo) async {
+    final uuid = Uuid();
+    final sfk = uuid.v4(options: {'rng': UuidUtil.cryptoRNG});
+    final ek = uuid.v4(options: {'rng': UuidUtil.cryptoRNG});
+    final localCrypto = _api.crypto;
+    final currentUser = await _api.baseUserApi.getCurrentUser();
+
+    // Check if delegatedBy has access
+    if (!patient.systemMetaData!.delegations.entries.any((element) => element.key == currentUser!.dataOwnerId())) {
+      throw StateError("Couldn't give access to unowned dataSample");
+    }
+
+    final keyAndOwner = await localCrypto.encryptAESKeyForHcp(currentUser!.id, delegatedTo, patient.id!, sfk);
+    final delegation = Delegation(owner: currentUser.id, delegatedTo: delegatedTo, key: keyAndOwner.item1);
+
+    if (patient.systemMetaData == null) {
+      patient.systemMetaData = SystemMetaDataOwnerEncrypted(delegations: {
+        delegatedTo: [delegation]
+      });
+    } else {
+      patient.systemMetaData!.delegations = {...patient.systemMetaData!.delegations}..addEntries([
+          MapEntry(delegatedTo, [delegation])
+        ]);
+    }
+
+    patient.systemMetaData!.encryptionKeys = {...patient.systemMetaData!.encryptionKeys}..addEntries([
+        MapEntry(delegatedTo, [
+          Delegation(
+              owner: currentUser.id,
+              delegatedTo: delegatedTo,
+              key: (await localCrypto.encryptAESKeyForHcp(currentUser.id, delegatedTo, patient.id!, ek)).item1)
+        ])
+      ]);
+
+    final dataOwner = keyAndOwner.item2;
+    if (dataOwner != null && dataOwner.dataOwnerId == patient.id) {
+      patient.rev = dataOwner.rev;
+      patient.systemMetaData!.hcPartyKeys = dataOwner.hcPartyKeys;
+    }
+
+    return (await createOrModifyPatient(patient)) ?? (throw StateError("Couldn't update patient"));
+  }
 }
