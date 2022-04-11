@@ -137,5 +137,14 @@ abstract class DataSampleApi {
   /// * [String] documentExternalUuid:
   ///
   /// * [String] documentLanguage:
-  Future<Document?> setDataSampleAttachment(String dataSampleId, ByteStream body, { String? documentName, String? documentVersion, String? documentExternalUuid, String? documentLanguage, });
+  Future<Document?> setDataSampleAttachment(
+    String dataSampleId,
+    ByteStream body, {
+    String? documentName,
+    String? documentVersion,
+    String? documentExternalUuid,
+    String? documentLanguage,
+  });
+
+  Future<DataSample> giveAccessTo(DataSample dataSample, String delegatedTo);
 }

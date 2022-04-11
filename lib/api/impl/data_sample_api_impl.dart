@@ -327,8 +327,46 @@ class DataSampleApiImpl extends DataSampleApi {
     return (await api.baseDocumentApi.getDocument(currentUser, documentId, documentCryptoConfig(localCrypto)))!;
   }
 
-  Future<Set<String>> _getDocumentEncryptionKeys(
-      Crypto localCrypto, base_api.UserDto currentUser, base_api.DecryptedDocumentDto document) async {
+  Future<Set<String>> _getDocumentEncryptionKeys(Crypto localCrypto, base_api.UserDto currentUser, base_api.DecryptedDocumentDto document) async {
     return await localCrypto.decryptEncryptionKeys(currentUser.findDataOwnerId(), document.encryptionKeys);
+  }
+
+  @override
+  Future<DataSample> giveAccessTo(DataSample dataSample, String delegatedTo) async {
+    final uuid = Uuid();
+    final sfk = uuid.v4(options: {'rng': UuidUtil.cryptoRNG});
+    final ek = uuid.v4(options: {'rng': UuidUtil.cryptoRNG});
+    final localCrypto = api.crypto;
+    final currentUser = await api.baseUserApi.getCurrentUser();
+
+    // Check if delegatedBy has access is done by _getContactOfDataSample
+    final contactTuple = await _getContactOfDataSample(localCrypto, currentUser!, dataSample);
+    final contact = contactTuple.item2;
+
+    final contactPatientId = await contact!.let((that) => _getPatientIdOfContact(localCrypto, currentUser, that));
+    final existingPatient = await api.basePatientApi.getPatient(currentUser, contactPatientId!, patientCryptoConfig(localCrypto));
+    final ccContact = contactCryptoConfig(currentUser, localCrypto);
+
+    final keyAndOwner = await localCrypto.encryptAESKeyForHcp(currentUser.id, delegatedTo, contact!.id, sfk);
+    final delegation = Delegation(owner: currentUser.id, delegatedTo: delegatedTo, key: keyAndOwner.item1);
+
+    contact.delegations = {...contact.delegations}..addEntries([
+        MapEntry(delegatedTo, [delegation.toDelegationDto()].toSet())
+      ]);
+    contact.encryptionKeys = {...contact.encryptionKeys}..addEntries([
+        MapEntry(
+            delegatedTo,
+            [
+              DelegationDto(
+                  owner: currentUser.id,
+                  delegatedTo: delegatedTo,
+                  key: (await localCrypto.encryptAESKeyForHcp(currentUser.id, delegatedTo, dataSample.id!, ek)).item1)
+            ].toSet())
+      ]);
+
+    final contactToCreate = _createContactDtoBasedOn([dataSample], contact);
+    final updatedContact = await api.baseContactApi.createContactWithPatient(currentUser, existingPatient!, contactToCreate, ccContact);
+
+    return updatedContact?.services.firstOrNull()?.toDataSample(updatedContact.id) ?? (throw StateError("Couldn't update dataSample"));
   }
 }
