@@ -74,7 +74,7 @@ class PatientApiImpl extends PatientApi {
       throw StateError("Couldn't give access to unowned dataSample");
     }
 
-    final keyAndOwner = await localCrypto.encryptAESKeyForHcp(currentUser!.id, delegatedTo, patient.id!, sfk);
+    final keyAndOwner = await localCrypto.encryptAESKeyForHcp(currentUser!.dataOwnerId()!, delegatedTo, patient.id!, sfk);
     final delegation = Delegation(owner: currentUser.id, delegatedTo: delegatedTo, key: keyAndOwner.item1);
 
     if (patient.systemMetaData == null) {
@@ -92,7 +92,7 @@ class PatientApiImpl extends PatientApi {
           Delegation(
               owner: currentUser.id,
               delegatedTo: delegatedTo,
-              key: (await localCrypto.encryptAESKeyForHcp(currentUser.id, delegatedTo, patient.id!, ek)).item1)
+              key: (await localCrypto.encryptAESKeyForHcp(currentUser.dataOwnerId()!, delegatedTo, patient.id!, ek)).item1)
         ])
       ]);
 
