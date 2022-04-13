@@ -347,7 +347,7 @@ class DataSampleApiImpl extends DataSampleApi {
     final existingPatient = await api.basePatientApi.getPatient(currentUser, contactPatientId!, patientCryptoConfig(localCrypto));
     final ccContact = contactCryptoConfig(currentUser, localCrypto);
 
-    final keyAndOwner = await localCrypto.encryptAESKeyForHcp(currentUser.id, delegatedTo, contact!.id, sfk);
+    final keyAndOwner = await localCrypto.encryptAESKeyForHcp(currentUser.dataOwnerId()!, delegatedTo, contact!.id, sfk);
     final delegation = Delegation(owner: currentUser.id, delegatedTo: delegatedTo, key: keyAndOwner.item1);
 
     contact.delegations = {...contact.delegations}..addEntries([
@@ -360,7 +360,7 @@ class DataSampleApiImpl extends DataSampleApi {
               DelegationDto(
                   owner: currentUser.id,
                   delegatedTo: delegatedTo,
-                  key: (await localCrypto.encryptAESKeyForHcp(currentUser.id, delegatedTo, dataSample.id!, ek)).item1)
+                  key: (await localCrypto.encryptAESKeyForHcp(currentUser.dataOwnerId()!, delegatedTo, dataSample.id!, ek)).item1)
             ].toSet())
       ]);
 
