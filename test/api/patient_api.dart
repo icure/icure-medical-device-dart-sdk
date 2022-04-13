@@ -106,7 +106,7 @@ void main() {
           .withAuthProcessId("f0ced6c6-d7cb-4f78-841e-2674ad09621e")
           .build();
 
-      final pat2 = await modPat!.giveAccessToItself(patMedtechApi.crypto);
+      final pat2 = await patMedtechApi.patientApi.giveAccessTo(modPat!, modPat.id!);
       pat2.note = "Secret";
       final modPat2 = (await patMedtechApi.patientApi.createOrModifyPatient(pat2))!;
 
@@ -120,9 +120,94 @@ void main() {
       final HealthcareElement hE = getHealthElementDto();
       final createdHealthElement = await patMedtechApi.healthcareElementApi.createOrModifyHealthcareElement(modPat2.id!, hE);
 
-      final filteredHealthElement = await patMedtechApi.healthcareElementApi.filterHealthcareElement(HealthcareElementByIdsFilter(ids: {createdHealthElement!.id!}));
+      final filteredHealthElement =
+          await patMedtechApi.healthcareElementApi.filterHealthcareElement(HealthcareElementByIdsFilter(ids: {createdHealthElement!.id!}));
 
       assert(filteredHealthElement!.rows.length == 1);
     });
+  });
+
+  test("Creating account for HK", () async {
+    final email = "XXX";
+    final username = Uuid(options: {'rng': UuidUtil.cryptoRNG}).v4().toString().substring(0, 6);
+
+    final AnonymousMedTechApi api = TestUtils.getAnonymousApi();
+
+    print("Username: ${username}");
+    print("email: ${email}");
+
+    final proc = await api.authenticationApi.startAuthentication('HCP_ID', username, '', email, 'RECAPTCHA');
+
+    print("processId id: ${proc?.processId}");
+
+    assert(proc != null);
+  });
+
+  test("Completing account", () async {
+    final email = "XXX";
+    final validationCode = "XXX";
+    final processId = "XXX";
+
+    final AnonymousMedTechApi api = TestUtils.getAnonymousApi(authProcessId: "6a355458dbfa392cb56244031907f47a");
+
+    final keyPair = generateRandomPrivateAndPublicKeyPair();
+
+    final tokenAndKeyProvider = (String userId, String groupId) async {
+      return null;
+    };
+    print("Private Key : ${keyPair.item1}");
+    print("Public  Key : ${keyPair.item2}");
+
+    final result =
+        await api.authenticationApi.completeAuthentication(AuthenticationProcess(processId, email), validationCode, keyPair, tokenAndKeyProvider);
+
+    var patMedtechApi = result.medTechApi;
+
+    final currentUser = await patMedtechApi.userApi.getLoggedUser();
+    final currentPatient = await patMedtechApi.patientApi.getPatient(currentUser!.patientId!);
+
+    print("User ID: ${currentUser.id}");
+    print("Patient ID: ${currentUser.patientId}");
+
+    // Then
+    assert(currentUser != null);
+    assert(currentPatient != null);
+  });
+
+  test("Connecting patient account", () async {
+    final api = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "pat_xitoko4453_kino.json");
+
+    final currentUser = await api.userApi.getLoggedUser();
+    final currentPatient = await api.patientApi.getPatient(currentUser!.patientId!);
+
+    // Then
+    assert(currentUser != null);
+    assert(currentPatient != null);
+  });
+
+  test("Connecting HCP account", () async {
+    final api = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "hcp_kotipi5184_kino.json");
+
+    final currentUser = await api.userApi.getLoggedUser();
+
+    // Then
+    assert(currentUser != null);
+    assert(currentUser?.healthcarePartyId != null);
+  });
+
+  test("Sharing delegation patient to HCP", () async {
+    final patApi = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "pat_xitoko4453_kino.json");
+    final hcpApi = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "hcp_kotipi5184_kino.json");
+
+    final currentUser = await patApi.userApi.getLoggedUser();
+    final currentHcp = await hcpApi.userApi.getLoggedUser();
+
+    final currentPatient = await patApi.patientApi.getPatient(currentUser!.patientId!);
+
+    final delegatedPatient = await patApi.patientApi.giveAccessTo(currentPatient!, currentHcp!.healthcarePartyId!);
+    assert(delegatedPatient != null);
+
+    final hcpCurrentPatient = await hcpApi.patientApi.getPatient(currentUser.patientId!);
+    assert(hcpCurrentPatient != null);
   });
 }
