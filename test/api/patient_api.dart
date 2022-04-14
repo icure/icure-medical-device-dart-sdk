@@ -106,7 +106,7 @@ void main() {
           .withAuthProcessId("f0ced6c6-d7cb-4f78-841e-2674ad09621e")
           .build();
 
-      final pat2 = await modPat!.giveAccessToItself(patMedtechApi.crypto);
+      final pat2 = await modPat!.patientGiveAccessToItself(patMedtechApi.crypto);
       pat2.note = "Secret";
       final modPat2 = (await patMedtechApi.patientApi.createOrModifyPatient(pat2))!;
 
