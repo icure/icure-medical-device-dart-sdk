@@ -1,10 +1,16 @@
 @Timeout(Duration(hours: 1))
+import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
+
+import 'package:crypton/crypton.dart';
 import 'package:icure_dart_sdk/api.dart' as rapi;
 import 'package:icure_dart_sdk/crypto/crypto.dart';
 import 'package:icure_dart_sdk/util/binary_utils.dart';
 import 'package:icure_medical_device_dart_sdk/api.dart';
 import 'package:icure_medical_device_dart_sdk/mappers/patient.dart';
 import 'package:icure_medical_device_dart_sdk/utils/net_utils.dart';
+import 'package:pointycastle/export.dart' as pointy;
 import "package:test/test.dart";
 import 'package:uuid/uuid.dart';
 import 'package:uuid/uuid_util.dart';
@@ -60,11 +66,10 @@ void main() {
       final MedTechApi api = await medtechApi();
 
       // When
-      var patients = (await api.patientApi.filterPatients(
-          PatientByHcPartyNameContainsFuzzyFilter(
-              healthcarePartyId: (await api.userApi.getLoggedUser())!.healthcarePartyId!,
-              searchString: "maes")
-      ))?.rows ?? [];
+      var patients = (await api.patientApi.filterPatients(PatientByHcPartyNameContainsFuzzyFilter(
+                  healthcarePartyId: (await api.userApi.getLoggedUser())!.healthcarePartyId!, searchString: "maes")))
+              ?.rows ??
+          [];
 
       expect(patients.length == 3, true);
 
@@ -74,13 +79,15 @@ void main() {
     test('test createPatient with crypto', () async {
       // Init
       final MedTechApi api = await medtechApi();
-      final rapi.DecryptedPatientDto patient = rapi.DecryptedPatientDto(id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}), firstName: 'John', lastName: 'Doe');
+      final rapi.DecryptedPatientDto patient =
+          rapi.DecryptedPatientDto(id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}), firstName: 'John', lastName: 'Doe');
 
       // When
       final Patient? createdPatient = await api.patientApi.createOrModifyPatient(PatientDtoMapper(patient).toPatient());
       var idUser = uuid.v4(options: {'rng': UuidUtil.cryptoRNG});
       var passwordUser = uuid.v4(options: {'rng': UuidUtil.cryptoRNG});
-      final User? createdUser = await api.userApi.createOrModifyUser(new User(id: idUser, login: idUser.substring(0, 8), patientId: createdPatient!.id, passwordHash: passwordUser));
+      final User? createdUser = await api.userApi
+          .createOrModifyUser(new User(id: idUser, login: idUser.substring(0, 8), patientId: createdPatient!.id, passwordHash: passwordUser));
 
       var patMedtechApi = MedTechApiBuilder()
           .withICureBasePath('https://kraken.icure.dev')
@@ -175,10 +182,10 @@ void main() {
   });
 
   test("Connecting patient account", () async {
-    final api = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "pat_xitoko4453_kino.json");
+    final patApi = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "pat_rikah54178_kino.json");
 
-    final currentUser = await api.userApi.getLoggedUser();
-    final currentPatient = await api.patientApi.getPatient(currentUser!.patientId!);
+    final currentUser = await patApi.userApi.getLoggedUser();
+    final currentPatient = await patApi.patientApi.getPatient(currentUser!.patientId!);
 
     // Then
     assert(currentUser != null);
@@ -186,7 +193,7 @@ void main() {
   });
 
   test("Connecting HCP account", () async {
-    final api = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "hcp_kotipi5184_kino.json");
+    final api = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "hcp_sobehex999_kino.json");
 
     final currentUser = await api.userApi.getLoggedUser();
 
@@ -196,8 +203,8 @@ void main() {
   });
 
   test("Sharing delegation patient to HCP", () async {
-    final patApi = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "pat_xitoko4453_kino.json");
-    final hcpApi = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "hcp_kotipi5184_kino.json");
+    final patApi = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "pat_rikah54178_kino.json");
+    final hcpApi = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "hcp_sobehex999_kino.json");
 
     final currentUser = await patApi.userApi.getLoggedUser();
     final currentHcp = await hcpApi.userApi.getLoggedUser();
@@ -209,5 +216,84 @@ void main() {
 
     final hcpCurrentPatient = await hcpApi.patientApi.getPatient(currentUser.patientId!);
     assert(hcpCurrentPatient != null);
+  });
+
+  test("Sharing delegation of DataSample patient to HCP", () async {
+    final patApi = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "pat_rikah54178_kino.json");
+    final hcpApi = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "hcp_sobehex999_kino.json");
+
+    final currentUser = await patApi.userApi.getLoggedUser();
+    final currentHcp = await hcpApi.userApi.getLoggedUser();
+
+    final currentPatient = await patApi.patientApi.getPatient(currentUser!.patientId!);
+
+    final ds = DataSample(
+      id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}),
+      content: {"en": Content(numberValue: 53.5)},
+      valueDate: 20220203111034,
+      labels: [CodingReference(id: "LOINC|29463-7|2", code: "29463-7", type: "LOINC", version: "2")].toSet(),
+    );
+
+    final createdDs = await patApi.dataSampleApi.createOrModifyDataSampleFor(currentPatient!.id!, ds);
+    final sharedDs = await patApi.dataSampleApi.giveAccessTo(createdDs!, currentHcp!.healthcarePartyId!);
+
+    final hcpDs = await hcpApi.dataSampleApi.getDataSample(sharedDs.id!);
+    assert(hcpDs != null);
+  });
+
+  test("Test eRSA encryption/decryption", () async {
+    var fileUri = Uri.file("test/resources/keys/a5af2d04-6ecc-44e8-8c93-38b9748d8d62-icc-priv.2048.key", windows: false);
+    var keyFile = File.fromUri(fileUri);
+    final privateKey = (await keyFile.readAsString(encoding: utf8)).trim().keyFromHexString();
+
+    final keyPair = RSAKeypair(RSAPrivateKey.fromString(base64.encoder.convert(privateKey)));
+    final publicKey = RSAPublicKey.fromString(base64.encoder.convert("xxx".fromHexString()));
+    final encryptorForDelegate = pointy.OAEPEncoding(pointy.RSAEngine())
+      ..init(true, pointy.PublicKeyParameter<pointy.RSAPublicKey>(publicKey.asPointyCastle));
+
+    final aesKey = Uint8List.fromList(List<int>.generate(32, (i) => random.nextInt(256)));
+
+    final encrypted = encryptorForDelegate.process(aesKey).toHexString();
+    final decryptor = pointy.OAEPEncoding(pointy.RSAEngine())
+      ..init(false, pointy.PrivateKeyParameter<pointy.RSAPrivateKey>(keyPair.privateKey.asPointyCastle));
+    final decrypted = decryptor.process(encrypted.fromHexString());
+
+    var aesKeyText = aesKey.toHexString();
+    var decryptedText = decrypted.toHexString();
+
+    final privateKeyAsHex =
+        base64Decode(keyPair.privateKey.toPEM().replaceAllMapped(RegExp(r'-----.+?-----'), (match) => '').replaceAll('\n', '')).toHexString();
+    final publicKeyAsHex =
+        base64Decode(keyPair.publicKey.toPEM().replaceAllMapped(RegExp(r'-----.+?-----'), (match) => '').replaceAll('\n', '')).toHexString();
+
+    assert(aesKeyText == decryptedText);
+  });
+
+  test("Test eRSA encryption/decryption", () async {
+    var fileUri = Uri.file("test/resources/keys/a5af2d04-6ecc-44e8-8c93-38b9748d8d62-icc-priv.2048.key", windows: false);
+    var keyFile = File.fromUri(fileUri);
+    final privateKey = (await keyFile.readAsString(encoding: utf8)).trim().keyFromHexString();
+
+    final keyPair = RSAKeypair(RSAPrivateKey.fromString(base64.encoder.convert(privateKey)));
+    final publicKey = RSAPublicKey.fromString(base64.encoder.convert("xxx".fromHexString()));
+    final encryptorForDelegate = pointy.OAEPEncoding(pointy.RSAEngine())
+      ..init(true, pointy.PublicKeyParameter<pointy.RSAPublicKey>(publicKey.asPointyCastle));
+
+    final aesKey = Uint8List.fromList(List<int>.generate(32, (i) => random.nextInt(256)));
+
+    final encrypted = encryptorForDelegate.process(aesKey).toHexString();
+    final decryptor = pointy.OAEPEncoding(pointy.RSAEngine())
+      ..init(false, pointy.PrivateKeyParameter<pointy.RSAPrivateKey>(keyPair.privateKey.asPointyCastle));
+    final decrypted = decryptor.process(encrypted.fromHexString());
+
+    var aesKeyText = aesKey.toHexString();
+    var decryptedText = decrypted.toHexString();
+
+    final privateKeyAsHex =
+        base64Decode(keyPair.privateKey.toPEM().replaceAllMapped(RegExp(r'-----.+?-----'), (match) => '').replaceAll('\n', '')).toHexString();
+    final publicKeyAsHex =
+        base64Decode(keyPair.publicKey.toPEM().replaceAllMapped(RegExp(r'-----.+?-----'), (match) => '').replaceAll('\n', '')).toHexString();
+
+    assert(aesKeyText == decryptedText);
   });
 }
