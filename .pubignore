@@ -1,1 +1,5 @@
-test/resources/keys/782f1bcd-9f3f-408a-af1b-cd9f3f908a98-icc-priv.2048.key
+analysis_options.yaml
+git_push.sh
+test/resources/creds/
+test/resources/keys/
+template/
