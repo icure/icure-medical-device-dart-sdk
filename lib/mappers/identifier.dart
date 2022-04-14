@@ -13,6 +13,7 @@ import 'package:icure_medical_device_dart_sdk/api.dart';
 import 'package:icure_medical_device_dart_sdk/utils/functional_utils.dart';
 import 'package:uuid/uuid.dart';
 import 'package:uuid/uuid_util.dart';
+
 import 'code_stub_coding_reference.dart';
 
 extension IdentifierDtoMapper on IdentifierDto {
@@ -25,6 +26,7 @@ extension IdentifierDtoMapper on IdentifierDto {
         system: this.system,
         type: this.type?.toCodingReference(),
         use: this.use,
+        value: this.value
       );
 }
 
@@ -38,5 +40,6 @@ extension IdentifierMapper on Identifier {
         system: this.system,
         type: this.type?.toCodeStubDto(),
         use: this.use,
+        value: this.value
       );
 }

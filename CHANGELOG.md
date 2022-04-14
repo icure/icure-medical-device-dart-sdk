@@ -1,3 +1,6 @@
+# 1.3.5
+- BUG Fix missing identifier value mapping
+
 # 1.3.4
 
 - Add parameter to provide keys and tokens using a Keystore
