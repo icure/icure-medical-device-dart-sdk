@@ -230,11 +230,10 @@ class DataSampleApiImpl extends DataSampleApi {
     return _countHierarchyOfDataSamples(currentCount + dataSampleCount, dataSampleIndex + 1, dataSamples);
   }
 
-  Future<Tuple2<bool, base_api.DecryptedContactDto?>> _getContactOfDataSample(
-      Crypto localCrypto, base_api.UserDto currentUser, DataSample dataSample) async {
-
+  Future<Tuple2<bool, base_api.DecryptedContactDto?>> _getContactOfDataSample(Crypto localCrypto, base_api.UserDto currentUser, DataSample dataSample,
+      {bool bypassCache = false}) async {
     final cachedContact = dataSample.id?.let((dsId) => contactsLinkedToDataSamplesCache.getIfPresent(dsId));
-    if (cachedContact != null) {
+    if (cachedContact != null && !bypassCache) {
       return Tuple2(true, cachedContact);
     } else {
       final base_api.DecryptedContactDto? contact = await dataSample.batchId
@@ -333,22 +332,18 @@ class DataSampleApiImpl extends DataSampleApi {
 
   @override
   Future<DataSample> giveAccessTo(DataSample dataSample, String delegatedTo) async {
-    final uuid = Uuid();
-    final sfk = uuid.v4(options: {'rng': UuidUtil.cryptoRNG});
-    final ek = uuid.v4(options: {'rng': UuidUtil.cryptoRNG});
     final localCrypto = api.crypto;
     final currentUser = await api.baseUserApi.getCurrentUser();
 
     // Check if delegatedBy has access is done by _getContactOfDataSample
-    final contactTuple = await _getContactOfDataSample(localCrypto, currentUser!, dataSample);
+    final contactTuple = await _getContactOfDataSample(localCrypto, currentUser!, dataSample, bypassCache: true);
     final contact = contactTuple.item2;
 
-    final contactPatientId = await contact!.let((that) => _getPatientIdOfContact(localCrypto, currentUser, that));
-    final existingPatient = await api.basePatientApi.getPatient(currentUser, contactPatientId!, patientCryptoConfig(localCrypto));
     final ccContact = contactCryptoConfig(currentUser, localCrypto);
 
-    final keyAndOwner = await localCrypto.encryptAESKeyForHcp(currentUser.dataOwnerId()!, delegatedTo, contact!.id, sfk);
-    final delegation = Delegation(owner: currentUser.id, delegatedTo: delegatedTo, key: keyAndOwner.item1);
+    final keyAndOwner = await localCrypto.encryptAESKeyForHcp(currentUser.dataOwnerId()!, delegatedTo, contact!.id,
+        (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, contact.delegations)).firstOrNull()!.formatAsKey());
+    final delegation = Delegation(owner: currentUser.dataOwnerId(), delegatedTo: delegatedTo, key: keyAndOwner.item1);
 
     contact.delegations = {...contact.delegations}..addEntries([
         MapEntry(delegatedTo, [delegation.toDelegationDto()].toSet())
@@ -358,14 +353,15 @@ class DataSampleApiImpl extends DataSampleApi {
             delegatedTo,
             [
               DelegationDto(
-                  owner: currentUser.id,
+                  owner: currentUser.dataOwnerId(),
                   delegatedTo: delegatedTo,
-                  key: (await localCrypto.encryptAESKeyForHcp(currentUser.dataOwnerId()!, delegatedTo, dataSample.id!, ek)).item1)
+                  key: (await localCrypto.encryptAESKeyForHcp(currentUser.dataOwnerId()!, delegatedTo, contact.id,
+                          (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, contact.encryptionKeys)).firstOrNull()!.formatAsKey()))
+                      .item1)
             ].toSet())
       ]);
 
-    final contactToCreate = _createContactDtoBasedOn([dataSample], contact);
-    final updatedContact = await api.baseContactApi.createContactWithPatient(currentUser, existingPatient!, contactToCreate, ccContact);
+    final updatedContact = await api.baseContactApi.modifyContact(currentUser, contact, ccContact);
 
     return updatedContact?.services.firstOrNull()?.toDataSample(updatedContact.id) ?? (throw StateError("Couldn't update dataSample"));
   }

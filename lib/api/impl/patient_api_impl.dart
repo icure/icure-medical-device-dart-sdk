@@ -63,9 +63,6 @@ class PatientApiImpl extends PatientApi {
 
   @override
   Future<Patient> giveAccessTo(Patient patient, String delegatedTo) async {
-    final uuid = Uuid();
-    final sfk = uuid.v4(options: {'rng': UuidUtil.cryptoRNG});
-    final ek = uuid.v4(options: {'rng': UuidUtil.cryptoRNG});
     final localCrypto = _api.crypto;
     final currentUser = await _api.baseUserApi.getCurrentUser();
 
@@ -74,7 +71,10 @@ class PatientApiImpl extends PatientApi {
       throw StateError("Couldn't give access to unowned dataSample");
     }
 
-    final keyAndOwner = await localCrypto.encryptAESKeyForHcp(currentUser!.dataOwnerId()!, delegatedTo, patient.id!, sfk);
+    final patientDto = patient.toPatientDto();
+
+    final keyAndOwner = await localCrypto.encryptAESKeyForHcp(currentUser!.dataOwnerId()!, delegatedTo, patientDto.id!,
+        (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, patientDto.delegations)).firstOrNull()!.formatAsKey());
     final delegation = Delegation(owner: currentUser.id, delegatedTo: delegatedTo, key: keyAndOwner.item1);
 
     if (patient.systemMetaData == null) {
@@ -90,9 +90,11 @@ class PatientApiImpl extends PatientApi {
     patient.systemMetaData!.encryptionKeys = {...patient.systemMetaData!.encryptionKeys}..addEntries([
         MapEntry(delegatedTo, [
           Delegation(
-              owner: currentUser.id,
+              owner: currentUser.dataOwnerId(),
               delegatedTo: delegatedTo,
-              key: (await localCrypto.encryptAESKeyForHcp(currentUser.dataOwnerId()!, delegatedTo, patient.id!, ek)).item1)
+              key: (await localCrypto.encryptAESKeyForHcp(currentUser.dataOwnerId()!, delegatedTo, patient.id!,
+                      (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, patientDto.encryptionKeys)).firstOrNull()!.formatAsKey()))
+                  .item1)
         ])
       ]);
 
