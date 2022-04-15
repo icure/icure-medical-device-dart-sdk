@@ -49,12 +49,19 @@ abstract class HealthcareElementApi {
   /// Parameters:
   ///
   /// * [String] id (required):
-  Future<HealthcareElement?> getHealthcareElement(String id,);
+  Future<HealthcareElement?> getHealthcareElement(
+    String id,
+  );
 
   /// Find Healthcare Elements using a filter
   ///
   /// Parameters:
   ///
   /// * [Filter] filter (required):
-  Future<List<String>?> matchHealthcareElement(Filter filter,);
+  Future<List<String>?> matchHealthcareElement(
+    Filter filter,
+  );
+
+  /// Give access to another user to the healthcareElement
+  Future<HealthcareElement> giveAccessTo(HealthcareElement healthcareElement, String delegatedTo);
 }
