@@ -339,15 +339,19 @@ class DataSampleApiImpl extends DataSampleApi {
     final contactTuple = await _getContactOfDataSample(localCrypto, currentUser!, dataSample, bypassCache: true);
     final contact = contactTuple.item2;
 
+    final patientId = (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, contact!.cryptedForeignKeys)).firstOrNull()!.formatAsKey();
+    final sfk = (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, contact.delegations)).firstOrNull()!.formatAsKey();
+    final ek = (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, contact.encryptionKeys)).firstOrNull()!.formatAsKey();
+
     final ccContact = contactCryptoConfig(currentUser, localCrypto);
 
-    final keyAndOwner = await localCrypto.encryptAESKeyForHcp(currentUser.dataOwnerId()!, delegatedTo, contact!.id,
-        (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, contact.delegations)).firstOrNull()!.formatAsKey());
+    final keyAndOwner = await localCrypto.encryptAESKeyForHcp(currentUser.dataOwnerId()!, delegatedTo, contact!.id, sfk);
     final delegation = Delegation(owner: currentUser.dataOwnerId(), delegatedTo: delegatedTo, key: keyAndOwner.item1);
 
     contact.delegations = {...contact.delegations}..addEntries([
         MapEntry(delegatedTo, [delegation.toDelegationDto()].toSet())
       ]);
+
     contact.encryptionKeys = {...contact.encryptionKeys}..addEntries([
         MapEntry(
             delegatedTo,
@@ -355,9 +359,18 @@ class DataSampleApiImpl extends DataSampleApi {
               DelegationDto(
                   owner: currentUser.dataOwnerId(),
                   delegatedTo: delegatedTo,
-                  key: (await localCrypto.encryptAESKeyForHcp(currentUser.dataOwnerId()!, delegatedTo, contact.id,
-                          (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, contact.encryptionKeys)).firstOrNull()!.formatAsKey()))
-                      .item1)
+                  key: (await localCrypto.encryptAESKeyForHcp(currentUser.dataOwnerId()!, delegatedTo, contact.id, ek)).item1)
+            ].toSet())
+      ]);
+
+    contact.cryptedForeignKeys = {...contact.cryptedForeignKeys}..addEntries([
+        MapEntry(
+            delegatedTo,
+            [
+              DelegationDto(
+                  owner: currentUser.dataOwnerId(),
+                  delegatedTo: delegatedTo,
+                  key: (await localCrypto.encryptAESKeyForHcp(currentUser.dataOwnerId()!, delegatedTo, contact.id, patientId)).item1)
             ].toSet())
       ]);
 
