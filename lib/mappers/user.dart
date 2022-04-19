@@ -20,32 +20,30 @@ import 'property.dart';
 final uuid = Uuid();
 
 extension UserDtoMapper on UserDto {
-  User toUser() =>
-      User(
-        id: this.id,
-        properties: this.properties.map((it) => it.toProperty()).toSet(),
-        roles: this.roles,
-        autoDelegations: this.autoDelegations,
-        rev: this.rev,
-        deletionDate: this.deletionDate,
-        created: this.created,
-        name: this.name,
-        login: this.login,
-        passwordHash: this.passwordHash,
-        secret: this.secret,
-        use2fa: this.use2fa,
-        groupId: this.groupId,
-        healthcarePartyId: this.healthcarePartyId,
-        patientId: this.patientId,
-        deviceId: this.deviceId,
-        email: this.email,
-        mobilePhone: this.mobilePhone,
-      );
+  User toUser() => User(
+      id: this.id,
+      properties: this.properties.map((it) => it.toProperty()).toSet(),
+      roles: this.roles,
+      autoDelegations: this.autoDelegations,
+      rev: this.rev,
+      deletionDate: this.deletionDate,
+      created: this.created,
+      name: this.name,
+      login: this.login,
+      passwordHash: this.passwordHash,
+      secret: this.secret,
+      use2fa: this.use2fa,
+      groupId: this.groupId,
+      healthcarePartyId: this.healthcarePartyId,
+      patientId: this.patientId,
+      deviceId: this.deviceId,
+      email: this.email,
+      mobilePhone: this.mobilePhone,
+      status: UserDtoStatusEnumMapper(this.status).toUserStatus(),
+      type: UserDtoTypeEnumMapper(this.type).toUserType());
 
   String findDataOwnerId() {
-    final id = this.healthcarePartyId
-        ?? this.patientId
-        ?? this.deviceId;
+    final id = this.healthcarePartyId ?? this.patientId ?? this.deviceId;
 
     if (id == null) {
       throw FormatException("At least one of healthcarePartyId, patientId, deviceId must be defined on user");
@@ -53,33 +51,94 @@ extension UserDtoMapper on UserDto {
 
     return id;
   }
-
 }
+
+extension UserStatusMapper on UserStatus? {
+  UserDtoStatusEnum? toUserDtoStatusEnum() {
+    switch (this) {
+      case UserStatus.ACTIVE:
+        return UserDtoStatusEnum.ACTIVE;
+      case UserStatus.DISABLED:
+        return UserDtoStatusEnum.DISABLED;
+      case UserStatus.REGISTERING:
+        return UserDtoStatusEnum.REGISTERING;
+      default:
+        return null;
+    }
+  }
+}
+
+extension UserDtoStatusEnumMapper on UserDtoStatusEnum? {
+  UserStatus? toUserStatus() {
+    switch (this) {
+      case UserDtoStatusEnum.ACTIVE:
+        return UserStatus.ACTIVE;
+      case UserDtoStatusEnum.DISABLED:
+        return UserStatus.DISABLED;
+      case UserDtoStatusEnum.REGISTERING:
+        return UserStatus.REGISTERING;
+      default:
+        return null;
+    }
+  }
+}
+
+extension UserTypeMapper on UserType? {
+  UserDtoTypeEnum? toUserDtoTypeEnum() {
+    switch (this) {
+      case UserType.database:
+        return UserDtoTypeEnum.database;
+      case UserType.ldap:
+        return UserDtoTypeEnum.ldap;
+      case UserType.token:
+        return UserDtoTypeEnum.token;
+      default:
+        return null;
+    }
+  }
+}
+
+extension UserDtoTypeEnumMapper on UserDtoTypeEnum? {
+  UserType? toUserType() {
+    switch (this) {
+      case UserDtoTypeEnum.database:
+        return UserType.database;
+      case UserDtoTypeEnum.ldap:
+        return UserType.ldap;
+      case UserDtoTypeEnum.token:
+        return UserType.token;
+      default:
+        return null;
+    }
+  }
+}
+
 extension UserMapper on User {
-  UserDto toUserDto() =>
-      UserDto(
-        id: this.id?.also((it) {
-          if (!Uuid.isValidUUID(fromString: it)) {
-            throw FormatException("Invalid id, id must be a valid UUID");
-          }
-        }) ?? uuid.v4(options: {'rng': UuidUtil.cryptoRNG}),
-        properties: this.properties.map((it) => it.toPropertyStubDto()).toSet(),
-        roles: this.roles,
-        autoDelegations: this.autoDelegations,
-        authenticationTokens: this.authenticationTokens.map((k,v) => MapEntry(k, v.toAuthenticationTokenDto())),
-        rev: this.rev,
-        deletionDate: this.deletionDate,
-        created: this.created,
-        name: this.name,
-        login: this.login,
-        passwordHash: this.passwordHash,
-        secret: this.secret,
-        use2fa: this.use2fa,
-        groupId: this.groupId,
-        healthcarePartyId: this.healthcarePartyId,
-        patientId: this.patientId,
-        deviceId: this.deviceId,
-        email: this.email,
-        mobilePhone: this.mobilePhone,
-      );
+  UserDto toUserDto() => UserDto(
+      id: this.id?.also((it) {
+            if (!Uuid.isValidUUID(fromString: it)) {
+              throw FormatException("Invalid id, id must be a valid UUID");
+            }
+          }) ??
+          uuid.v4(options: {'rng': UuidUtil.cryptoRNG}),
+      properties: this.properties.map((it) => it.toPropertyStubDto()).toSet(),
+      roles: this.roles,
+      autoDelegations: this.autoDelegations,
+      authenticationTokens: this.authenticationTokens.map((k, v) => MapEntry(k, v.toAuthenticationTokenDto())),
+      rev: this.rev,
+      deletionDate: this.deletionDate,
+      created: this.created,
+      name: this.name,
+      login: this.login,
+      passwordHash: this.passwordHash,
+      secret: this.secret,
+      use2fa: this.use2fa,
+      groupId: this.groupId,
+      healthcarePartyId: this.healthcarePartyId,
+      patientId: this.patientId,
+      deviceId: this.deviceId,
+      email: this.email,
+      mobilePhone: this.mobilePhone,
+      status: UserStatusMapper(this.status).toUserDtoStatusEnum(),
+      type: UserTypeMapper(this.type).toUserDtoTypeEnum());
 }
