@@ -18,11 +18,51 @@ class UserApiImpl extends UserApi {
   Future<bool?> checkTokenValidity(String userId, String token) => api.baseUserApi.checkTokenValidity(userId, token);
 
   @override
-  Future<User?> createOrModifyUser(User user) async =>
-      (await (user.rev?.let((it) => api.baseUserApi.modifyUser(user.toUserDto())) ?? api.baseUserApi.createUser(user.toUserDto())))?.toUser();
+  Future<User?> createOrModifyUser(User user) async {
+    return (await (user.rev?.let((it) async {
+              final modifiedUser = user.toUserDto();
+              final userToUpdate = await api.baseUserApi.getUser(modifiedUser.id);
+              final currentUser = await api.baseUserApi.getCurrentUser();
+
+              if (currentUser!.permissions.any((permission) => permission.grants.any((grant) => grant.type == PermissionItemDtoTypeEnum.ADMIN))) {
+                return api.baseUserApi.modifyUser(userToUpdate!);
+              } else if (currentUser.healthcarePartyId != null) {
+                userToUpdate!.deletionDate = modifiedUser.deletionDate;
+                userToUpdate.name = modifiedUser.name;
+                userToUpdate.properties = modifiedUser.properties;
+                userToUpdate.roles = modifiedUser.roles;
+                userToUpdate.login = modifiedUser.login;
+                userToUpdate.secret = modifiedUser.secret;
+                userToUpdate.passwordHash = modifiedUser.passwordHash;
+                userToUpdate.email = modifiedUser.email;
+                userToUpdate.autoDelegations = modifiedUser.autoDelegations;
+                userToUpdate.termsOfUseDate = modifiedUser.termsOfUseDate;
+                userToUpdate.groupId = modifiedUser.groupId;
+                userToUpdate.patientId = modifiedUser.patientId;
+                userToUpdate.use2fa = modifiedUser.use2fa;
+                userToUpdate.applicationTokens = modifiedUser.applicationTokens;
+                userToUpdate.authenticationTokens = modifiedUser.authenticationTokens;
+
+                return api.baseUserApi.modifyUser(userToUpdate);
+              } else {
+                userToUpdate!.passwordHash = modifiedUser.passwordHash;
+                userToUpdate.email = modifiedUser.email;
+                userToUpdate.autoDelegations = modifiedUser.autoDelegations;
+                userToUpdate.termsOfUseDate = modifiedUser.termsOfUseDate;
+                userToUpdate.properties = modifiedUser.properties;
+
+                return api.baseUserApi.modifyUser(userToUpdate);
+              }
+            }) ??
+            api.baseUserApi.createUser(user.toUserDto())))
+        ?.toUser();
+  }
 
   @override
-  Future<String?> createToken(String userId, {Duration validity = const Duration(days: 30), }) =>
+  Future<String?> createToken(
+    String userId, {
+    Duration validity = const Duration(days: 30),
+  }) =>
       api.baseUserApi.getToken(userId, uuid.v4(options: {'rng': UuidUtil.cryptoRNG}), tokenValidity: validity.inSeconds);
 
   @override
