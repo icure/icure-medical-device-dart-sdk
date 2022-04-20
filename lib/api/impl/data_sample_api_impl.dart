@@ -335,11 +335,20 @@ class DataSampleApiImpl extends DataSampleApi {
     final localCrypto = api.crypto;
     final currentUser = await api.baseUserApi.getCurrentUser();
 
-    // Check if delegatedBy has access is done by _getContactOfDataSample
-    final contactTuple = await _getContactOfDataSample(localCrypto, currentUser!, dataSample, bypassCache: true);
-    final contact = contactTuple.item2;
+    // Check if delegatedBy has access
+    Future<DecryptedContactDto?> getContactOfDataSample() async {
+      try {
+        final contactTuple = await _getContactOfDataSample(localCrypto, currentUser!, dataSample, bypassCache: true);
+        return contactTuple.item2;
+      } on FormatException {
+        throw StateError("DataOwner ${currentUser!.dataOwnerId()} does not have the right to access dataSample ${dataSample.id}");
+      }
+    }
 
-    final patientId = (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, contact!.cryptedForeignKeys)).firstOrNull()!.formatAsKey();
+    final contact = await getContactOfDataSample();
+
+    final patientId =
+        (await localCrypto.decryptEncryptionKeys(currentUser!.dataOwnerId()!, contact!.cryptedForeignKeys)).firstOrNull()!.formatAsKey();
     final sfk = (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, contact.delegations)).firstOrNull()!.formatAsKey();
     final ek = (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, contact.encryptionKeys)).firstOrNull()!.formatAsKey();
 
@@ -376,6 +385,6 @@ class DataSampleApiImpl extends DataSampleApi {
 
     final updatedContact = await api.baseContactApi.modifyContact(currentUser, contact, ccContact);
 
-    return updatedContact?.services.firstOrNull()?.toDataSample(updatedContact.id) ?? (throw StateError("Couldn't update dataSample"));
+    return updatedContact?.services.firstOrNull()?.toDataSample(updatedContact.id) ?? (throw StateError("Couldn't give access to dataSample"));
   }
 }

@@ -67,7 +67,7 @@ abstract class HealthcareElementApi {
   /// Parameters:
   ///
   /// * [HealthcareElement] healthcareElement to giveAccessTo [delegateTo]
-  /// * [String] dataOwnerId to giveAccessTo
+  /// * [String] delegatedTo: dataOwnerId to giveAccessTo
   ///
   /// Data owner id can be either a:
   /// * healthcarePartyId,

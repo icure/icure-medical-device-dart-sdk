@@ -68,12 +68,12 @@ class PatientApiImpl extends PatientApi {
 
     // Check if delegatedBy has access
     if (!patient.systemMetaData!.delegations.entries.any((element) => element.key == currentUser!.dataOwnerId())) {
-      throw StateError("Couldn't give access to unowned dataSample");
+      throw StateError("DataOwner ${currentUser!.dataOwnerId()} does not have the right to access patient ${patient.id}");
     }
 
     final patientDto = patient.toPatientDto();
 
-    final keyAndOwner = await localCrypto.encryptAESKeyForHcp(currentUser!.dataOwnerId()!, delegatedTo, patientDto.id!,
+    final keyAndOwner = await localCrypto.encryptAESKeyForHcp(currentUser!.dataOwnerId()!, delegatedTo, patientDto.id,
         (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, patientDto.delegations)).firstOrNull()!.formatAsKey());
     final delegation = Delegation(owner: currentUser.id, delegatedTo: delegatedTo, key: keyAndOwner.item1);
 
@@ -104,6 +104,6 @@ class PatientApiImpl extends PatientApi {
       patient.systemMetaData!.hcPartyKeys = dataOwner.hcPartyKeys;
     }
 
-    return (await createOrModifyPatient(patient)) ?? (throw StateError("Couldn't update patient"));
+    return (await createOrModifyPatient(patient)) ?? (throw StateError("Couldn't give access to $delegatedTo to patient ${patient.id}"));
   }
 }

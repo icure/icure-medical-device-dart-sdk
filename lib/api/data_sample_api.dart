@@ -146,5 +146,17 @@ abstract class DataSampleApi {
     String? documentLanguage,
   });
 
+  /// Give access to another dataOwner to the DataSample
+  ///
+  /// Parameters:
+  ///
+  /// * [DataSample] dataSample to give access to [delegateTo]
+  /// * [String] delegatedTo: dataOwnerId to give access to
+  ///
+  /// Data owner id can be either a:
+  /// * healthcarePartyId,
+  /// * patientId
+  /// * deviceId
+  ///
   Future<DataSample> giveAccessTo(DataSample dataSample, String delegatedTo);
 }

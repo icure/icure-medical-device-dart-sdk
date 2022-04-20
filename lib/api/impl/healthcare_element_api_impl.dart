@@ -105,7 +105,7 @@ class HealthcareElementApiImpl extends HealthcareElementApi {
 
     // Check if delegatedBy has access
     if (!healthcareElement.systemMetaData!.delegations.entries.any((element) => element.key == currentUser!.dataOwnerId())) {
-      throw StateError("Couldn't give access to unowned healthcareElement");
+      throw StateError("DataOwner ${currentUser!.dataOwnerId()} does not have the right to access healthcare element ${healthcareElement.id}");
     }
 
     final healthcareElementDto = healthcareElement.toHealthElementDto();
@@ -147,6 +147,7 @@ class HealthcareElementApiImpl extends HealthcareElementApi {
         ])
       ]);
 
-    return (await createOrModifyHealthcareElement(patientId, healthcareElement)) ?? (throw StateError("Couldn't update healthcareElement"));
+    return (await createOrModifyHealthcareElement(patientId, healthcareElement)) ??
+        (throw StateError("Couldn't give access to $delegatedTo to health element ${healthcareElement.id}"));
   }
 }

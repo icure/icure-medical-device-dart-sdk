@@ -242,7 +242,7 @@ void main() {
     assert(hcpDs != null);
   });
 
-  test("Sharing delegation of DataSample patient to HCP", () async {
+  test("Sharing delegation of DecryptedHealthElementDto patient to HCP", () async {
     final patApi = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "pat_rikah54178_kino.json");
     final hcpApi = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "hcp_sobehex999_kino.json");
 

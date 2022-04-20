@@ -71,6 +71,17 @@ abstract class PatientApi {
     Filter filter,
   );
 
-  /// Give access to another user to the patient
+  /// Give access to another dataOwner to the patient
+  ///
+  /// Parameters:
+  ///
+  /// * [Patient] patient to giveAccessTo [delegateTo]
+  /// * [String] delegatedTo: dataOwnerId to giveAccessTo
+  ///
+  /// Data owner id can be either a:
+  /// * healthcarePartyId,
+  /// * patientId
+  /// * deviceId
+  ///
   Future<Patient> giveAccessTo(Patient patient, String delegatedTo);
 }
