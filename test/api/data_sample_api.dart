@@ -125,4 +125,27 @@ void main() {
       assert(deletedDataSampleId != null && deletedDataSampleId == createdDataSample.id);
     });
   });
+
+  test("Sharing delegation of DataSample patient to HCP", () async {
+    final patApi = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "pat_rikah54178_kino.json");
+    final hcpApi = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "hcp_sobehex999_kino.json");
+
+    final currentUser = await patApi.userApi.getLoggedUser();
+    final currentHcp = await hcpApi.userApi.getLoggedUser();
+
+    final currentPatient = await patApi.patientApi.getPatient(currentUser!.patientId!);
+
+    final ds = DataSample(
+      id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}),
+      content: {"en": Content(numberValue: 53.5)},
+      valueDate: 20220203111034,
+      labels: [CodingReference(id: "LOINC|29463-7|2", code: "29463-7", type: "LOINC", version: "2")].toSet(),
+    );
+
+    final createdDs = await patApi.dataSampleApi.createOrModifyDataSampleFor(currentPatient!.id!, ds);
+    final sharedDs = await patApi.dataSampleApi.giveAccessTo(createdDs!, currentHcp!.healthcarePartyId!);
+
+    final hcpDs = await hcpApi.dataSampleApi.getDataSample(sharedDs.id!);
+    assert(hcpDs != null);
+  });
 }

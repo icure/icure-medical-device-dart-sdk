@@ -60,4 +60,52 @@ class PatientApiImpl extends PatientApi {
   Future<List<String>?> matchPatients(Filter filter) {
     return _api.basePatientApi.rawMatchPatientsBy(filter.toAbstractFilterDto());
   }
+
+  @override
+  Future<Patient> giveAccessTo(Patient patient, String delegatedTo) async {
+    final localCrypto = _api.crypto;
+    final currentUser = await _api.baseUserApi.getCurrentUser();
+
+    // Check if delegatedBy has access
+    if (!patient.systemMetaData!.delegations.entries.any((element) => element.key == currentUser!.dataOwnerId())) {
+      throw StateError("DataOwner ${currentUser!.dataOwnerId()} does not have the right to access patient ${patient.id}");
+    }
+
+    final patientDto = patient.toPatientDto();
+
+    final keyAndOwner = await localCrypto.encryptAESKeyForHcp(currentUser!.dataOwnerId()!, delegatedTo, patientDto.id,
+        (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, patientDto.delegations)).firstOrNull()!.formatAsKey());
+    final delegation = Delegation(owner: currentUser.id, delegatedTo: delegatedTo, key: keyAndOwner.item1);
+
+    if (patient.systemMetaData == null) {
+      patient.systemMetaData = SystemMetaDataOwnerEncrypted(delegations: {
+        delegatedTo: [delegation]
+      });
+    } else {
+      patient.systemMetaData!.delegations = {...patient.systemMetaData!.delegations}..addEntries([
+          MapEntry(delegatedTo, [delegation])
+        ]);
+    }
+
+    patient.systemMetaData!.encryptionKeys = {...patient.systemMetaData!.encryptionKeys}..addEntries([
+        MapEntry(delegatedTo, [await DelegationExtended.delegationBasedOn(localCrypto, currentUser.dataOwnerId()!, delegatedTo, patient.id!,
+    (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, patientDto.encryptionKeys)).firstOrNull()!.formatAsKey())])
+      ]);
+
+    final dataOwner = keyAndOwner.item2;
+    if (dataOwner != null && dataOwner.dataOwnerId == patient.id) {
+      patient.rev = dataOwner.rev;
+      patient.systemMetaData!.hcPartyKeys = dataOwner.hcPartyKeys;
+    }
+
+    return (await createOrModifyPatient(patient)) ?? (throw StateError("Couldn't give access to $delegatedTo to patient ${patient.id}"));
+  }
+
+  Future<Delegation> createDelegationBasedOn(Crypto localCrypto, String dataOwnerId,
+      String delegatedTo, String objectId, String keyToEncrypt) async {
+    return Delegation(
+        owner: dataOwnerId,
+        delegatedTo: delegatedTo,
+        key: (await localCrypto.encryptAESKeyForHcp(dataOwnerId, delegatedTo, objectId, keyToEncrypt)).item1);
+  }
 }

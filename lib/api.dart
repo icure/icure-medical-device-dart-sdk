@@ -30,6 +30,8 @@ import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
 import 'package:uuid/uuid_util.dart';
 
+import 'model/extended/delegation_extended.dart';
+
 import 'mappers/address.dart';
 import 'mappers/authentication_token.dart';
 import 'mappers/code_coding.dart';
@@ -191,8 +193,6 @@ part 'model/delegation.dart';
 part 'model/document.dart';
 
 part 'model/extended/user_extended.dart';
-
-part 'model/extended/patient_extended.dart';
 
 part 'model/healthcare_element.dart';
 

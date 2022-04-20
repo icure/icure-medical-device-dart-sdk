@@ -97,4 +97,46 @@ class HealthcareElementApiImpl extends HealthcareElementApi {
   Future<List<String>?> matchHealthcareElement(Filter filter) {
     return api.baseHealthElementApi.rawMatchHealthElementsBy(filter.toAbstractFilterDto());
   }
+
+  @override
+  Future<HealthcareElement> giveAccessTo(HealthcareElement healthcareElement, String delegatedTo) async {
+    final localCrypto = api.crypto;
+    final currentUser = await api.baseUserApi.getCurrentUser();
+
+    // Check if delegatedBy has access
+    if (!healthcareElement.systemMetaData!.delegations.entries.any((element) => element.key == currentUser!.dataOwnerId())) {
+      throw StateError("DataOwner ${currentUser!.dataOwnerId()} does not have the right to access healthcare element ${healthcareElement.id}");
+    }
+
+    final healthcareElementDto = healthcareElement.toHealthElementDto();
+
+    final patientId =
+        (await localCrypto.decryptEncryptionKeys(currentUser!.dataOwnerId()!, healthcareElementDto.cryptedForeignKeys)).firstOrNull()!.formatAsKey();
+    final sfk = (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, healthcareElementDto.delegations)).firstOrNull()!.formatAsKey();
+    final ek =
+        (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, healthcareElementDto.encryptionKeys)).firstOrNull()!.formatAsKey();
+
+    final delegation = await DelegationExtended.delegationBasedOn(localCrypto, currentUser.dataOwnerId()!, delegatedTo, healthcareElement.id!, sfk);
+
+    if (healthcareElement.systemMetaData == null) {
+      healthcareElement.systemMetaData = SystemMetaDataEncrypted(delegations: {
+        delegatedTo: [delegation]
+      });
+    } else {
+      healthcareElement.systemMetaData!.delegations = {...healthcareElement.systemMetaData!.delegations}..addEntries([
+          MapEntry(delegatedTo, [delegation])
+        ]);
+    }
+
+    healthcareElement.systemMetaData!.encryptionKeys = {...healthcareElement.systemMetaData!.encryptionKeys}..addEntries([
+        MapEntry(delegatedTo, [await DelegationExtended.delegationBasedOn(localCrypto, currentUser.dataOwnerId()!, delegatedTo, healthcareElement.id!, ek)])
+      ]);
+
+    healthcareElement.systemMetaData!.cryptedForeignKeys = {...healthcareElement.systemMetaData!.cryptedForeignKeys}..addEntries([
+        MapEntry(delegatedTo, [ await DelegationExtended.delegationBasedOn(localCrypto, currentUser.dataOwnerId()!, delegatedTo, healthcareElement.id!, patientId)])
+      ]);
+
+    return (await createOrModifyHealthcareElement(patientId, healthcareElement)) ??
+        (throw StateError("Couldn't give access to $delegatedTo to health element ${healthcareElement.id}"));
+  }
 }
