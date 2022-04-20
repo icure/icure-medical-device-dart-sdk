@@ -62,6 +62,17 @@ abstract class HealthcareElementApi {
     Filter filter,
   );
 
-  /// Give access to another user to the healthcareElement
+  /// Give access to another dataOwner to the healthcareElement
+  ///
+  /// Parameters:
+  ///
+  /// * [HealthcareElement] healthcareElement to giveAccessTo [delegateTo]
+  /// * [String] dataOwnerId to giveAccessTo
+  ///
+  /// Data owner id can be either a:
+  /// * healthcarePartyId,
+  /// * patientId
+  /// * deviceId
+  ///
   Future<HealthcareElement> giveAccessTo(HealthcareElement healthcareElement, String delegatedTo);
 }
