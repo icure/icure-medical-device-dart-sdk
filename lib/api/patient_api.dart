@@ -67,5 +67,21 @@ abstract class PatientApi {
   ///
   /// * [Filter] filter (required):
   ///   The Filter object that describes which condition(s) the elements whose the ids should be returned must fulfill
-  Future<List<String>?> matchPatients(Filter filter,);
+  Future<List<String>?> matchPatients(
+    Filter filter,
+  );
+
+  /// Give access to another dataOwner to the patient
+  ///
+  /// Parameters:
+  ///
+  /// * [Patient] patient to giveAccessTo [delegateTo]
+  /// * [String] delegatedTo: dataOwnerId to giveAccessTo
+  ///
+  /// Data owner id can be either a:
+  /// * healthcarePartyId,
+  /// * patientId
+  /// * deviceId
+  ///
+  Future<Patient> giveAccessTo(Patient patient, String delegatedTo);
 }

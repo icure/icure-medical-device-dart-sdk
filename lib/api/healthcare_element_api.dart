@@ -49,12 +49,30 @@ abstract class HealthcareElementApi {
   /// Parameters:
   ///
   /// * [String] id (required):
-  Future<HealthcareElement?> getHealthcareElement(String id,);
+  Future<HealthcareElement?> getHealthcareElement(
+    String id,
+  );
 
   /// Find Healthcare Elements using a filter
   ///
   /// Parameters:
   ///
   /// * [Filter] filter (required):
-  Future<List<String>?> matchHealthcareElement(Filter filter,);
+  Future<List<String>?> matchHealthcareElement(
+    Filter filter,
+  );
+
+  /// Give access to another dataOwner to the healthcareElement
+  ///
+  /// Parameters:
+  ///
+  /// * [HealthcareElement] healthcareElement to giveAccessTo [delegateTo]
+  /// * [String] delegatedTo: dataOwnerId to giveAccessTo
+  ///
+  /// Data owner id can be either a:
+  /// * healthcarePartyId,
+  /// * patientId
+  /// * deviceId
+  ///
+  Future<HealthcareElement> giveAccessTo(HealthcareElement healthcareElement, String delegatedTo);
 }
