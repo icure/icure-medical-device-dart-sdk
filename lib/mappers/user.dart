@@ -10,7 +10,7 @@
 
 import 'package:icure_dart_sdk/api.dart';
 import 'package:icure_medical_device_dart_sdk/api.dart';
-import 'package:icure_medical_device_dart_sdk/mappers/user_type.dart';
+import 'package:icure_medical_device_dart_sdk/mappers/user_status.dart';
 import 'package:icure_medical_device_dart_sdk/utils/functional_utils.dart';
 import 'package:uuid/uuid.dart';
 import 'package:uuid/uuid_util.dart';
@@ -40,8 +40,7 @@ extension UserDtoMapper on UserDto {
       deviceId: this.deviceId,
       email: this.email,
       mobilePhone: this.mobilePhone,
-      status: UserDtoStatusEnumMapper(this.status).toUserStatus(),
-      type: UserDtoTypeEnumMapper(this.type).toUserType());
+      status: UserDtoStatusEnumMapper(this.status).toUserStatus());
 
   String findDataOwnerId() {
     final id = this.healthcarePartyId ?? this.patientId ?? this.deviceId;
@@ -71,15 +70,15 @@ extension UserMapper on User {
       created: this.created,
       name: this.name,
       login: this.login,
-      passwordHash: this.passwordHash,
-      secret: this.secret,
-      use2fa: this.use2fa,
-      groupId: this.groupId,
-      healthcarePartyId: this.healthcarePartyId,
-      patientId: this.patientId,
-      deviceId: this.deviceId,
-      email: this.email,
-      mobilePhone: this.mobilePhone,
-      status: UserStatusMapper(this.status).toUserDtoStatusEnum(),
-      type: UserTypeMapper(this.type).toUserDtoTypeEnum());
+        passwordHash: this.passwordHash,
+        secret: this.secret,
+        use2fa: this.use2fa,
+        groupId: this.groupId,
+        healthcarePartyId: this.healthcarePartyId,
+        patientId: this.patientId,
+        deviceId: this.deviceId,
+        email: this.email,
+        mobilePhone: this.mobilePhone,
+        status: UserStatusMapper(this.status).toUserDtoStatusEnum(),
+      );
 }

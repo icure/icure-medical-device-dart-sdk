@@ -32,8 +32,7 @@ class User {
       this.email,
       this.mobilePhone,
       this.authenticationTokens = const {},
-      this.status,
-      this.type});
+      this.status});
 
   /// the Id of the user. We encourage using either a v4 UUID or a HL7 Id.
   ///
@@ -185,9 +184,6 @@ class User {
   ///Status of the current user
   UserStatus? status;
 
-  /// Type of the current user
-  UserType? type;
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -211,8 +207,7 @@ class User {
           other.email == email &&
           other.mobilePhone == mobilePhone &&
           other.authenticationTokens == authenticationTokens &&
-          other.status == status &&
-          other.type == type;
+          other.status == status;
 
   @override
   int get hashCode =>
@@ -236,12 +231,11 @@ class User {
       (email == null ? 0 : email!.hashCode) +
       (mobilePhone == null ? 0 : mobilePhone!.hashCode) +
       (authenticationTokens.hashCode) +
-      (status?.hashCode ?? 0) +
-      (type?.hashCode ?? 0);
+      (status?.hashCode ?? 0);
 
   @override
   String toString() =>
-      'User[id=$id, rev=$rev, deletionDate=$deletionDate, created=$created, name=$name, properties=$properties, roles=$roles, login=$login, passwordHash=$passwordHash, secret=$secret, use2fa=$use2fa, groupId=$groupId, healthcarePartyId=$healthcarePartyId, patientId=$patientId, deviceId=$deviceId, autoDelegations=$autoDelegations, email=$email, mobilePhone=$mobilePhone, authenticationTokens=$authenticationTokens, status=$status, type=$type]';
+      'User[id=$id, rev=$rev, deletionDate=$deletionDate, created=$created, name=$name, properties=$properties, roles=$roles, login=$login, passwordHash=$passwordHash, secret=$secret, use2fa=$use2fa, groupId=$groupId, healthcarePartyId=$healthcarePartyId, patientId=$patientId, deviceId=$deviceId, autoDelegations=$autoDelegations, email=$email, mobilePhone=$mobilePhone, authenticationTokens=$authenticationTokens, status=$status]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -297,9 +291,6 @@ class User {
     if (status != null) {
       json[r'status'] = status;
     }
-    if (type == null) {
-      json[r'type'] = type;
-    }
     return json;
   }
 
@@ -325,28 +316,28 @@ class User {
         id: mapValueOfType<String>(json, r'id'),
         rev: mapValueOfType<String>(json, r'rev'),
         deletionDate: mapValueOfType<int>(json, r'deletionDate'),
-          created: mapValueOfType<int>(json, r'created'),
-          name: mapValueOfType<String>(json, r'name'),
-          properties: Property.listFromJson(json[r'properties'])!.toSet(),
-          roles: json[r'roles'] is Set
-              ? (json[r'roles'] as Set).cast<String>()
-              : json[r'roles'] is List
-                  ? ((json[r'roles'] as List).toSet()).cast<String>()
-                  : const {},
-          login: mapValueOfType<String>(json, r'login'),
-          passwordHash: mapValueOfType<String>(json, r'passwordHash'),
-          secret: mapValueOfType<String>(json, r'secret'),
-          use2fa: mapValueOfType<bool>(json, r'use2fa'),
-          groupId: mapValueOfType<String>(json, r'groupId'),
-          healthcarePartyId: mapValueOfType<String>(json, r'healthcarePartyId'),
-          patientId: mapValueOfType<String>(json, r'patientId'),
-          deviceId: mapValueOfType<String>(json, r'deviceId'),
-          autoDelegations: json[r'autoDelegations'] == null ? const {} : mapWithSetOfStringsFromJson(json[r'autoDelegations']),
-          email: mapValueOfType<String>(json, r'email'),
-          mobilePhone: mapValueOfType<String>(json, r'mobilePhone'),
-          authenticationTokens: mapValueOfType<Map<String, AuthenticationToken>>(json, r'authenticationTokens')!,
-          status: mapValueOfType<UserStatus>(json, r'status'),
-          type: mapValueOfType<UserType>(json, r'type'));
+        created: mapValueOfType<int>(json, r'created'),
+        name: mapValueOfType<String>(json, r'name'),
+        properties: Property.listFromJson(json[r'properties'])!.toSet(),
+        roles: json[r'roles'] is Set
+            ? (json[r'roles'] as Set).cast<String>()
+            : json[r'roles'] is List
+                ? ((json[r'roles'] as List).toSet()).cast<String>()
+                : const {},
+        login: mapValueOfType<String>(json, r'login'),
+        passwordHash: mapValueOfType<String>(json, r'passwordHash'),
+        secret: mapValueOfType<String>(json, r'secret'),
+        use2fa: mapValueOfType<bool>(json, r'use2fa'),
+        groupId: mapValueOfType<String>(json, r'groupId'),
+        healthcarePartyId: mapValueOfType<String>(json, r'healthcarePartyId'),
+        patientId: mapValueOfType<String>(json, r'patientId'),
+        deviceId: mapValueOfType<String>(json, r'deviceId'),
+        autoDelegations: json[r'autoDelegations'] == null ? const {} : mapWithSetOfStringsFromJson(json[r'autoDelegations']),
+        email: mapValueOfType<String>(json, r'email'),
+        mobilePhone: mapValueOfType<String>(json, r'mobilePhone'),
+        authenticationTokens: mapValueOfType<Map<String, AuthenticationToken>>(json, r'authenticationTokens')!,
+        status: mapValueOfType<UserStatus>(json, r'status'),
+      );
     }
     return null;
   }
@@ -410,7 +401,3 @@ class User {
     'authenticationTokens',
   };
 }
-
-enum UserStatus { ACTIVE, DISABLED, REGISTERING }
-
-enum UserType { database, ldap, token }

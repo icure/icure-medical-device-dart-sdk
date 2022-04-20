@@ -9,11 +9,3 @@ extension UserStatusMapper on UserStatus? {
 extension UserDtoStatusEnumMapper on UserDtoStatusEnum? {
   UserStatus? toUserStatus() => UserStatus?.values.firstWhereOrNull((it) => it.name == this?.value);
 }
-
-extension UserTypeMapper on UserType? {
-  UserDtoTypeEnum? toUserDtoTypeEnum() => UserDtoTypeEnum?.values.firstWhereOrNull((it) => it.value == this?.name);
-}
-
-extension UserDtoTypeEnumMapper on UserDtoTypeEnum? {
-  UserType? toUserType() => UserType?.values.firstWhereOrNull((it) => it.name == this?.value);
-}
