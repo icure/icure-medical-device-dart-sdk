@@ -10,6 +10,7 @@
 
 import 'package:icure_dart_sdk/api.dart';
 import 'package:icure_medical_device_dart_sdk/api.dart';
+import 'package:icure_medical_device_dart_sdk/mappers/user_type.dart';
 import 'package:icure_medical_device_dart_sdk/utils/functional_utils.dart';
 import 'package:uuid/uuid.dart';
 import 'package:uuid/uuid_util.dart';
@@ -50,66 +51,6 @@ extension UserDtoMapper on UserDto {
     }
 
     return id;
-  }
-}
-
-extension UserStatusMapper on UserStatus? {
-  UserDtoStatusEnum? toUserDtoStatusEnum() {
-    switch (this) {
-      case UserStatus.ACTIVE:
-        return UserDtoStatusEnum.ACTIVE;
-      case UserStatus.DISABLED:
-        return UserDtoStatusEnum.DISABLED;
-      case UserStatus.REGISTERING:
-        return UserDtoStatusEnum.REGISTERING;
-      default:
-        return null;
-    }
-  }
-}
-
-extension UserDtoStatusEnumMapper on UserDtoStatusEnum? {
-  UserStatus? toUserStatus() {
-    switch (this) {
-      case UserDtoStatusEnum.ACTIVE:
-        return UserStatus.ACTIVE;
-      case UserDtoStatusEnum.DISABLED:
-        return UserStatus.DISABLED;
-      case UserDtoStatusEnum.REGISTERING:
-        return UserStatus.REGISTERING;
-      default:
-        return null;
-    }
-  }
-}
-
-extension UserTypeMapper on UserType? {
-  UserDtoTypeEnum? toUserDtoTypeEnum() {
-    switch (this) {
-      case UserType.database:
-        return UserDtoTypeEnum.database;
-      case UserType.ldap:
-        return UserDtoTypeEnum.ldap;
-      case UserType.token:
-        return UserDtoTypeEnum.token;
-      default:
-        return null;
-    }
-  }
-}
-
-extension UserDtoTypeEnumMapper on UserDtoTypeEnum? {
-  UserType? toUserType() {
-    switch (this) {
-      case UserDtoTypeEnum.database:
-        return UserType.database;
-      case UserDtoTypeEnum.ldap:
-        return UserType.ldap;
-      case UserDtoTypeEnum.token:
-        return UserType.token;
-      default:
-        return null;
-    }
   }
 }
 

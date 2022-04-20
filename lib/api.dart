@@ -52,6 +52,7 @@ import 'mappers/service_data_sample.dart';
 import 'mappers/time_series.dart';
 import 'mappers/typed_value_object.dart';
 import 'mappers/user.dart';
+import 'mappers/user_type.dart';
 import 'utils/cached_map.dart';
 import 'utils/date_utils.dart';
 import 'utils/functional_utils.dart';
