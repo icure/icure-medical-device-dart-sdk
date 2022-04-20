@@ -8,7 +8,7 @@ import '../utils/test_utils.dart';
 void main() {
   final Uuid uuid = Uuid();
 
-  group('tests for PatientApi', () {
+  group('tests for UserApi', () {
     test("Updating user properties", () async {
       final api = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "hcp_test-n8joty04x_kino.json");
 
