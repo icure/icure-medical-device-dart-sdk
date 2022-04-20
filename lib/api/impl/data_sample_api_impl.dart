@@ -330,25 +330,24 @@ class DataSampleApiImpl extends DataSampleApi {
     return await localCrypto.decryptEncryptionKeys(currentUser.findDataOwnerId(), document.encryptionKeys);
   }
 
+  Future<DecryptedContactDto?> _getContactOfDataSampleOrElse(UserDto user, DataSample dataSample, Crypto localCrypto, Function orElse) async {
+    try {
+      final contactTuple = await _getContactOfDataSample(localCrypto, user, dataSample, bypassCache: true);
+      return contactTuple.item2;
+    } on FormatException {
+      return orElse();
+    }
+  }
+
   @override
   Future<DataSample> giveAccessTo(DataSample dataSample, String delegatedTo) async {
-    final localCrypto = api.crypto;
+    final Crypto localCrypto = api.crypto;
     final currentUser = await api.baseUserApi.getCurrentUser();
 
-    // Check if delegatedBy has access
-    Future<DecryptedContactDto?> getContactOfDataSample() async {
-      try {
-        final contactTuple = await _getContactOfDataSample(localCrypto, currentUser!, dataSample, bypassCache: true);
-        return contactTuple.item2;
-      } on FormatException {
-        throw StateError("DataOwner ${currentUser!.dataOwnerId()} does not have the right to access dataSample ${dataSample.id}");
-      }
-    }
+    final contact = await _getContactOfDataSampleOrElse(currentUser!, dataSample, localCrypto,
+        () => throw StateError("DataOwner ${currentUser.dataOwnerId()} does not have the right to access dataSample ${dataSample.id}"));
 
-    final contact = await getContactOfDataSample();
-
-    final patientId =
-        (await localCrypto.decryptEncryptionKeys(currentUser!.dataOwnerId()!, contact!.cryptedForeignKeys)).firstOrNull()!.formatAsKey();
+    final patientId = (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, contact!.cryptedForeignKeys)).firstOrNull()!.formatAsKey();
     final sfk = (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, contact.delegations)).firstOrNull()!.formatAsKey();
     final ek = (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, contact.encryptionKeys)).firstOrNull()!.formatAsKey();
 
