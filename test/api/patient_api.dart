@@ -4,12 +4,9 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:crypton/crypton.dart';
-import 'package:icure_dart_sdk/api.dart' as rapi;
 import 'package:icure_dart_sdk/crypto/crypto.dart';
 import 'package:icure_dart_sdk/util/binary_utils.dart';
 import 'package:icure_medical_device_dart_sdk/api.dart';
-import 'package:icure_medical_device_dart_sdk/mappers/healthcare_element.dart';
-import 'package:icure_medical_device_dart_sdk/mappers/patient.dart';
 import 'package:icure_medical_device_dart_sdk/utils/net_utils.dart';
 import 'package:pointycastle/export.dart' as pointy;
 import "package:test/test.dart";
@@ -27,20 +24,19 @@ void main() {
 
   HealthcareElement getHealthElementDto() => HealthcareElement(note: 'Premature optimization is the root of all evil');
 
-  rapi.DecryptedPatientDto getPatient() => rapi.DecryptedPatientDto(
-      id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}), firstName: 'John', lastName: 'Doe', note: 'Premature optimization is the root of all evil');
+  Patient getPatient() => Patient(firstName: 'John', lastName: 'Doe', note: 'Premature optimization is the root of all evil');
 
   group('tests for PatientApi', () {
     test('test createPatient', () async {
       // Init
       final MedTechApi api = await medtechApi();
-      final rapi.DecryptedPatientDto patient = getPatient();
+      final Patient patient = getPatient();
 
       // When
-      final Patient? createdPatient = await api.patientApi.createOrModifyPatient(PatientDtoMapper(patient).toPatient());
+      final Patient? createdPatient = await api.patientApi.createOrModifyPatient(patient);
 
       // Then
-      expect(createdPatient!.id, patient.id);
+      expect(createdPatient!.id != null, true);
       expect(createdPatient.firstName, patient.firstName);
       expect(createdPatient.lastName, patient.lastName);
       expect(createdPatient.note, patient.note);
@@ -49,10 +45,10 @@ void main() {
     test('test getPatient', () async {
       // Init
       final MedTechApi api = await medtechApi();
-      final rapi.DecryptedPatientDto patient = getPatient();
+      final Patient patient = getPatient();
 
       // When
-      final Patient? createdPatient = await api.patientApi.createOrModifyPatient(PatientDtoMapper(patient).toPatient());
+      final Patient? createdPatient = await api.patientApi.createOrModifyPatient(patient);
       final Patient? gotPatient = await api.patientApi.getPatient(createdPatient!.id!);
 
       // Then
@@ -80,11 +76,10 @@ void main() {
     test('test createPatient with crypto', () async {
       // Init
       final MedTechApi api = await medtechApi();
-      final rapi.DecryptedPatientDto patient =
-          rapi.DecryptedPatientDto(id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}), firstName: 'John', lastName: 'Doe');
+      final Patient patient = Patient(firstName: 'John', lastName: 'Doe');
 
       // When
-      final Patient? createdPatient = await api.patientApi.createOrModifyPatient(PatientDtoMapper(patient).toPatient());
+      final Patient? createdPatient = await api.patientApi.createOrModifyPatient(patient);
       var idUser = uuid.v4(options: {'rng': UuidUtil.cryptoRNG});
       var passwordUser = uuid.v4(options: {'rng': UuidUtil.cryptoRNG});
       final User? createdUser = await api.userApi
@@ -213,53 +208,11 @@ void main() {
     final currentPatient = await patApi.patientApi.getPatient(currentUser!.patientId!);
 
     final delegatedPatient = await patApi.patientApi.giveAccessTo(currentPatient!, currentHcp!.healthcarePartyId!);
-    assert(delegatedPatient != null);
+    assert(delegatedPatient.systemMetaData!.delegations.containsKey(currentHcp.healthcarePartyId!));
+    assert(delegatedPatient.systemMetaData!.encryptionKeys.containsKey(currentHcp.healthcarePartyId!));
 
     final hcpCurrentPatient = await hcpApi.patientApi.getPatient(currentUser.patientId!);
     assert(hcpCurrentPatient != null);
-  });
-
-  test("Sharing delegation of DataSample patient to HCP", () async {
-    final patApi = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "pat_rikah54178_kino.json");
-    final hcpApi = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "hcp_sobehex999_kino.json");
-
-    final currentUser = await patApi.userApi.getLoggedUser();
-    final currentHcp = await hcpApi.userApi.getLoggedUser();
-
-    final currentPatient = await patApi.patientApi.getPatient(currentUser!.patientId!);
-
-    final ds = DataSample(
-      id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}),
-      content: {"en": Content(numberValue: 53.5)},
-      valueDate: 20220203111034,
-      labels: [CodingReference(id: "LOINC|29463-7|2", code: "29463-7", type: "LOINC", version: "2")].toSet(),
-    );
-
-    final createdDs = await patApi.dataSampleApi.createOrModifyDataSampleFor(currentPatient!.id!, ds);
-    final sharedDs = await patApi.dataSampleApi.giveAccessTo(createdDs!, currentHcp!.healthcarePartyId!);
-
-    final hcpDs = await hcpApi.dataSampleApi.getDataSample(sharedDs.id!);
-    assert(hcpDs != null);
-  });
-
-  test("Sharing delegation of DecryptedHealthElementDto patient to HCP", () async {
-    final patApi = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "pat_rikah54178_kino.json");
-    final hcpApi = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "hcp_sobehex999_kino.json");
-
-    final currentUser = await patApi.userApi.getLoggedUser();
-    final currentHcp = await hcpApi.userApi.getLoggedUser();
-
-    final currentPatient = await patApi.patientApi.getPatient(currentUser!.patientId!);
-
-    final he = rapi.DecryptedHealthElementDto(
-        id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}), note: 'Premature optimization is the root of all evil', relevant: true, status: 0);
-
-    final createdHe =
-        await patApi.healthcareElementApi.createOrModifyHealthcareElement(currentPatient!.id!, HealthElementDtoMapper(he).toHealthcareElement());
-    final sharedHe = await patApi.healthcareElementApi.giveAccessTo(createdHe!, currentHcp!.healthcarePartyId!);
-
-    final hcpHe = await hcpApi.healthcareElementApi.getHealthcareElement(sharedHe.id!);
-    assert(hcpHe != null);
   });
 
   test("Test eRSA encryption/decryption", () async {

@@ -88,14 +88,8 @@ class PatientApiImpl extends PatientApi {
     }
 
     patient.systemMetaData!.encryptionKeys = {...patient.systemMetaData!.encryptionKeys}..addEntries([
-        MapEntry(delegatedTo, [
-          Delegation(
-              owner: currentUser.dataOwnerId(),
-              delegatedTo: delegatedTo,
-              key: (await localCrypto.encryptAESKeyForHcp(currentUser.dataOwnerId()!, delegatedTo, patient.id!,
-                      (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, patientDto.encryptionKeys)).firstOrNull()!.formatAsKey()))
-                  .item1)
-        ])
+        MapEntry(delegatedTo, [await DelegationExtended.delegationBasedOn(localCrypto, currentUser.dataOwnerId()!, delegatedTo, patient.id!,
+    (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, patientDto.encryptionKeys)).firstOrNull()!.formatAsKey())])
       ]);
 
     final dataOwner = keyAndOwner.item2;
@@ -105,5 +99,13 @@ class PatientApiImpl extends PatientApi {
     }
 
     return (await createOrModifyPatient(patient)) ?? (throw StateError("Couldn't give access to $delegatedTo to patient ${patient.id}"));
+  }
+
+  Future<Delegation> createDelegationBasedOn(Crypto localCrypto, String dataOwnerId,
+      String delegatedTo, String objectId, String keyToEncrypt) async {
+    return Delegation(
+        owner: dataOwnerId,
+        delegatedTo: delegatedTo,
+        key: (await localCrypto.encryptAESKeyForHcp(dataOwnerId, delegatedTo, objectId, keyToEncrypt)).item1);
   }
 }

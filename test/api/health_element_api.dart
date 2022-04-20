@@ -93,4 +93,23 @@ void main() {
     // Then
     assert(deletedHealthcareElementRev != null);
   });
+
+  test("Sharing delegation of DecryptedHealthElementDto patient to HCP", () async {
+    final patApi = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "pat_rikah54178_kino.json");
+    final hcpApi = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "hcp_sobehex999_kino.json");
+
+    final currentUser = await patApi.userApi.getLoggedUser();
+    final currentHcp = await hcpApi.userApi.getLoggedUser();
+
+    final currentPatient = await patApi.patientApi.getPatient(currentUser!.patientId!);
+
+    final he = HealthcareElement(note: 'Premature optimization is the root of all evil');
+
+    final createdHe =
+    await patApi.healthcareElementApi.createOrModifyHealthcareElement(currentPatient!.id!, he);
+    final sharedHe = await patApi.healthcareElementApi.giveAccessTo(createdHe!, currentHcp!.healthcarePartyId!);
+
+    final hcpHe = await hcpApi.healthcareElementApi.getHealthcareElement(sharedHe.id!);
+    assert(hcpHe != null);
+  });
 }

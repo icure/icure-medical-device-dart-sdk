@@ -232,13 +232,17 @@ class DataSampleApiImpl extends DataSampleApi {
 
   Future<Tuple2<bool, base_api.DecryptedContactDto?>> _getContactOfDataSample(Crypto localCrypto, base_api.UserDto currentUser, DataSample dataSample,
       {bool bypassCache = false}) async {
-    final cachedContact = dataSample.id?.let((dsId) => contactsLinkedToDataSamplesCache.getIfPresent(dsId));
-    if (cachedContact != null && !bypassCache) {
-      return Tuple2(true, cachedContact);
-    } else {
-      final base_api.DecryptedContactDto? contact = await dataSample.batchId
-          ?.let((that) async => await api.baseContactApi.getContact(currentUser, that, contactCryptoConfig(currentUser, localCrypto)));
-      return Tuple2(false, contact);
+    try {
+      final cachedContact = dataSample.id?.let((dsId) => contactsLinkedToDataSamplesCache.getIfPresent(dsId));
+      if (cachedContact != null && !bypassCache) {
+        return Tuple2(true, cachedContact);
+      } else {
+        final base_api.DecryptedContactDto? contact = await dataSample.batchId
+            ?.let((that) async => await api.baseContactApi.getContact(currentUser, that, contactCryptoConfig(currentUser, localCrypto)));
+        return Tuple2(false, contact);
+      }
+    } on FormatException {
+        throw Exception("DataOwner ${currentUser.dataOwnerId()} may not access batch info of dataSample ${dataSample.id}");
     }
   }
 
@@ -332,59 +336,38 @@ class DataSampleApiImpl extends DataSampleApi {
 
   @override
   Future<DataSample> giveAccessTo(DataSample dataSample, String delegatedTo) async {
-    final localCrypto = api.crypto;
-    final currentUser = await api.baseUserApi.getCurrentUser();
+      final localCrypto = api.crypto;
+      final currentUser = await api.baseUserApi.getCurrentUser();
 
-    // Check if delegatedBy has access
-    Future<DecryptedContactDto?> getContactOfDataSample() async {
-      try {
-        final contactTuple = await _getContactOfDataSample(localCrypto, currentUser!, dataSample, bypassCache: true);
-        return contactTuple.item2;
-      } on FormatException {
-        throw StateError("DataOwner ${currentUser!.dataOwnerId()} does not have the right to access dataSample ${dataSample.id}");
-      }
-    }
+      // Check if delegatedBy has access
+      final contact = (await _getContactOfDataSample(localCrypto, currentUser!, dataSample, bypassCache: true)).item2;
 
-    final contact = await getContactOfDataSample();
+      final patientId =
+      (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, contact!.cryptedForeignKeys)).firstOrNull()!.formatAsKey();
+      final sfk = (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, contact.delegations)).firstOrNull()!.formatAsKey();
+      final ek = (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, contact.encryptionKeys)).firstOrNull()!.formatAsKey();
 
-    final patientId =
-        (await localCrypto.decryptEncryptionKeys(currentUser!.dataOwnerId()!, contact!.cryptedForeignKeys)).firstOrNull()!.formatAsKey();
-    final sfk = (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, contact.delegations)).firstOrNull()!.formatAsKey();
-    final ek = (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, contact.encryptionKeys)).firstOrNull()!.formatAsKey();
+      final ccContact = contactCryptoConfig(currentUser, localCrypto);
 
-    final ccContact = contactCryptoConfig(currentUser, localCrypto);
+      contact.delegations = await addDelegationBasedOn(contact.delegations, localCrypto, currentUser.dataOwnerId()!, delegatedTo, contact.id, sfk);
+      contact.encryptionKeys = await addDelegationBasedOn(contact.encryptionKeys, localCrypto, currentUser.dataOwnerId()!, delegatedTo, contact.id, ek);
+      contact.cryptedForeignKeys = await addDelegationBasedOn(contact.cryptedForeignKeys, localCrypto, currentUser.dataOwnerId()!, delegatedTo, contact.id, patientId);
 
-    final keyAndOwner = await localCrypto.encryptAESKeyForHcp(currentUser.dataOwnerId()!, delegatedTo, contact!.id, sfk);
-    final delegation = Delegation(owner: currentUser.dataOwnerId(), delegatedTo: delegatedTo, key: keyAndOwner.item1);
+      final updatedContact = await api.baseContactApi.modifyContact(currentUser, contact, ccContact);
 
-    contact.delegations = {...contact.delegations}..addEntries([
-        MapEntry(delegatedTo, [delegation.toDelegationDto()].toSet())
-      ]);
+      return updatedContact?.services.firstOrNull()?.toDataSample(updatedContact.id) ?? (throw StateError("Couldn't give access to dataSample"));
+  }
 
-    contact.encryptionKeys = {...contact.encryptionKeys}..addEntries([
-        MapEntry(
-            delegatedTo,
-            [
-              DelegationDto(
-                  owner: currentUser.dataOwnerId(),
-                  delegatedTo: delegatedTo,
-                  key: (await localCrypto.encryptAESKeyForHcp(currentUser.dataOwnerId()!, delegatedTo, contact.id, ek)).item1)
-            ].toSet())
-      ]);
-
-    contact.cryptedForeignKeys = {...contact.cryptedForeignKeys}..addEntries([
-        MapEntry(
-            delegatedTo,
-            [
-              DelegationDto(
-                  owner: currentUser.dataOwnerId(),
-                  delegatedTo: delegatedTo,
-                  key: (await localCrypto.encryptAESKeyForHcp(currentUser.dataOwnerId()!, delegatedTo, contact.id, patientId)).item1)
-            ].toSet())
-      ]);
-
-    final updatedContact = await api.baseContactApi.modifyContact(currentUser, contact, ccContact);
-
-    return updatedContact?.services.firstOrNull()?.toDataSample(updatedContact.id) ?? (throw StateError("Couldn't give access to dataSample"));
+  Future<Map<String, Set<DelegationDto>>> addDelegationBasedOn(Map<String, Set<DelegationDto>> delegations, Crypto localCrypto, String dataOwnerId,
+      String delegatedTo, String objectId, String encKey) async {
+    return {...delegations}..addEntries([
+      MapEntry(delegatedTo, [
+        DelegationDto(
+            owner: dataOwnerId,
+            delegatedTo: delegatedTo,
+            key: (await localCrypto.encryptAESKeyForHcp(dataOwnerId, delegatedTo, objectId, encKey)).item1)
+      ].toSet()
+      )
+    ]);
   }
 }

@@ -116,8 +116,7 @@ class HealthcareElementApiImpl extends HealthcareElementApi {
     final ek =
         (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, healthcareElementDto.encryptionKeys)).firstOrNull()!.formatAsKey();
 
-    final keyAndOwner = await localCrypto.encryptAESKeyForHcp(currentUser.dataOwnerId()!, delegatedTo, healthcareElementDto.id!, sfk);
-    final delegation = Delegation(owner: currentUser.id, delegatedTo: delegatedTo, key: keyAndOwner.item1);
+    final delegation = await DelegationExtended.delegationBasedOn(localCrypto, currentUser.dataOwnerId()!, delegatedTo, healthcareElement.id!, sfk);
 
     if (healthcareElement.systemMetaData == null) {
       healthcareElement.systemMetaData = SystemMetaDataEncrypted(delegations: {
@@ -130,21 +129,11 @@ class HealthcareElementApiImpl extends HealthcareElementApi {
     }
 
     healthcareElement.systemMetaData!.encryptionKeys = {...healthcareElement.systemMetaData!.encryptionKeys}..addEntries([
-        MapEntry(delegatedTo, [
-          Delegation(
-              owner: currentUser.dataOwnerId(),
-              delegatedTo: delegatedTo,
-              key: (await localCrypto.encryptAESKeyForHcp(currentUser.dataOwnerId()!, delegatedTo, healthcareElement.id!, ek)).item1)
-        ])
+        MapEntry(delegatedTo, [await DelegationExtended.delegationBasedOn(localCrypto, currentUser.dataOwnerId()!, delegatedTo, healthcareElement.id!, ek)])
       ]);
 
     healthcareElement.systemMetaData!.cryptedForeignKeys = {...healthcareElement.systemMetaData!.cryptedForeignKeys}..addEntries([
-        MapEntry(delegatedTo, [
-          Delegation(
-              owner: currentUser.dataOwnerId(),
-              delegatedTo: delegatedTo,
-              key: (await localCrypto.encryptAESKeyForHcp(currentUser.dataOwnerId()!, delegatedTo, healthcareElement.id!, patientId)).item1)
-        ])
+        MapEntry(delegatedTo, [ await DelegationExtended.delegationBasedOn(localCrypto, currentUser.dataOwnerId()!, delegatedTo, healthcareElement.id!, patientId)])
       ]);
 
     return (await createOrModifyHealthcareElement(patientId, healthcareElement)) ??
