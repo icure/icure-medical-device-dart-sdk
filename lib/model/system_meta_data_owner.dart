@@ -33,12 +33,12 @@ class SystemMetaDataOwner {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-          other is SystemMetaDataOwner &&
-              other.hcPartyKeys == hcPartyKeys &&
-              other.privateKeyShamirPartitions == privateKeyShamirPartitions &&
-              other.aesExchangeKeys == aesExchangeKeys &&
-              other.transferKeys == transferKeys &&
-              other.lostHcPartyKeys == lostHcPartyKeys;
+      other is SystemMetaDataOwner &&
+          MapEquality(values: ListEquality()).equals(other.hcPartyKeys, hcPartyKeys) &&
+          MapEquality().equals(other.privateKeyShamirPartitions, privateKeyShamirPartitions) &&
+          MapEquality(values: MapEquality(values: ListEquality())).equals(other.aesExchangeKeys, aesExchangeKeys) &&
+          MapEquality(values: MapEquality()).equals(other.transferKeys, transferKeys) &&
+          ListEquality().equals(other.lostHcPartyKeys, lostHcPartyKeys);
 
   @override
   int get hashCode =>

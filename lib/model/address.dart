@@ -116,7 +116,7 @@ class Address {
           other.state == state &&
           other.country == country &&
           other.note == note &&
-          other.telecoms == telecoms;
+          ListEquality().equals(other.telecoms, telecoms);
 
   @override
   int get hashCode =>
