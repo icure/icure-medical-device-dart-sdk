@@ -10,7 +10,7 @@ void main() {
 
   group('tests for UserApi', () {
     test("Updating user properties", () async {
-      final api = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "hcp_test-n8joty04x_kino.json");
+      final api = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "hcp_test-n8joty04x_kino.json", host: "http://localhost:16043");
 
       final currentUser = await api.userApi.getLoggedUser();
       currentUser!.properties
@@ -20,7 +20,8 @@ void main() {
       // Then
       currentUser.rev = null;
       updatedUser?.rev = null;
-      expect(currentUser, updatedUser);
+
+      expect(currentUser == updatedUser, isTrue);
     });
 
     test("Mapping user", () async {
@@ -31,7 +32,7 @@ void main() {
       final mappedUser = iCureUser.toUser();
 
       // Then
-      assert(currentUser == mappedUser);
+      expect(currentUser == mappedUser, isTrue);
     });
   });
 }

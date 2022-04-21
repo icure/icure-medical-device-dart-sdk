@@ -193,8 +193,8 @@ class User {
           other.deletionDate == deletionDate &&
           other.created == created &&
           other.name == name &&
-          other.properties == properties &&
-          other.roles == roles &&
+          SetEquality().equals(other.properties, properties) &&
+          SetEquality().equals(other.roles, roles) &&
           other.login == login &&
           other.passwordHash == passwordHash &&
           other.secret == secret &&
@@ -203,10 +203,10 @@ class User {
           other.healthcarePartyId == healthcarePartyId &&
           other.patientId == patientId &&
           other.deviceId == deviceId &&
-          other.autoDelegations == autoDelegations &&
+          MapEquality(values: SetEquality()).equals(other.autoDelegations, autoDelegations) &&
           other.email == email &&
           other.mobilePhone == mobilePhone &&
-          other.authenticationTokens == authenticationTokens &&
+          MapEquality().equals(other.authenticationTokens, authenticationTokens) &&
           other.status == status;
 
   @override
