@@ -40,7 +40,7 @@ extension UserDtoMapper on UserDto {
       deviceId: this.deviceId,
       email: this.email,
       mobilePhone: this.mobilePhone,
-      status: UserDtoStatusEnumMapper(this.status).toUserStatus());
+      status: this.status?.let((it) => UserDtoStatusEnumMapper(it).toUserStatus()));
 
   String findDataOwnerId() {
     final id = this.healthcarePartyId ?? this.patientId ?? this.deviceId;
@@ -69,7 +69,7 @@ extension UserMapper on User {
       deletionDate: this.deletionDate,
       created: this.created,
       name: this.name,
-      login: this.login,
+        login: this.login,
         passwordHash: this.passwordHash,
         secret: this.secret,
         use2fa: this.use2fa,
@@ -79,6 +79,6 @@ extension UserMapper on User {
         deviceId: this.deviceId,
         email: this.email,
         mobilePhone: this.mobilePhone,
-        status: UserStatusMapper(this.status).toUserDtoStatusEnum(),
+        status: this.status?.let((it) => UserStatusMapper(it).toUserDtoStatusEnum()),
       );
 }

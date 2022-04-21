@@ -77,7 +77,7 @@ class DataSampleApiImpl extends DataSampleApi {
     final currentUser = await api.baseUserApi.getCurrentUser();
 
     final base_api.DecryptedContactDto existingContact =
-        (await _findContactsForDataSampleIds(currentUser!, localCrypto, [dataSampleId])).firstOrNull() ??
+        (await _findContactsForDataSampleIds(currentUser!, localCrypto, [dataSampleId])).firstOrNull ??
             (throw StateError("Could not find batch information of the data sample $dataSampleId"));
 
     final base_api.DecryptedServiceDto existingService =
@@ -97,7 +97,7 @@ class DataSampleApiImpl extends DataSampleApi {
 
   @override
   Future<String?> deleteDataSample(String dataSampleId) async {
-    return (await deleteDataSamples([dataSampleId]))?.firstOrNull() ?? (throw StateError("Couldn't delete data sample $dataSampleId"));
+    return (await deleteDataSamples([dataSampleId]))?.firstOrNull ?? (throw StateError("Couldn't delete data sample $dataSampleId"));
   }
 
   @override
@@ -106,8 +106,8 @@ class DataSampleApiImpl extends DataSampleApi {
     final currentUser = await api.baseUserApi.getCurrentUser();
 
     final base_api.DecryptedContactDto existingContact =
-        (await _findContactsForDataSampleIds(currentUser!, localCrypto, requestBody)).firstOrNull() ??
-            (throw StateError("Could not find batch information of the data sample $requestBody"));
+        (await _findContactsForDataSampleIds(currentUser!, localCrypto, requestBody)).firstOrNull ??
+        (throw StateError("Could not find batch information of the data sample $requestBody"));
 
     final existingServiceIds = existingContact.services.map((e) => e.id);
     if (requestBody.any((element) => !existingServiceIds.contains(element))) {
@@ -190,8 +190,8 @@ class DataSampleApiImpl extends DataSampleApi {
 
 
     final documentCC = documentCryptoConfig(localCrypto);
-    final createdDocument = await api.baseDocumentApi.createDocument(currentUser, documentToCreate, documentCC)
-      ?? throwFormatException("Could not create document for data sample $dataSampleId");
+    final createdDocument = await api.baseDocumentApi.createDocument(currentUser, documentToCreate, documentCC) ??
+        throwFormatException("Could not create document for data sample $dataSampleId");
 
     // Update data sample with documentId
     final contentIso = documentLanguage ?? "en";
@@ -200,17 +200,11 @@ class DataSampleApiImpl extends DataSampleApi {
 
     // Add attachment to document
     List<int> docDigest = [];
-    final String? docEncKey = (await _getDocumentEncryptionKeys(localCrypto, currentUser, createdDocument)).firstOrNull();
-    await api.baseDocumentApi.setAttachmentTo(
-          currentUser,
-          createdDocument.id,
-          ByteStream(body.map((bytes) {
-            docDigest = bytes;
-            return bytes;
-          })),
-          docEncKey,
-          documentCC
-    );
+    final String? docEncKey = (await _getDocumentEncryptionKeys(localCrypto, currentUser, createdDocument)).firstOrNull;
+    await api.baseDocumentApi.setAttachmentTo(currentUser, createdDocument.id, ByteStream(body.map((bytes) {
+      docDigest = bytes;
+      return bytes;
+    })), docEncKey, documentCC);
 
     // Update document with digest
     createdDocument.hash = sha256.convert(docDigest).toString();
@@ -317,7 +311,7 @@ class DataSampleApiImpl extends DataSampleApi {
     final localCrypto = api.crypto;
     final currentUser = await api.baseUserApi.getCurrentUser();
 
-    return (await api.baseContactApi.listServices(currentUser!, base_api.ListOfIdsDto(ids: [dataSampleId]), localCrypto)).firstOrNull();
+    return (await api.baseContactApi.listServices(currentUser!, base_api.ListOfIdsDto(ids: [dataSampleId]), localCrypto)).firstOrNull;
   }
 
   Future<base_api.DecryptedDocumentDto> _getDataSampleAttachmentDocumentFromICure(
@@ -336,26 +330,26 @@ class DataSampleApiImpl extends DataSampleApi {
 
   @override
   Future<DataSample> giveAccessTo(DataSample dataSample, String delegatedTo) async {
-      final localCrypto = api.crypto;
-      final currentUser = await api.baseUserApi.getCurrentUser();
+    final localCrypto = api.crypto;
+    final currentUser = await api.baseUserApi.getCurrentUser();
 
-      // Check if delegatedBy has access
-      final contact = (await _getContactOfDataSample(localCrypto, currentUser!, dataSample, bypassCache: true)).item2;
+    // Check if delegatedBy has access
+    final contact = (await _getContactOfDataSample(localCrypto, currentUser!, dataSample, bypassCache: true)).item2;
 
-      final patientId =
-      (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, contact!.cryptedForeignKeys)).firstOrNull()!.formatAsKey();
-      final sfk = (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, contact.delegations)).firstOrNull()!.formatAsKey();
-      final ek = (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, contact.encryptionKeys)).firstOrNull()!.formatAsKey();
+    final patientId = (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, contact!.cryptedForeignKeys)).firstOrNull!.formatAsKey();
+    final sfk = (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, contact.delegations)).firstOrNull!.formatAsKey();
+    final ek = (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, contact.encryptionKeys)).firstOrNull!.formatAsKey();
 
-      final ccContact = contactCryptoConfig(currentUser, localCrypto);
+    final ccContact = contactCryptoConfig(currentUser, localCrypto);
 
-      contact.delegations = await addDelegationBasedOn(contact.delegations, localCrypto, currentUser.dataOwnerId()!, delegatedTo, contact.id, sfk);
-      contact.encryptionKeys = await addDelegationBasedOn(contact.encryptionKeys, localCrypto, currentUser.dataOwnerId()!, delegatedTo, contact.id, ek);
-      contact.cryptedForeignKeys = await addDelegationBasedOn(contact.cryptedForeignKeys, localCrypto, currentUser.dataOwnerId()!, delegatedTo, contact.id, patientId);
+    contact.delegations = await addDelegationBasedOn(contact.delegations, localCrypto, currentUser.dataOwnerId()!, delegatedTo, contact.id, sfk);
+    contact.encryptionKeys = await addDelegationBasedOn(contact.encryptionKeys, localCrypto, currentUser.dataOwnerId()!, delegatedTo, contact.id, ek);
+    contact.cryptedForeignKeys =
+        await addDelegationBasedOn(contact.cryptedForeignKeys, localCrypto, currentUser.dataOwnerId()!, delegatedTo, contact.id, patientId);
 
-      final updatedContact = await api.baseContactApi.modifyContact(currentUser, contact, ccContact);
+    final updatedContact = await api.baseContactApi.modifyContact(currentUser, contact, ccContact);
 
-      return updatedContact?.services.firstOrNull()?.toDataSample(updatedContact.id) ?? (throw StateError("Couldn't give access to dataSample"));
+    return updatedContact?.services.firstOrNull?.toDataSample(updatedContact.id) ?? (throw StateError("Couldn't give access to dataSample"));
   }
 
   Future<Map<String, Set<DelegationDto>>> addDelegationBasedOn(Map<String, Set<DelegationDto>> delegations, Crypto localCrypto, String dataOwnerId,

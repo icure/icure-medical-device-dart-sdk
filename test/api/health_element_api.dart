@@ -67,9 +67,11 @@ void main() {
     final Patient? createdPatient = await api.patientApi.createOrModifyPatient(PatientDtoMapper(patient).toPatient());
 
     // When
-    final HealthcareElement? createdHealthcareElement = await api.healthcareElementApi.createOrModifyHealthcareElement(createdPatient!.id!, healthElementTocreate);
+    final HealthcareElement? createdHealthcareElement =
+        await api.healthcareElementApi.createOrModifyHealthcareElement(createdPatient!.id!, healthElementTocreate);
     createdHealthcareElement!.note = updateNote;
-    final HealthcareElement? updatedHealthcareElement = await api.healthcareElementApi.createOrModifyHealthcareElement(createdPatient!.id!, createdHealthcareElement);
+    final HealthcareElement? updatedHealthcareElement =
+        await api.healthcareElementApi.createOrModifyHealthcareElement(createdPatient.id!, createdHealthcareElement);
 
     // Then
     expect(createdHealthcareElement.id, updatedHealthcareElement!.id);
