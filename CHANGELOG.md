@@ -1,3 +1,7 @@
+# 1.4.1
+
+- Fix an issue that block the decryption of data samples
+
 # 1.4.0
 
 - Add the ability to give access to other data owner to healthcare element, data sample and patient
