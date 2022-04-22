@@ -4,8 +4,6 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:crypton/crypton.dart';
-import 'package:icure_dart_sdk/crypto/crypto.dart';
-import 'package:icure_dart_sdk/util/binary_utils.dart';
 import 'package:icure_medical_device_dart_sdk/api.dart';
 import 'package:icure_medical_device_dart_sdk/utils/net_utils.dart';
 import 'package:pointycastle/export.dart' as pointy;

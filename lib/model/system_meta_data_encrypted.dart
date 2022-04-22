@@ -31,10 +31,10 @@ class SystemMetaDataEncrypted {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is SystemMetaDataEncrypted &&
-          other.secretForeignKeys == secretForeignKeys &&
-          other.cryptedForeignKeys == cryptedForeignKeys &&
-          other.delegations == delegations &&
-          other.encryptionKeys == encryptionKeys;
+          UnorderedIterableEquality().equals(other.secretForeignKeys, secretForeignKeys) &&
+          MapEquality(values: UnorderedIterableEquality()).equals(other.cryptedForeignKeys, cryptedForeignKeys) &&
+          MapEquality(values: UnorderedIterableEquality()).equals(other.delegations, delegations) &&
+          MapEquality(values: UnorderedIterableEquality()).equals(other.encryptionKeys, encryptionKeys);
 
   @override
   int get hashCode =>

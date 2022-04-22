@@ -202,13 +202,13 @@ class MedicalDevice {
           other.id == id &&
           other.rev == rev &&
           other.deletionDate == deletionDate &&
-          other.identifiers == identifiers &&
+          ListEquality().equals(other.identifiers, identifiers) &&
           other.created == created &&
           other.modified == modified &&
           other.author == author &&
           other.responsible == responsible &&
-          other.labels == labels &&
-          other.codes == codes &&
+          SetEquality().equals(other.codes, codes) &&
+          SetEquality().equals(other.labels, labels) &&
           other.endOfLife == endOfLife &&
           other.externalId == externalId &&
           other.publicKey == publicKey &&
@@ -218,8 +218,8 @@ class MedicalDevice {
           other.model == model &&
           other.serialNumber == serialNumber &&
           other.parentId == parentId &&
-          other.picture == picture &&
-          other.properties == properties &&
+          ListEquality().equals(other.picture, picture) &&
+          SetEquality().equals(other.properties, properties) &&
           other.systemMetaData == systemMetaData;
 
   @override

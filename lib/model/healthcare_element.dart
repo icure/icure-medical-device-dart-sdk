@@ -181,15 +181,15 @@ class HealthcareElement {
       identical(this, other) ||
       other is HealthcareElement &&
           other.id == id &&
-          other.identifiers == identifiers &&
+          ListEquality().equals(other.identifiers, identifiers) &&
           other.rev == rev &&
           other.created == created &&
           other.modified == modified &&
           other.author == author &&
           other.responsible == responsible &&
           other.medicalLocationId == medicalLocationId &&
-          other.labels == labels &&
-          other.codes == codes &&
+          SetEquality().equals(other.labels, labels) &&
+          SetEquality().equals(other.codes, codes) &&
           other.endOfLife == endOfLife &&
           other.deletionDate == deletionDate &&
           other.healthElementId == healthElementId &&

@@ -84,9 +84,9 @@ class Coding {
           other.type == type &&
           other.code == code &&
           other.version == version &&
-          other.description == description &&
-          other.qualifiedLinks == qualifiedLinks &&
-          other.searchTerms == searchTerms;
+          MapEquality().equals(other.description, description) &&
+          MapEquality(values: ListEquality()).equals(other.qualifiedLinks, qualifiedLinks) &&
+          MapEquality(values: SetEquality()).equals(other.searchTerms, searchTerms);
 
   @override
   int get hashCode =>

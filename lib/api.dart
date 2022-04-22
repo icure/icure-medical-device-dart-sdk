@@ -15,6 +15,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:collection/collection.dart';
 import 'package:crypto/crypto.dart';
 import 'package:crypton/crypton.dart';
 import 'package:http/http.dart';
@@ -54,6 +55,7 @@ import 'mappers/service_data_sample.dart';
 import 'mappers/time_series.dart';
 import 'mappers/typed_value_object.dart';
 import 'mappers/user.dart';
+import 'mappers/user_status.dart';
 import 'utils/cached_map.dart';
 import 'utils/date_utils.dart';
 import 'utils/functional_utils.dart';
@@ -250,6 +252,8 @@ part 'model/time_series.dart';
 part 'model/typed_value_object.dart';
 
 part 'model/user.dart';
+
+part 'model/user_status.dart';
 
 const _delimiters = {'csv': ',', 'ssv': ' ', 'tsv': '\t', 'pipes': '|'};
 const _dateEpochMarker = 'epoch';

@@ -68,11 +68,11 @@ class PersonName {
       identical(this, other) ||
       other is PersonName &&
           other.lastName == lastName &&
-          other.firstNames == firstNames &&
+          ListEquality().equals(other.firstNames, firstNames) &&
           other.start == start &&
           other.end == end &&
-          other.prefix == prefix &&
-          other.suffix == suffix &&
+          ListEquality().equals(other.prefix, prefix) &&
+          ListEquality().equals(other.suffix, suffix) &&
           other.text == text &&
           other.use == use;
 

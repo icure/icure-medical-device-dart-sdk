@@ -120,9 +120,9 @@ class Content {
           other.documentId == documentId &&
           other.measureValue == measureValue &&
           other.timeSeries == timeSeries &&
-          other.compoundValue == compoundValue &&
-          other.ratio == ratio &&
-          other.range == range;
+          UnorderedIterableEquality().equals(other.compoundValue, compoundValue) &&
+          ListEquality().equals(other.ratio, ratio) &&
+          ListEquality().equals(other.range, range);
 
   @override
   int get hashCode =>
