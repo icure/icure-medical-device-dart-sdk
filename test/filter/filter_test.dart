@@ -3,6 +3,8 @@ import 'package:icure_medical_device_dart_sdk/api.dart';
 import 'package:icure_medical_device_dart_sdk/mappers/filter.dart';
 import "package:test/test.dart";
 
+import '../utils/test_utils.dart';
+
 
 void main() {
   group('tests for Hcps', () {
@@ -25,6 +27,26 @@ void main() {
       var filter = await CodingFilter().byIds({"123", "456"}).byRegionTypeLabelLanguage(region: "region").build();
       expect((filter as IntersectionFilter<Coding>).filters[0] is CodingByIdsFilter, true);
       expect((filter as IntersectionFilter<Coding>).filters[1] is CodingByRegionTypeLabelLanguageFilter, true);
+    });
+
+    test('test data samples filter dsl', () async {
+      // Given
+      final MedTechApi api = await TestUtils.medtechApi();
+      final currentUser = await api.userApi.getLoggedUser();
+
+      final createdPatient = await api.patientApi.createOrModifyPatient(Patient(
+        firstName: "John",
+        lastName: "Snow",
+        note: "Winter is coming"
+      ));
+
+      var filter = await DataSampleFilter()
+          .forDataOwner(currentUser!.healthcarePartyId!)
+          .byTagCodeDateFilter(tagType: "HK-KINO", tagCode: "RECORD")
+          .forPatients(api.crypto, [createdPatient!])
+          .build();
+      expect((filter as IntersectionFilter<DataSample>).filters[0] is DataSampleByHcPartyTagCodeDateFilter, true);
+      expect((filter as IntersectionFilter<DataSample>).filters[1] is DataSampleBySecretForeignKeys, true);
     });
 
     test('test DataSample filter dsl', () async {
