@@ -192,18 +192,18 @@ class HealthcareProfessional {
           other.name == name &&
           other.lastName == lastName &&
           other.firstName == firstName &&
-          other.names == names &&
+          ListEquality().equals(other.names, names) &&
           other.gender == gender &&
           other.civility == civility &&
           other.speciality == speciality &&
           other.parentId == parentId &&
-          other.addresses == addresses &&
-          other.languages == languages &&
+          ListEquality().equals(other.addresses, addresses) &&
+          ListEquality().equals(other.languages, languages) &&
           other.picture == picture &&
-          other.specialityCodes == specialityCodes &&
+          SetEquality().equals(other.specialityCodes, specialityCodes) &&
           other.notes == notes &&
           other.publicKey == publicKey &&
-          other.properties == properties &&
+          SetEquality().equals(other.properties, properties) &&
           other.systemMetaData == systemMetaData;
 
   @override

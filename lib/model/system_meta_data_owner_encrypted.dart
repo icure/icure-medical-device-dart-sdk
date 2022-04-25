@@ -46,15 +46,15 @@ class SystemMetaDataOwnerEncrypted {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is SystemMetaDataOwnerEncrypted &&
-          other.hcPartyKeys == hcPartyKeys &&
-          other.privateKeyShamirPartitions == privateKeyShamirPartitions &&
-          other.secretForeignKeys == secretForeignKeys &&
-          other.cryptedForeignKeys == cryptedForeignKeys &&
-          other.delegations == delegations &&
-          other.encryptionKeys == encryptionKeys &&
-          other.aesExchangeKeys == aesExchangeKeys &&
-          other.transferKeys == transferKeys &&
-          other.lostHcPartyKeys == lostHcPartyKeys;
+          MapEquality(values: ListEquality()).equals(other.hcPartyKeys, hcPartyKeys) &&
+          MapEquality().equals(other.privateKeyShamirPartitions, privateKeyShamirPartitions) &&
+          ListEquality().equals(secretForeignKeys, secretForeignKeys) &&
+          MapEquality(values: ListEquality()).equals(other.cryptedForeignKeys, cryptedForeignKeys) &&
+          MapEquality(values: ListEquality()).equals(other.delegations, delegations) &&
+          MapEquality(values: ListEquality()).equals(other.encryptionKeys, encryptionKeys) &&
+          MapEquality(values: MapEquality(values: ListEquality())).equals(other.aesExchangeKeys, aesExchangeKeys) &&
+          MapEquality(values: MapEquality()).equals(other.transferKeys, transferKeys) &&
+          ListEquality().equals(other.lostHcPartyKeys, lostHcPartyKeys);
 
   @override
   int get hashCode =>

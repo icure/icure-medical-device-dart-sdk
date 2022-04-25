@@ -120,7 +120,7 @@ class Measure {
           other.severityCode == severityCode &&
           other.evolution == evolution &&
           other.unit == unit &&
-          other.unitCodes == unitCodes &&
+          SetEquality().equals(other.unitCodes, unitCodes) &&
           other.comment == comment &&
           other.comparator == comparator;
 

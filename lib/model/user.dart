@@ -12,27 +12,27 @@ part of icure_medical_device_dart_sdk.api;
 
 class User {
   /// Returns a new [User] instance.
-  User({
-    this.id,
-    this.rev,
-    this.deletionDate,
-    this.created,
-    this.name,
-    this.properties = const {},
-    this.roles = const {},
-    this.login,
-    this.passwordHash,
-    this.secret,
-    this.use2fa,
-    this.groupId,
-    this.healthcarePartyId,
-    this.patientId,
-    this.deviceId,
-    this.autoDelegations = const {},
-    this.email,
-    this.mobilePhone,
-    this.authenticationTokens = const {},
-  });
+  User(
+      {this.id,
+      this.rev,
+      this.deletionDate,
+      this.created,
+      this.name,
+      this.properties = const {},
+      this.roles = const {},
+      this.login,
+      this.passwordHash,
+      this.secret,
+      this.use2fa,
+      this.groupId,
+      this.healthcarePartyId,
+      this.patientId,
+      this.deviceId,
+      this.autoDelegations = const {},
+      this.email,
+      this.mobilePhone,
+      this.authenticationTokens = const {},
+      this.status});
 
   /// the Id of the user. We encourage using either a v4 UUID or a HL7 Id.
   ///
@@ -181,6 +181,9 @@ class User {
   /// Encrypted and time-limited Authentication tokens used for inter-applications authentication
   Map<String, AuthenticationToken> authenticationTokens;
 
+  ///Status of the current user
+  UserStatus? status;
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -190,8 +193,8 @@ class User {
           other.deletionDate == deletionDate &&
           other.created == created &&
           other.name == name &&
-          other.properties == properties &&
-          other.roles == roles &&
+          SetEquality().equals(other.properties, properties) &&
+          SetEquality().equals(other.roles, roles) &&
           other.login == login &&
           other.passwordHash == passwordHash &&
           other.secret == secret &&
@@ -200,10 +203,11 @@ class User {
           other.healthcarePartyId == healthcarePartyId &&
           other.patientId == patientId &&
           other.deviceId == deviceId &&
-          other.autoDelegations == autoDelegations &&
+          MapEquality(values: SetEquality()).equals(other.autoDelegations, autoDelegations) &&
           other.email == email &&
           other.mobilePhone == mobilePhone &&
-          other.authenticationTokens == authenticationTokens;
+          MapEquality().equals(other.authenticationTokens, authenticationTokens) &&
+          other.status == status;
 
   @override
   int get hashCode =>
@@ -226,11 +230,12 @@ class User {
       (autoDelegations.hashCode) +
       (email == null ? 0 : email!.hashCode) +
       (mobilePhone == null ? 0 : mobilePhone!.hashCode) +
-      (authenticationTokens.hashCode);
+      (authenticationTokens.hashCode) +
+      (status?.hashCode ?? 0);
 
   @override
   String toString() =>
-      'User[id=$id, rev=$rev, deletionDate=$deletionDate, created=$created, name=$name, properties=$properties, roles=$roles, login=$login, passwordHash=$passwordHash, secret=$secret, use2fa=$use2fa, groupId=$groupId, healthcarePartyId=$healthcarePartyId, patientId=$patientId, deviceId=$deviceId, autoDelegations=$autoDelegations, email=$email, mobilePhone=$mobilePhone, authenticationTokens=$authenticationTokens]';
+      'User[id=$id, rev=$rev, deletionDate=$deletionDate, created=$created, name=$name, properties=$properties, roles=$roles, login=$login, passwordHash=$passwordHash, secret=$secret, use2fa=$use2fa, groupId=$groupId, healthcarePartyId=$healthcarePartyId, patientId=$patientId, deviceId=$deviceId, autoDelegations=$autoDelegations, email=$email, mobilePhone=$mobilePhone, authenticationTokens=$authenticationTokens, status=$status]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -283,6 +288,9 @@ class User {
       json[r'mobilePhone'] = mobilePhone;
     }
     json[r'authenticationTokens'] = authenticationTokens;
+    if (status != null) {
+      json[r'status'] = status;
+    }
     return json;
   }
 
@@ -328,6 +336,7 @@ class User {
         email: mapValueOfType<String>(json, r'email'),
         mobilePhone: mapValueOfType<String>(json, r'mobilePhone'),
         authenticationTokens: mapValueOfType<Map<String, AuthenticationToken>>(json, r'authenticationTokens')!,
+        status: mapValueOfType<UserStatus>(json, r'status'),
       );
     }
     return null;

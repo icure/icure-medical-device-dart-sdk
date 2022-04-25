@@ -39,7 +39,7 @@ class PaginatedListHealthcareProfessional {
       other is PaginatedListHealthcareProfessional &&
           other.pageSize == pageSize &&
           other.totalSize == totalSize &&
-          other.rows == rows &&
+          ListEquality().equals(other.rows, rows) &&
           other.nextKeyPair == nextKeyPair;
 
   @override

@@ -422,26 +422,26 @@ class Patient {
       other is Patient &&
           other.id == id &&
           other.rev == rev &&
-          other.identifiers == identifiers &&
+          ListEquality().equals(other.identifiers, identifiers) &&
           other.created == created &&
           other.modified == modified &&
           other.author == author &&
           other.responsible == responsible &&
-          other.labels == labels &&
-          other.codes == codes &&
+          SetEquality().equals(other.labels, labels) &&
+          SetEquality().equals(other.codes, codes) &&
           other.endOfLife == endOfLife &&
           other.deletionDate == deletionDate &&
           other.firstName == firstName &&
           other.lastName == lastName &&
-          other.names == names &&
+          ListEquality().equals(other.names, names) &&
           other.companyName == companyName &&
-          other.languages == languages &&
-          other.addresses == addresses &&
+          ListEquality().equals(other.languages, languages) &&
+          ListEquality().equals(other.addresses, addresses) &&
           other.civility == civility &&
           other.gender == gender &&
           other.birthSex == birthSex &&
           other.mergeToPatientId == mergeToPatientId &&
-          other.mergedIds == mergedIds &&
+          SetEquality().equals(other.mergedIds, mergedIds) &&
           other.alias == alias &&
           other.active == active &&
           other.deactivationReason == deactivationReason &&
@@ -465,11 +465,11 @@ class Patient {
           other.picture == picture &&
           other.externalId == externalId &&
           other.publicKey == publicKey &&
-          other.partnerships == partnerships &&
-          other.patientHealthCareParties == patientHealthCareParties &&
-          other.patientProfessions == patientProfessions &&
-          other.parameters == parameters &&
-          other.properties == properties &&
+          ListEquality().equals(other.partnerships, partnerships) &&
+          ListEquality().equals(other.patientHealthCareParties, patientHealthCareParties) &&
+          ListEquality().equals(other.patientProfessions, patientProfessions) &&
+          MapEquality(values: ListEquality()).equals(other.parameters, parameters) &&
+          SetEquality().equals(other.properties, properties) &&
           other.systemMetaData == systemMetaData;
 
   @override

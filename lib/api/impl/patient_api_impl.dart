@@ -74,7 +74,7 @@ class PatientApiImpl extends PatientApi {
     final patientDto = patient.toPatientDto();
 
     final keyAndOwner = await localCrypto.encryptAESKeyForHcp(currentUser!.dataOwnerId()!, delegatedTo, patientDto.id,
-        (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, patientDto.delegations)).firstOrNull()!.formatAsKey());
+        (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, patientDto.delegations)).firstOrNull!.formatAsKey());
     final delegation = Delegation(owner: currentUser.id, delegatedTo: delegatedTo, key: keyAndOwner.item1);
 
     if (patient.systemMetaData == null) {
@@ -88,8 +88,10 @@ class PatientApiImpl extends PatientApi {
     }
 
     patient.systemMetaData!.encryptionKeys = {...patient.systemMetaData!.encryptionKeys}..addEntries([
-        MapEntry(delegatedTo, [await DelegationExtended.delegationBasedOn(localCrypto, currentUser.dataOwnerId()!, delegatedTo, patient.id!,
-    (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, patientDto.encryptionKeys)).firstOrNull()!.formatAsKey())])
+        MapEntry(delegatedTo, [
+          await DelegationExtended.delegationBasedOn(localCrypto, currentUser.dataOwnerId()!, delegatedTo, patient.id!,
+              (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, patientDto.encryptionKeys)).firstOrNull!.formatAsKey())
+        ])
       ]);
 
     final dataOwner = keyAndOwner.item2;

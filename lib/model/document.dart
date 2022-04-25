@@ -189,7 +189,7 @@ class Document {
           other.mainUti == mainUti &&
           other.name == name &&
           other.version == version &&
-          other.otherUtis == otherUtis &&
+          SetEquality().equals(other.otherUtis, otherUtis) &&
           other.externalUuid == externalUuid &&
           other.size == size &&
           other.hash == hash &&

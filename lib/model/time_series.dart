@@ -40,13 +40,13 @@ class TimeSeries {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is TimeSeries &&
-          other.fields == fields &&
-          other.samples == samples &&
-          other.min == min &&
-          other.max == max &&
-          other.mean == mean &&
-          other.median == median &&
-          other.variance == variance;
+          ListEquality().equals(other.fields, fields) &&
+          ListEquality(ListEquality()).equals(other.samples, samples) &&
+          ListEquality().equals(other.min, min) &&
+          ListEquality().equals(other.max, max) &&
+          ListEquality().equals(other.mean, mean) &&
+          ListEquality().equals(other.median, median) &&
+          ListEquality().equals(other.variance, variance);
 
   @override
   int get hashCode =>

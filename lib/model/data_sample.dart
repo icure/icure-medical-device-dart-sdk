@@ -179,12 +179,12 @@ class DataSample {
       other is DataSample &&
           other.id == id &&
           other.transactionId == transactionId &&
-          other.identifiers == identifiers &&
+          ListEquality().equals(other.identifiers, identifiers) &&
           other.batchId == batchId &&
-          other.healthElementsIds == healthElementsIds &&
-          other.canvasesIds == canvasesIds &&
+          SetEquality().equals(other.healthElementsIds, healthElementsIds) &&
+          SetEquality().equals(other.canvasesIds, canvasesIds) &&
           other.index == index &&
-          other.content == content &&
+          MapEquality().equals(other.content, content) &&
           other.valueDate == valueDate &&
           other.openingDate == openingDate &&
           other.closingDate == closingDate &&
@@ -194,10 +194,9 @@ class DataSample {
           other.author == author &&
           other.responsible == responsible &&
           other.comment == comment &&
-          other.qualifiedLinks == qualifiedLinks &&
-          other.codes == codes &&
-          other.labels == labels;
-
+          MapEquality().equals(other.qualifiedLinks, qualifiedLinks) &&
+          SetEquality().equals(other.codes, codes) &&
+          SetEquality().equals(other.labels, labels);
   @override
   int get hashCode =>
       // ignore: unnecessary_parenthesis

@@ -48,7 +48,7 @@ class Delegation {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is Delegation && other.tags == tags && other.owner == owner && other.delegatedTo == delegatedTo && other.key == key;
+      other is Delegation && ListEquality().equals(other.tags, tags) && other.owner == owner && other.delegatedTo == delegatedTo && other.key == key;
 
   @override
   int get hashCode =>
