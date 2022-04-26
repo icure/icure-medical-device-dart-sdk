@@ -1,3 +1,9 @@
+# 1.4.2
+
+- FIX giveAccessTo wouldn't check if the delegateTo already has access
+- FIX User ID is used in giveAccessTo in PatientApi
+- FIX Cache could sometimes return wrong values for delegateHcPartyKeys
+
 # 1.4.1
 
 - Fix an issue that block the decryption of data samples
