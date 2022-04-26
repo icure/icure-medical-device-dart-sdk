@@ -135,17 +135,62 @@ void main() {
 
     final currentPatient = await patApi.patientApi.getPatient(currentUser!.patientId!);
 
-    final ds = DataSample(
-      id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}),
-      content: {"en": Content(numberValue: 53.5)},
-      valueDate: 20220203111034,
-      labels: [CodingReference(id: "LOINC|29463-7|2", code: "29463-7", type: "LOINC", version: "2")].toSet(),
-    );
+    final ds = getHeightDataSample();
 
     final createdDs = await patApi.dataSampleApi.createOrModifyDataSampleFor(currentPatient!.id!, ds);
     final sharedDs = await patApi.dataSampleApi.giveAccessTo(createdDs!, currentHcp!.healthcarePartyId!);
 
     final hcpDs = await hcpApi.dataSampleApi.getDataSample(sharedDs.id!);
     assert(hcpDs != null);
+  });
+
+  test("Sharing delegation of DataSample HCP to Patient", () async {
+    final hcpApi = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "hcp_test-xfl1thnfc_kino.json");
+    final patApi = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "pat_josimo2577_kino.json");
+
+    final currentUser = await patApi.userApi.getLoggedUser();
+
+    final currentPatient = await patApi.patientApi.getPatient(currentUser!.patientId!);
+
+    final ds = getHeightDataSample();
+
+    final createdDs = await hcpApi.dataSampleApi.createOrModifyDataSampleFor(currentPatient!.id!, ds);
+    final sharedDs = await hcpApi.dataSampleApi.giveAccessTo(createdDs!, currentPatient.id!);
+
+    final patDs = await patApi.dataSampleApi.getDataSample(sharedDs.id!);
+    assert(patDs != null);
+  });
+
+  test("Creating a datasample as HCP for a patient", () async {
+    final hcpApi = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "hcp_test-xfl1thnfc_kino.json");
+    final patApi = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "pat_josimo2577_kino.json");
+
+    final currentPatUser = await patApi.userApi.getLoggedUser();
+    final currentHcpUser = await hcpApi.userApi.getLoggedUser();
+
+    // When
+    final hcpPatient = await hcpApi.patientApi.getPatient(currentPatUser!.dataOwnerId()!);
+
+    // Then
+    assert(hcpPatient != null);
+    assert(hcpPatient!.id! == currentPatUser!.dataOwnerId()!);
+    assert(hcpPatient!.systemMetaData!.delegations[currentHcpUser!.healthcarePartyId!]!.isNotEmpty);
+    assert(hcpPatient!.systemMetaData!.encryptionKeys[currentHcpUser!.healthcarePartyId!]!.isNotEmpty);
+    assert(hcpPatient!.systemMetaData!.hcPartyKeys[currentHcpUser!.healthcarePartyId!]!.isNotEmpty);
+
+    // When
+    final dataSample = await hcpApi.dataSampleApi.createOrModifyDataSampleFor(hcpPatient!.id!, getWeightDataSample());
+
+    // Then
+    assert(dataSample != null);
+    assert(dataSample!.id != null);
+
+    // When
+    await hcpApi.dataSampleApi.giveAccessTo(dataSample!, currentPatUser.dataOwnerId()!);
+
+    // Then
+    final patDataSample = await patApi.dataSampleApi.getDataSample(dataSample.id!);
+    assert(patDataSample != null);
+    assert(patDataSample!.id! == dataSample.id);
   });
 }

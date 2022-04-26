@@ -336,6 +336,11 @@ class DataSampleApiImpl extends DataSampleApi {
     // Check if delegatedBy has access
     final contact = (await _getContactOfDataSample(localCrypto, currentUser!, dataSample, bypassCache: true)).item2;
 
+    // Check if delegatedTo already has access
+    if (!contact!.delegations.entries.any((element) => element.key == delegatedTo)) {
+      return dataSample;
+    }
+
     final patientId = (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, contact!.cryptedForeignKeys)).firstOrNull!.formatAsKey();
     final sfk = (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, contact.delegations)).firstOrNull!.formatAsKey();
     final ek = (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, contact.encryptionKeys)).firstOrNull!.formatAsKey();

@@ -108,6 +108,11 @@ class HealthcareElementApiImpl extends HealthcareElementApi {
       throw StateError("DataOwner ${currentUser!.dataOwnerId()} does not have the right to access healthcare element ${healthcareElement.id}");
     }
 
+    // Check if delegatedTo already has access
+    if (!healthcareElement.systemMetaData!.delegations.entries.any((element) => element.key == delegatedTo)) {
+      return healthcareElement;
+    }
+
     final healthcareElementDto = healthcareElement.toHealthElementDto();
 
     final patientId =
