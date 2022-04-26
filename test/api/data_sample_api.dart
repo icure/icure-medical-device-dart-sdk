@@ -148,4 +148,16 @@ void main() {
     final hcpDs = await hcpApi.dataSampleApi.getDataSample(sharedDs.id!);
     assert(hcpDs != null);
   });
+
+  test("Creating a datasample as HCP for a patient", () async {
+    final hcpApi = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "hcp_test-xfl1thnfc_kino.json");
+    final patApi = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "pat_test-gxcfe19ky_kino.json");
+
+    final currentPatUser = await patApi.userApi.getLoggedUser();
+
+    final dataSample = await hcpApi.dataSampleApi.createOrModifyDataSampleFor(currentPatUser!.dataOwnerId()!, getWeightDataSample());
+
+    // Then
+    assert(dataSample != null);
+  });
 }

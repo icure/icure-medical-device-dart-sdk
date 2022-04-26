@@ -75,7 +75,7 @@ class PatientApiImpl extends PatientApi {
 
     final keyAndOwner = await localCrypto.encryptAESKeyForHcp(currentUser!.dataOwnerId()!, delegatedTo, patientDto.id,
         (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, patientDto.delegations)).firstOrNull!.formatAsKey());
-    final delegation = Delegation(owner: currentUser.id, delegatedTo: delegatedTo, key: keyAndOwner.item1);
+    final delegation = Delegation(owner: currentUser.dataOwnerId(), delegatedTo: delegatedTo, key: keyAndOwner.item1);
 
     if (patient.systemMetaData == null) {
       patient.systemMetaData = SystemMetaDataOwnerEncrypted(delegations: {
