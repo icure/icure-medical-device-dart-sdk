@@ -129,8 +129,8 @@ void main() {
   });
 
   test("Sharing delegation patient to HCP", () async {
-    final patApi = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "pat_rikah54178_kino.json");
-    final hcpApi = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "hcp_sobehex999_kino.json");
+    final hcpApi = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "hcp_test-xfl1thnfc_kino.json");
+    final patApi = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "pat_josimo2577_kino.json");
 
     final currentUser = await patApi.userApi.getLoggedUser();
     final currentHcp = await hcpApi.userApi.getLoggedUser();
