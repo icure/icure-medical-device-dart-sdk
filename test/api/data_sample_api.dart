@@ -154,10 +154,31 @@ void main() {
     final patApi = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "pat_test-gxcfe19ky_kino.json");
 
     final currentPatUser = await patApi.userApi.getLoggedUser();
+    final currentHcpUser = await hcpApi.userApi.getLoggedUser();
 
-    final dataSample = await hcpApi.dataSampleApi.createOrModifyDataSampleFor(currentPatUser!.dataOwnerId()!, getWeightDataSample());
+    // When
+    final hcpPatient = await hcpApi.patientApi.getPatient(currentPatUser!.dataOwnerId()!);
+
+    // Then
+    assert(hcpPatient != null);
+    assert(hcpPatient!.id! == currentPatUser!.dataOwnerId()!);
+    assert(hcpPatient!.systemMetaData!.delegations[currentHcpUser!.healthcarePartyId!]!.isNotEmpty);
+    assert(hcpPatient!.systemMetaData!.encryptionKeys[currentHcpUser!.healthcarePartyId!]!.isNotEmpty);
+    assert(hcpPatient!.systemMetaData!.hcPartyKeys[currentHcpUser!.healthcarePartyId!]!.isNotEmpty);
+
+    // When
+    final dataSample = await hcpApi.dataSampleApi.createOrModifyDataSampleFor(hcpPatient!.id!, getWeightDataSample());
 
     // Then
     assert(dataSample != null);
+    assert(dataSample!.id != null);
+
+    // When
+    await hcpApi.dataSampleApi.giveAccessTo(dataSample!, currentPatUser.dataOwnerId()!);
+
+    // Then
+    final patDataSample = await patApi.dataSampleApi.getDataSample(dataSample.id!);
+    assert(patDataSample != null);
+    assert(patDataSample!.id! == dataSample.id);
   });
 }

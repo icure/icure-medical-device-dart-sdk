@@ -71,6 +71,11 @@ class PatientApiImpl extends PatientApi {
       throw StateError("DataOwner ${currentUser!.dataOwnerId()} does not have the right to access patient ${patient.id}");
     }
 
+    // Check if delegatedTo already has access
+    if (!patient.systemMetaData!.delegations.entries.any((element) => element.key == delegatedTo)) {
+      return patient;
+    }
+
     final patientDto = patient.toPatientDto();
 
     final keyAndOwner = await localCrypto.encryptAESKeyForHcp(currentUser!.dataOwnerId()!, delegatedTo, patientDto.id,
