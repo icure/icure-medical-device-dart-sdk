@@ -109,7 +109,7 @@ class HealthcareElementApiImpl extends HealthcareElementApi {
     }
 
     // Check if delegatedTo already has access
-    if (!healthcareElement.systemMetaData!.delegations.entries.any((element) => element.key == delegatedTo)) {
+    if (healthcareElement.systemMetaData!.delegations.entries.any((element) => element.key == delegatedTo)) {
       return healthcareElement;
     }
 

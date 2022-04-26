@@ -162,7 +162,7 @@ void main() {
   });
 
   test("Creating a datasample as HCP for a patient", () async {
-    final hcpApi = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "hcp_test-xfl1thnfc_kino.json");
+    final hcpApi = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "hcp_kino.json");
     final patApi = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "pat_josimo2577_kino.json");
 
     final currentPatUser = await patApi.userApi.getLoggedUser();
@@ -186,7 +186,9 @@ void main() {
     assert(dataSample!.id != null);
 
     // When
-    await hcpApi.dataSampleApi.giveAccessTo(dataSample!, currentPatUser.dataOwnerId()!);
+    final sharedDS = await hcpApi.dataSampleApi.giveAccessTo(dataSample!, currentPatUser.dataOwnerId()!);
+
+    assert(sharedDS != null);
 
     // Then
     final patDataSample = await patApi.dataSampleApi.getDataSample(dataSample.id!);

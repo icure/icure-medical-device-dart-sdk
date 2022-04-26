@@ -1,3 +1,7 @@
+# 1.4.3
+
+- FIX an issue that inverted the logic of delegation sharing when the delegation is already existing
+
 # 1.4.2
 
 - FIX giveAccessTo wouldn't check if the delegateTo already has access

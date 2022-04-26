@@ -72,7 +72,7 @@ class PatientApiImpl extends PatientApi {
     }
 
     // Check if delegatedTo already has access
-    if (!patient.systemMetaData!.delegations.entries.any((element) => element.key == delegatedTo)) {
+    if (patient.systemMetaData!.delegations.entries.any((element) => element.key == delegatedTo)) {
       return patient;
     }
 

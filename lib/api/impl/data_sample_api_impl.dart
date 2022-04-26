@@ -337,7 +337,7 @@ class DataSampleApiImpl extends DataSampleApi {
     final contact = (await _getContactOfDataSample(localCrypto, currentUser!, dataSample, bypassCache: true)).item2;
 
     // Check if delegatedTo already has access
-    if (!contact!.delegations.entries.any((element) => element.key == delegatedTo)) {
+    if (contact!.delegations.entries.any((element) => element.key == delegatedTo)) {
       return dataSample;
     }
 
