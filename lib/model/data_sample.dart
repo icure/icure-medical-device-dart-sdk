@@ -17,7 +17,7 @@ class DataSample {
     this.transactionId,
     this.identifiers = const [],
     this.batchId,
-    this.healthElementsIds = const {},
+    this.healthcareElementsIds = const {},
     this.canvasesIds = const {},
     this.index,
     this.content = const {},
@@ -66,7 +66,7 @@ class DataSample {
   String? batchId;
 
   /// List of IDs of all healthcare elements for which the data sample is provided. Only used when the Data sample is emitted outside of its batch
-  Set<String> healthElementsIds;
+  Set<String> healthcareElementsIds;
 
   /// List of Ids of all canvases linked to the Data sample. Only used when the Data sample is emitted outside of its batch.
   Set<String> canvasesIds;
@@ -176,12 +176,12 @@ class DataSample {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is DataSample &&
+          other is DataSample &&
           other.id == id &&
           other.transactionId == transactionId &&
           ListEquality().equals(other.identifiers, identifiers) &&
           other.batchId == batchId &&
-          SetEquality().equals(other.healthElementsIds, healthElementsIds) &&
+          SetEquality().equals(other.healthcareElementsIds, healthcareElementsIds) &&
           SetEquality().equals(other.canvasesIds, canvasesIds) &&
           other.index == index &&
           MapEquality().equals(other.content, content) &&
@@ -200,11 +200,11 @@ class DataSample {
   @override
   int get hashCode =>
       // ignore: unnecessary_parenthesis
-      (id == null ? 0 : id!.hashCode) +
+  (id == null ? 0 : id!.hashCode) +
       (transactionId == null ? 0 : transactionId!.hashCode) +
       (identifiers.hashCode) +
       (batchId == null ? 0 : batchId!.hashCode) +
-      (healthElementsIds.hashCode) +
+      (healthcareElementsIds.hashCode) +
       (canvasesIds.hashCode) +
       (index == null ? 0 : index!.hashCode) +
       (content.hashCode) +
@@ -223,7 +223,7 @@ class DataSample {
 
   @override
   String toString() =>
-      'DataSample[id=$id, transactionId=$transactionId, identifiers=$identifiers, batchId=$batchId, healthElementsIds=$healthElementsIds, canvasesIds=$canvasesIds, index=$index, content=$content, valueDate=$valueDate, openingDate=$openingDate, closingDate=$closingDate, created=$created, modified=$modified, endOfLife=$endOfLife, author=$author, responsible=$responsible, comment=$comment, qualifiedLinks=$qualifiedLinks, codes=$codes, labels=$labels]';
+      'DataSample[id=$id, transactionId=$transactionId, identifiers=$identifiers, batchId=$batchId, healthElementsIds=$healthcareElementsIds, canvasesIds=$canvasesIds, index=$index, content=$content, valueDate=$valueDate, openingDate=$openingDate, closingDate=$closingDate, created=$created, modified=$modified, endOfLife=$endOfLife, author=$author, responsible=$responsible, comment=$comment, qualifiedLinks=$qualifiedLinks, codes=$codes, labels=$labels]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -237,7 +237,7 @@ class DataSample {
     if (batchId != null) {
       json[r'batchId'] = batchId;
     }
-    json[r'healthElementsIds'] = healthElementsIds.toList();
+    json[r'healthElementsIds'] = healthcareElementsIds.toList();
     json[r'canvasesIds'] = canvasesIds.toList();
     if (index != null) {
       json[r'index'] = index;
@@ -299,7 +299,7 @@ class DataSample {
         transactionId: mapValueOfType<String>(json, r'transactionId'),
         identifiers: Identifier.listFromJson(json[r'identifiers'])!,
         batchId: mapValueOfType<String>(json, r'batchId'),
-        healthElementsIds: json[r'healthElementsIds'] is Set
+        healthcareElementsIds: json[r'healthElementsIds'] is Set
             ? (json[r'healthElementsIds'] as Set).cast<String>()
             : json[r'healthElementsIds'] is List
                 ? ((json[r'healthElementsIds'] as List).toSet()).cast<String>()

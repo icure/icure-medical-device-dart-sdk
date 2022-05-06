@@ -55,7 +55,7 @@ void main() {
 
       // Then
       print("Login : ${registrationProcess!.login}");
-      print("Process ID : ${registrationProcess.processId}");
+      print("Process ID : ${registrationProcess.requestId}");
     });
   });
 
@@ -114,7 +114,7 @@ void main() {
 
     // Then
     print("Login : ${loginProcess!.login}");
-    print("Process ID : ${loginProcess.processId}");
+    print("Process ID : ${loginProcess.requestId}");
   });
 
   test('test complete login on new device', () async {

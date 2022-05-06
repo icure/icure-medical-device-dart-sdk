@@ -47,7 +47,7 @@ void main() {
       print("email: ${email}");
 
       final proc = await api.authenticationApi.startAuthentication("XXX", username, '', email, "XXX");
-      print("processId id: ${proc?.processId}");
+      print("processId id: ${proc?.requestId}");
 
       assert(proc != null);
     });

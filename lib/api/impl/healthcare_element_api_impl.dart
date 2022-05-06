@@ -39,25 +39,26 @@ class HealthcareElementApiImpl extends HealthcareElementApi {
   }
 
   @override
-  Future<List<HealthcareElement>?> createOrModifyHealthcareElements(String patientId, List<HealthcareElement> healthcareElement) async {
+  Future<List<HealthcareElement>?> createOrModifyHealthcareElements(String patientId, List<HealthcareElement> healthcareElements) async {
     final localCrypto = api.crypto;
     final currentUser = await api.baseUserApi.getCurrentUser();
     final ccHealthElement = healthElementCryptoConfig(localCrypto);
     final ccPatient = patientCryptoConfig(localCrypto);
 
-    final healthElementToCreate = healthcareElement.where((element) => element.rev == null).toSet();
-    final healthElementToUpdate = healthcareElement.toSet().difference(healthElementToCreate).toSet();
+    final healthcareElementsToCreate = healthcareElements.where((element) => element.rev == null).toSet();
+    final healthcareElementsToUpdate = healthcareElements.toSet().difference(healthcareElementsToCreate).toSet();
 
-    if (healthElementToUpdate.any((element) => element.id == null || !Uuid.isValidUUID(fromString: element.id!))) {
+    if (healthcareElementsToUpdate.any((element) => element.id == null || !Uuid.isValidUUID(fromString: element.id!))) {
       throw FormatException("Update id should be provided as an UUID");
     }
 
-    final healthElementDtoToUpdate = healthElementToUpdate.map((e) => e.toHealthElementDto()).toList();
-    final healthElementDtoToCreate = healthElementToCreate.map((e) => e.toHealthElementDto()).toList();
+    final healthElementDtosToUpdate = healthcareElementsToUpdate.map((e) => e.toHealthElementDto()).toList();
+    final healthElementDtosToCreate = healthcareElementsToCreate.map((e) => e.toHealthElementDto()).toList();
 
-    final patient = await base_api.PatientApiCrypto(api.basePatientApi).getPatient(currentUser!, patientId, ccPatient) ?? (throw StateError("Patient not found"));
-    final heCreated = await api.baseHealthElementApi.createHealthElements(currentUser, patient, healthElementDtoToCreate, ccHealthElement);
-    final heUpdated = await api.baseHealthElementApi.modifyHealthElements(currentUser, healthElementDtoToUpdate, ccHealthElement);
+    final patient =
+        await base_api.PatientApiCrypto(api.basePatientApi).getPatient(currentUser!, patientId, ccPatient) ?? (throw StateError("Patient not found"));
+    final heCreated = await api.baseHealthElementApi.createHealthElements(currentUser, patient, healthElementDtosToCreate, ccHealthElement);
+    final heUpdated = await api.baseHealthElementApi.modifyHealthElements(currentUser, healthElementDtosToUpdate, ccHealthElement);
     final heProcessed = [...?heCreated, ...heUpdated];
 
     return heProcessed.map((e) => e.toHealthcareElement()).toList();

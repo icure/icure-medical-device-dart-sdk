@@ -145,6 +145,42 @@ void main() {
     assert(hcpCurrentPatient != null);
   });
 
+  test('Update patient lastname and first name', () async {
+    // Init
+    final patApi = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "pat_josimo2577_kino.json");
+    final patUser = await patApi.userApi.getLoggedUser();
+    final patient = await patApi.patientApi.getPatient(patUser!.dataOwnerId()!);
+
+    print("BEFORE CHANGE :");
+    print("First name: ${patient!.firstName}");
+    print("Last name: ${patient.lastName}");
+    print("---");
+
+    // When
+    patient.lastName = uuid.v4(options: {'rng': UuidUtil.cryptoRNG}).substring(0, 8);
+    patient.firstName = uuid.v4(options: {'rng': UuidUtil.cryptoRNG}).substring(0, 8);
+
+    final updatedPatient = await patApi.patientApi.createOrModifyPatient(patient);
+    final gotPatient = await patApi.patientApi.getPatient(patUser.dataOwnerId()!);
+
+    // Then
+    print("AFTER CHANGE :");
+    print("First name: ${updatedPatient!.firstName}");
+    print("Last name: ${updatedPatient.lastName}");
+    print("---");
+
+    expect(updatedPatient.firstName, equals(patient.firstName));
+    expect(updatedPatient.lastName, equals(patient.lastName));
+
+    print("AFTER GET :");
+    print("First name: ${gotPatient!.firstName}");
+    print("Last name: ${gotPatient.lastName}");
+    print("---");
+
+    expect(updatedPatient.lastName, equals(gotPatient.lastName));
+    expect(updatedPatient.firstName, equals(gotPatient.firstName));
+  });
+
   test("Test eRSA encryption/decryption", () async {
     var fileUri = Uri.file("test/resources/keys/a5af2d04-6ecc-44e8-8c93-38b9748d8d62-icc-priv.2048.key", windows: false);
     var keyFile = File.fromUri(fileUri);

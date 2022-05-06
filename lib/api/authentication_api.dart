@@ -45,22 +45,21 @@ class AuthenticationApi {
     return null;
   }
 
-  Future<AuthenticationResult> completeAuthentication(AuthenticationProcess process, String validationCode, Tuple2<String, String> patientKeyPair, Future<Tuple3<String, String, String>?> Function(String, String) tokenAndKeyPairProvider) async {
+  Future<AuthenticationResult> completeAuthentication(AuthenticationProcess process, String validationCode, Tuple2<String, String> userKeyPair,
+      Future<Tuple3<String, String, String>?> Function(String, String) tokenAndKeyPairProvider) async {
     var client = Client();
-    final Response res = await client.get(Uri.parse('${authServerUrl}/process/validate/${process.processId}-${validationCode}'), headers: {
-      'Content-Type': 'application/json'
-    });
+    final Response res = await client
+        .get(Uri.parse('${authServerUrl}/process/validate/${process.requestId}-${validationCode}'), headers: {'Content-Type': 'application/json'});
 
     if (res.statusCode < 400) {
-      final Tuple2<MedTechApi, ApiInitialisationResult> initInfo = await retry(
-              () async => await initApiAndUserAuthenticationToken(process, validationCode, tokenAndKeyPairProvider),
-          trials: 5, delay: 1000
-      );
+      final Tuple2<MedTechApi, ApiInitialisationResult> initInfo =
+          await retry(() async => await initApiAndUserAuthenticationToken(process, validationCode, tokenAndKeyPairProvider), trials: 5, delay: 1000);
 
+      MedTechApi authenticatedApi =
+          await initUserCrypto(initInfo.item1, initInfo.item2.token, initInfo.item2.user, initInfo.item2.keyPair ?? userKeyPair);
 
-      MedTechApi authenticatedApi = await initUserCrypto(initInfo.item1, initInfo.item2.token, initInfo.item2.user, initInfo.item2.keyPair ?? patientKeyPair);
-
-      return AuthenticationResult(authenticatedApi, initInfo.item2.keyPair ?? patientKeyPair, initInfo.item2.token, initInfo.item2.user.groupId!, initInfo.item2.user.id);
+      return AuthenticationResult(
+          authenticatedApi, initInfo.item2.keyPair ?? userKeyPair, initInfo.item2.token, initInfo.item2.user.groupId!, initInfo.item2.user.id);
     }
 
     throw FormatException("Invalid validation code");
@@ -95,11 +94,9 @@ class AuthenticationApi {
     }
   }
 
-  Future<MedTechApi> initUserCrypto(MedTechApi api, String token, UserDto user, Tuple2<String, String> patientKeyPair) async {
-    final authenticatedApi = MedTechApiBuilder.from(api)
-        .withPassword(token)
-        .addKeyPair(user.dataOwnerId()!, patientKeyPair.item1.keyFromHexString())
-        .build();
+  Future<MedTechApi> initUserCrypto(MedTechApi api, String token, UserDto user, Tuple2<String, String> userKeyPair) async {
+    final authenticatedApi =
+        MedTechApiBuilder.from(api).withPassword(token).addKeyPair(user.dataOwnerId()!, userKeyPair.item1.keyFromHexString()).build();
 
     final dataOwnerApi = await DataOwnerApiFactory.fromExistingApis(
       authenticatedApi.baseHealthcarePartyApi,
@@ -113,13 +110,13 @@ class AuthenticationApi {
     }
 
     if (dataOwner.publicKey == null) {
-      dataOwner.publicKey = patientKeyPair.item2;
+      dataOwner.publicKey = userKeyPair.item2;
       final modDataOwner = await dataOwnerApi.modifyDataOwner(dataOwner);
 
       if (user.patientId != null) {
         await initPatientDelegationsAndSave(authenticatedApi, modDataOwner as PatientDto, user, dataOwnerApi);
       }
-    } else if (dataOwner.publicKey != patientKeyPair.item2) {
+    } else if (dataOwner.publicKey != userKeyPair.item2) {
       //TODO User lost his key
     }
 

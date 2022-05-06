@@ -25,7 +25,7 @@ class HealthcareElement {
     this.codes = const {},
     this.endOfLife,
     this.deletionDate,
-    this.healthElementId,
+    this.healthcareElementId,
     this.valueDate,
     this.openingDate,
     this.closingDate,
@@ -121,7 +121,7 @@ class HealthcareElement {
   /// source code must fall back to having a nullable type.
   /// Consider adding a "default:" property in the specification file to hide this note.
   ///
-  String? healthElementId;
+  String? healthcareElementId;
 
   /// The date (unix epoch in ms) when the healthcare element is noted to have started and also closes on the same date
   ///
@@ -192,7 +192,7 @@ class HealthcareElement {
           SetEquality().equals(other.codes, codes) &&
           other.endOfLife == endOfLife &&
           other.deletionDate == deletionDate &&
-          other.healthElementId == healthElementId &&
+          other.healthcareElementId == healthcareElementId &&
           other.valueDate == valueDate &&
           other.openingDate == openingDate &&
           other.closingDate == closingDate &&
@@ -215,7 +215,7 @@ class HealthcareElement {
       (codes.hashCode) +
       (endOfLife == null ? 0 : endOfLife!.hashCode) +
       (deletionDate == null ? 0 : deletionDate!.hashCode) +
-      (healthElementId == null ? 0 : healthElementId!.hashCode) +
+      (healthcareElementId == null ? 0 : healthcareElementId!.hashCode) +
       (valueDate == null ? 0 : valueDate!.hashCode) +
       (openingDate == null ? 0 : openingDate!.hashCode) +
       (closingDate == null ? 0 : closingDate!.hashCode) +
@@ -225,7 +225,7 @@ class HealthcareElement {
 
   @override
   String toString() =>
-      'HealthcareElement[id=$id, identifiers=$identifiers, rev=$rev, created=$created, modified=$modified, author=$author, responsible=$responsible, medicalLocationId=$medicalLocationId, labels=$labels, codes=$codes, endOfLife=$endOfLife, deletionDate=$deletionDate, healthElementId=$healthElementId, valueDate=$valueDate, openingDate=$openingDate, closingDate=$closingDate, description=$description, note=$note, systemMetaData=$systemMetaData]';
+      'HealthcareElement[id=$id, identifiers=$identifiers, rev=$rev, created=$created, modified=$modified, author=$author, responsible=$responsible, medicalLocationId=$medicalLocationId, labels=$labels, codes=$codes, endOfLife=$endOfLife, deletionDate=$deletionDate, healthElementId=$healthcareElementId, valueDate=$valueDate, openingDate=$openingDate, closingDate=$closingDate, description=$description, note=$note, systemMetaData=$systemMetaData]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -259,8 +259,8 @@ class HealthcareElement {
     if (deletionDate != null) {
       json[r'deletionDate'] = deletionDate;
     }
-    if (healthElementId != null) {
-      json[r'healthElementId'] = healthElementId;
+    if (healthcareElementId != null) {
+      json[r'healthElementId'] = healthcareElementId;
     }
     if (valueDate != null) {
       json[r'valueDate'] = valueDate;
@@ -314,7 +314,7 @@ class HealthcareElement {
         codes: CodingReference.listFromJson(json[r'codes'])!.toSet(),
         endOfLife: mapValueOfType<int>(json, r'endOfLife'),
         deletionDate: mapValueOfType<int>(json, r'deletionDate'),
-        healthElementId: mapValueOfType<String>(json, r'healthElementId'),
+        healthcareElementId: mapValueOfType<String>(json, r'healthElementId'),
         valueDate: mapValueOfType<int>(json, r'valueDate'),
         openingDate: mapValueOfType<int>(json, r'openingDate'),
         closingDate: mapValueOfType<int>(json, r'closingDate'),

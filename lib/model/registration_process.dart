@@ -4,8 +4,8 @@
 part of icure_medical_device_dart_sdk.api;
 
 class AuthenticationProcess {
-  AuthenticationProcess(this.processId, this.login);
+  AuthenticationProcess(this.requestId, this.login);
 
-  String processId;
+  String requestId;
   String login;
 }
