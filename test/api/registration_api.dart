@@ -47,10 +47,10 @@ void main() {
     test('test signup', () async {
       // Init
       final MedTechApi api = await medtechApi();
-      final AuthenticationApi registrationApi = api.authenticationApi;
+      final AuthenticationApi authenthicationApi = api.authenticationApi;
 
       // When
-      final registrationProcess = await registrationApi.startAuthentication(
+      final registrationProcess = await authenthicationApi.startAuthentication(
           "171f186a-7a2a-40f0-b842-b486428c771b", "justin_th", "", userEmail, "a58afe0e-02dc-431b-8155-0351140099e4");
 
       // Then
@@ -61,7 +61,7 @@ void main() {
 
   test('test complete signUp', () async {
     final MedTechApi api = await medtechApi();
-    final AuthenticationApi registrationApi = api.authenticationApi;
+    final AuthenticationApi authenticationApi = api.authenticationApi;
     final registrationProcess = AuthenticationProcess(processId, userEmail);
     final validationCode = userValidationCode;
 
@@ -72,7 +72,7 @@ void main() {
     Future<Tuple3<String, String, String>?> Function(String, String) tokenAndKeyPairProvider = (String groupId, String userId) async => null;
 
     // When
-    final registrationResult = await registrationApi.completeAuthentication(registrationProcess, validationCode, keyPair, tokenAndKeyPairProvider);
+    final registrationResult = await authenticationApi.completeAuthentication(registrationProcess, validationCode, keyPair, tokenAndKeyPairProvider);
 
     // Init
     var patMedtechApi = registrationResult.medTechApi;
@@ -106,10 +106,10 @@ void main() {
 
   test('test start login without password', () async {
     final MedTechApi api = await medtechApi();
-    final AuthenticationApi registrationApi = api.authenticationApi;
+    final AuthenticationApi authenticationApi = api.authenticationApi;
 
     // When
-    final loginProcess = await registrationApi.startAuthentication(
+    final loginProcess = await authenticationApi.startAuthentication(
         "171f186a-7a2a-40f0-b842-b486428c771b", "justin_th", "", userEmail, "a58afe0e-02dc-431b-8155-0351140099e4");
 
     // Then
@@ -119,7 +119,7 @@ void main() {
 
   test('test complete login on new device', () async {
     final MedTechApi api = await medtechApi();
-    final AuthenticationApi registrationApi = api.authenticationApi;
+    final AuthenticationApi authenticationApi = api.authenticationApi;
     final registrationProcess = AuthenticationProcess(processId, userEmail);
     final validationCode = userValidationCode;
 
@@ -130,7 +130,7 @@ void main() {
     Future<Tuple3<String, String, String>?> Function(String, String) tokenAndKeyPairProvider = (String groupId, String userId) async => null;
 
     // When
-    final registrationResult = await registrationApi.completeAuthentication(registrationProcess, validationCode, keyPair, tokenAndKeyPairProvider);
+    final registrationResult = await authenticationApi.completeAuthentication(registrationProcess, validationCode, keyPair, tokenAndKeyPairProvider);
 
     // Init
     var patMedtechApi = registrationResult.medTechApi;

@@ -28,7 +28,7 @@ class AnonymousMedTechApi {
     if (this.authServerUrl == null || this.authProcessId == null) {
       throw FormatException("To use RegistrationApi, you need to provide the msgGtwUrl, your signUpProcessId and your loginProcessId !");
     }
-    _authenticationApi = AuthenticationApi(this.iCureBasePath, this.authServerUrl!, this.authProcessId!, null);
+    _authenticationApi = AuthenticationApiImpl(this.iCureBasePath, this.authServerUrl!, this.authProcessId!, null);
     return _authenticationApi!;
   }
 }
@@ -100,7 +100,7 @@ class MedTechApi {
       throw FormatException("To use RegistrationApi, you need to provide the msgGtwUrl, your signUpProcessId and your loginProcessId !");
     }
 
-    _authenticationApi = AuthenticationApi(this.iCureBasePath, this.authServerUrl!, this.authProcessId!,
+    _authenticationApi = AuthenticationApiImpl(this.iCureBasePath, this.authServerUrl!, this.authProcessId!,
         DataOwnerApiFactory.fromExistingApis(this.baseHealthcarePartyApi, this.basePatientApi, this.baseDeviceApi));
     return _authenticationApi!;
   }

@@ -69,6 +69,8 @@ export 'package:icure_dart_sdk/util/binary_utils.dart';
 
 part 'api/coding_api.dart';
 
+part 'api/authentication_api.dart';
+
 part 'api/data_sample_api.dart';
 
 part 'api/healthcare_element_api.dart';
@@ -93,7 +95,7 @@ part 'api/medical_device_api.dart';
 
 part 'api/patient_api.dart';
 
-part 'api/authentication_api.dart';
+part 'api/impl/authentication_api_impl.dart';
 
 part 'api/user_api.dart';
 
