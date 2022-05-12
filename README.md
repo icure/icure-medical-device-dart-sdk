@@ -19,7 +19,7 @@ dependencies:
 If you wish to get this package from Github, add the following dependency to your pubspec.yaml
 ```
 dependencies:
-  icure_medical_device_dart_sdk: ^1.0.3
+  icure_medical_device_dart_sdk: ^1.4.4
 ```
 
 ## Tests

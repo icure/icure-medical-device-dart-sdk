@@ -1,3 +1,7 @@
+# 1.4.4
+
+- FEATURE Send recaptchaKey as sha256 during authentication process
+
 # 1.4.3
 
 - FIX an issue that inverted the logic of delegation sharing when the delegation is already existing
