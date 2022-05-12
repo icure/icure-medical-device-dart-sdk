@@ -24,11 +24,14 @@ class AuthenticationApiImpl extends AuthenticationApi {
       String healthcareProfessionalId, String firstName, String lastName, String email, String recaptcha,
       {String? mobilePhone}) async {
     final requestId = Uuid().v4(options: {'rng': UuidUtil.cryptoRNG});
+    final date = DateTime.now().millisecondsSinceEpoch ~/ 60000;
+    final String recaptchaHash = sha256.convert((date.toString() + ':' + recaptcha).codeUnits).toString();
+
     var client = Client();
     final Response res = await client.post(Uri.parse('${authServerUrl}/process/${authProcessId}/${requestId}'),
         headers: {'Content-Type': 'application/json'},
         body: await serializeAsync({
-          'g-recaptcha-response': recaptcha,
+          'g-recaptcha-response': recaptchaHash,
           'firstName': firstName,
           'lastName': lastName,
           'from': email,
