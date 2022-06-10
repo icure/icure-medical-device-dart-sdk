@@ -341,7 +341,7 @@ class DataSampleApiImpl extends DataSampleApi {
       return dataSample;
     }
 
-    final patientId = (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, contact!.cryptedForeignKeys)).firstOrNull!.formatAsKey();
+    final patientId = (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, contact.cryptedForeignKeys)).firstOrNull!.formatAsKey();
     final sfk = (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, contact.delegations)).firstOrNull!.formatAsKey();
     final ek = (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, contact.encryptionKeys)).firstOrNull!.formatAsKey();
 

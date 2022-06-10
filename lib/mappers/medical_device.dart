@@ -47,7 +47,6 @@ extension DeviceDtoMapper on DeviceDto {
         privateKeyShamirPartitions: this.privateKeyShamirPartitions,
         aesExchangeKeys: this.aesExchangeKeys,
         transferKeys: this.transferKeys,
-        lostHcPartyKeys: this.lostHcPartyKeys.toList(),
       ));
 }
 
@@ -76,7 +75,6 @@ extension MedicalDeviceMapper on MedicalDevice {
     privateKeyShamirPartitions: this.systemMetaData?.privateKeyShamirPartitions ?? const {},
     aesExchangeKeys: this.systemMetaData?.aesExchangeKeys ?? const {},
     transferKeys: this.systemMetaData?.transferKeys ?? const {},
-    lostHcPartyKeys: this.systemMetaData?.lostHcPartyKeys.toSet() ?? {},
   );
 
   DataOwnerDto toDataOwnerDto() => DataOwnerDto(DataOwnerType.device, this.id!, this.systemMetaData?.hcPartyKeys ?? const {},

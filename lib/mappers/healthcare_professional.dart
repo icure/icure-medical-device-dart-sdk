@@ -49,7 +49,6 @@ extension HealthcarePartyDtoMapper on HealthcarePartyDto {
         privateKeyShamirPartitions: this.privateKeyShamirPartitions,
         aesExchangeKeys: this.aesExchangeKeys,
         transferKeys: this.transferKeys,
-        lostHcPartyKeys: this.lostHcPartyKeys.toList(),
       ));
 }
 
@@ -86,7 +85,6 @@ extension HealthcareProfessionalMapper on HealthcareProfessional {
     privateKeyShamirPartitions: this.systemMetaData?.privateKeyShamirPartitions ?? const {},
     aesExchangeKeys: this.systemMetaData?.aesExchangeKeys ?? const {},
     transferKeys: this.systemMetaData?.transferKeys ?? const {},
-    lostHcPartyKeys: this.systemMetaData?.lostHcPartyKeys.toSet() ?? {},
   );
 }
 

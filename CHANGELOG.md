@@ -1,3 +1,7 @@
+# 1.4.5
+
+- FIX an issue on registration
+
 # 1.4.4
 
 - FEATURE Send recaptchaKey as sha256 during authentication process
