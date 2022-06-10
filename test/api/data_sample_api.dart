@@ -34,15 +34,16 @@ void main() {
   group('tests for DataSampleApi', () {
     test('test createOrModifyDataSampleFor CREATE', () async {
       // Init
-      final MedTechApi api = await medtechApi();
+      final api = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "pat_test-6ounpaaem.json");
       final DataSample weight = getWeightDataSample();
       final DataSample height = getHeightDataSample();
       final dataSamples = [weight, height];
-      final Patient patient = getPatient();
+
+      final currentUser = await api.userApi.getLoggedUser();
+      final currentPatient = await api.patientApi.getPatient(currentUser!.patientId!);
 
       // When
-      final createdPatient = await api.patientApi.createOrModifyPatient(patient);
-      final createdDataSamples = await api.dataSampleApi.createOrModifyDataSamplesFor(createdPatient!.id!, dataSamples);
+      final createdDataSamples = await api.dataSampleApi.createOrModifyDataSamplesFor(currentPatient!.id!, dataSamples);
       print(createdDataSamples?.map((e) => e.id));
 
       // Then

@@ -1,3 +1,7 @@
+# 1.4.6
+
+- Updated dart sdk
+
 # 1.4.5
 
 - FIX an issue on registration
