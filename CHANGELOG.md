@@ -1,3 +1,7 @@
+# 1.4.7
+- Fixed buggy services
+- Fixed issue blocking registration
+
 # 1.4.6
 
 - Updated dart sdk
