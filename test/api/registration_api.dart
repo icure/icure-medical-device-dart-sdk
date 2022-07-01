@@ -24,7 +24,7 @@ void main() {
         .withPassword(creds.password)
         .withAuthServerUrl("https://msg-gw.icure.cloud/km")
         .withAuthProcessId("f0ced6c6-d7cb-4f78-841e-2674ad09621e")
-        .addKeyPair("171f186a-7a2a-40f0-b842-b486428c771b", await TestUtils.keyFromFile(keyFileName: "171f186a-7a2a-40f0-b842-b486428c771b.2048.key"))
+        .addKeyPair("171f186a-7a2a-40f0-b842-b486428c771b", await TestUtils.keyFromFile(keyFileName: "171f186a-7a2a-40f0-b842-b486428c771b-icc-priv.2048.key"))
         .build();
   }
 

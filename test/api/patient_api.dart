@@ -107,9 +107,12 @@ void main() {
           .withAuthProcessId("f0ced6c6-d7cb-4f78-841e-2674ad09621e")
           .build();
 
-      final pat2 = await patMedtechApi.patientApi.giveAccessTo(modPat!, modPat.id!);
+      final pat2 = await api.patientApi.giveAccessTo(modPat!, modPat.id!);
       pat2.note = "Secret";
       final modPat2 = (await patMedtechApi.patientApi.createOrModifyPatient(pat2))!;
+
+      patMedtechApi.crypto.clearCachesFor(modPat2.id!);
+      api.crypto.clearCachesFor(modPat2.id!);
 
       // Then
       expect(modPat2.id, pat2.id);
@@ -129,8 +132,8 @@ void main() {
   });
 
   test("Sharing delegation patient to HCP", () async {
-    final hcpApi = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "hcp_test-xfl1thnfc_kino.json");
-    final patApi = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "pat_josimo2577_kino.json");
+    final hcpApi = await TestUtils.medtechApi(credsFilePath: ".hkCredentials", hcpId: "171f186a-7a2a-40f0-b842-b486428c771b");
+    final patApi = await TestUtils.medtechApi(credsFilePath: ".hkPatientCredentials", hcpId: "a37e0a71-07d2-4414-9b2b-2120ae9a16fc");
 
     final currentUser = await patApi.userApi.getLoggedUser();
     final currentHcp = await hcpApi.userApi.getLoggedUser();
@@ -147,7 +150,7 @@ void main() {
 
   test('Update patient lastname and first name', () async {
     // Init
-    final patApi = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "pat_josimo2577_kino.json");
+    final patApi = await TestUtils.medtechApi(credsFilePath: ".hkPatientCredentials", hcpId: "a37e0a71-07d2-4414-9b2b-2120ae9a16fc");
     final patUser = await patApi.userApi.getLoggedUser();
     final patient = await patApi.patientApi.getPatient(patUser!.dataOwnerId()!);
 

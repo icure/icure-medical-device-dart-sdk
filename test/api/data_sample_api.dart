@@ -34,13 +34,12 @@ void main() {
   group('tests for DataSampleApi', () {
     test('test createOrModifyDataSampleFor CREATE', () async {
       // Init
-      final api = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "pat_test-6ounpaaem.json");
+      final api = await TestUtils.medtechApi(iCureBackendUrl: "http://localhost:16043", credsFilePath: ".hkCredentials", hcpId: "171f186a-7a2a-40f0-b842-b486428c771b");
       final DataSample weight = getWeightDataSample();
       final DataSample height = getHeightDataSample();
       final dataSamples = [weight, height];
 
-      final currentUser = await api.userApi.getLoggedUser();
-      final currentPatient = await api.patientApi.getPatient(currentUser!.patientId!);
+      final currentPatient = await api.patientApi.createOrModifyPatient(getPatient());
 
       // When
       final createdDataSamples = await api.dataSampleApi.createOrModifyDataSamplesFor(currentPatient!.id!, dataSamples);
@@ -146,8 +145,8 @@ void main() {
   });
 
   test("Sharing delegation of DataSample HCP to Patient", () async {
-    final hcpApi = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "hcp_test-xfl1thnfc_kino.json");
-    final patApi = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "pat_josimo2577_kino.json");
+    final hcpApi = await TestUtils.medtechApi(credsFilePath: ".hkCredentials", hcpId: "171f186a-7a2a-40f0-b842-b486428c771b");
+    final patApi = await TestUtils.medtechApi(credsFilePath: ".hkPatientCredentials", hcpId: "a37e0a71-07d2-4414-9b2b-2120ae9a16fc");
 
     final currentUser = await patApi.userApi.getLoggedUser();
 
@@ -163,21 +162,11 @@ void main() {
   });
 
   test("Creating a datasample as HCP for a patient", () async {
-    final hcpApi = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "hcp_kino.json");
-    final patApi = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "pat_josimo2577_kino.json");
+    final hcpApi = await TestUtils.medtechApi(credsFilePath: ".hkCredentials", hcpId: "171f186a-7a2a-40f0-b842-b486428c771b");
+    final patApi = await TestUtils.medtechApi(credsFilePath: ".hkPatientCredentials", hcpId: "a37e0a71-07d2-4414-9b2b-2120ae9a16fc");
 
     final currentPatUser = await patApi.userApi.getLoggedUser();
-    final currentHcpUser = await hcpApi.userApi.getLoggedUser();
-
-    // When
     final hcpPatient = await hcpApi.patientApi.getPatient(currentPatUser!.dataOwnerId()!);
-
-    // Then
-    assert(hcpPatient != null);
-    assert(hcpPatient!.id! == currentPatUser!.dataOwnerId()!);
-    assert(hcpPatient!.systemMetaData!.delegations[currentHcpUser!.healthcarePartyId!]!.isNotEmpty);
-    assert(hcpPatient!.systemMetaData!.encryptionKeys[currentHcpUser!.healthcarePartyId!]!.isNotEmpty);
-    assert(hcpPatient!.systemMetaData!.hcPartyKeys[currentHcpUser!.healthcarePartyId!]!.isNotEmpty);
 
     // When
     final dataSample = await hcpApi.dataSampleApi.createOrModifyDataSampleFor(hcpPatient!.id!, getWeightDataSample());

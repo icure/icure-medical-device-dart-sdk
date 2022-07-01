@@ -6,16 +6,16 @@ import 'package:icure_medical_device_dart_sdk/api.dart';
 
 class TestUtils {
 
-  static Future<MedTechApi> medtechApi() async {
-    final creds = await TestUtils.credentials();
+  static Future<MedTechApi> medtechApi({iCureBackendUrl= "https://kraken.icure.dev", credsFilePath = ".credentials", hcpId = "782f1bcd-9f3f-408a-af1b-cd9f3f908a98"}) async {
+    final creds = await TestUtils.credentials(credentialsFilePath: credsFilePath);
 
     return MedTechApiBuilder.newBuilder()
-        .withICureBasePath("https://kraken.icure.dev")
+        .withICureBasePath(iCureBackendUrl)
         .withUserName(creds.username)
         .withPassword(creds.password)
         .withAuthServerUrl("https://msg-gw.icure.cloud/km")
         .withAuthProcessId("f0ced6c6-d7cb-4f78-841e-2674ad09621e")
-        .addKeyPair("782f1bcd-9f3f-408a-af1b-cd9f3f908a98", await TestUtils.keyFromFile())
+        .addKeyPair(hcpId, await TestUtils.keyFromFile(keyFileName: "${hcpId}-icc-priv.2048.key"))
         .build();
   }
 

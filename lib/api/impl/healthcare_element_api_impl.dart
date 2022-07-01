@@ -32,7 +32,7 @@ class HealthcareElementApiImpl extends HealthcareElementApi {
       return modifiedHealthElementDto != null ? HealthElementDtoMapper(modifiedHealthElementDto).toHealthcareElement() : null;
     }
 
-    final patient = await base_api.PatientApiCrypto(api.basePatientApi).getPatient(currentUser, patientId, ccPatient) ?? (throw StateError("Patient not found"));
+    final patient = await api.basePatientApi.getPatient(currentUser, patientId, ccPatient) ?? (throw StateError("Patient not found"));
     final createdHealthElementDto = await api.baseHealthElementApi
         .createHealthElementWithPatient(currentUser, patient, HealthcareElementMapper(healthcareElement).toHealthElementDto(), ccHealthElement);
     return createdHealthElementDto != null ? HealthElementDtoMapper(createdHealthElementDto).toHealthcareElement() : null;

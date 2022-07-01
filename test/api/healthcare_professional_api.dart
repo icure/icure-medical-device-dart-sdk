@@ -67,7 +67,7 @@ void main() {
     expect(createdHcp.name, updatedHcp.name);
   });
 
-  test('test deleteHealthcareElement', () async {
+  test('test deleteHealthcareProfessional', () async {
     // Init
     final MedTechApi api = await medtechApi();
     final HealthcareProfessional healthcareProfessional = getHcp();

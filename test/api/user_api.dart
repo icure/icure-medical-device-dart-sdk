@@ -11,7 +11,7 @@ void main() {
 
   group('tests for UserApi', () {
     test("Updating user properties", () async {
-      final api = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "hcp_test-n8joty04x_kino.json", host: "http://localhost:16043");
+      final api = await TestUtils.medtechApi(credsFilePath: ".hkCredentials", hcpId: "171f186a-7a2a-40f0-b842-b486428c771b");
 
       final currentUser = await api.userApi.getLoggedUser();
       currentUser!.properties
@@ -26,7 +26,7 @@ void main() {
     });
 
     test("Mapping user", () async {
-      final api = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "hcp_test-n8joty04x_kino.json");
+      final api = await TestUtils.medtechApi(credsFilePath: ".hkCredentials", hcpId: "171f186a-7a2a-40f0-b842-b486428c771b");
 
       final currentUser = await api.userApi.getLoggedUser();
       final iCureUser = UserMapper(currentUser!).toUserDto();
@@ -85,7 +85,7 @@ void main() {
     });
 
     test("Connecting patient account", () async {
-      final patApi = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "pat_rikah54178_kino.json");
+      final patApi = await TestUtils.medtechApi(credsFilePath: ".hkPatientCredentials", hcpId: "a37e0a71-07d2-4414-9b2b-2120ae9a16fc");
 
       final currentUser = await patApi.userApi.getLoggedUser();
       final currentPatient = await patApi.patientApi.getPatient(currentUser!.patientId!);
@@ -96,7 +96,7 @@ void main() {
     });
 
     test("Connecting HCP account", () async {
-      final api = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "hcp_test-xfl1thnfc_kino.json");
+      final api = await TestUtils.medtechApi(credsFilePath: ".hkCredentials", hcpId: "171f186a-7a2a-40f0-b842-b486428c771b");
 
       final currentUser = await api.userApi.getLoggedUser();
 
