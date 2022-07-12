@@ -1,4 +1,10 @@
+# 1.4.8
+
+- Bumped icure-dart-sdk
+- Changed TimeSeries to list of num
+
 # 1.4.7
+
 - Fixed buggy services
 - Fixed issue blocking registration
 

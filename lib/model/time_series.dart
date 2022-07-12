@@ -24,17 +24,17 @@ class TimeSeries {
 
   List<String> fields;
 
-  List<List<double>> samples;
+  List<List<num>> samples;
 
-  List<double> min;
+  List<num> min;
 
-  List<double> max;
+  List<num> max;
 
-  List<double> mean;
+  List<num> mean;
 
-  List<double> median;
+  List<num> median;
 
-  List<double> variance;
+  List<num> variance;
 
   @override
   bool operator ==(Object other) =>
@@ -89,13 +89,13 @@ class TimeSeries {
       return TimeSeries(
         fields: json[r'fields'] is List ? (json[r'fields'] as List).cast<String>() : const [],
         samples: json[r'samples'] is List
-            ? (json[r'samples'] as List).map((e) => e == null ? const <double>[] : (e as List).cast<double>()).toList()
-            : const <List<double>>[],
-        min: json[r'min'] is List ? (json[r'min'] as List).cast<double>() : const [],
-        max: json[r'max'] is List ? (json[r'max'] as List).cast<double>() : const [],
-        mean: json[r'mean'] is List ? (json[r'mean'] as List).cast<double>() : const [],
-        median: json[r'median'] is List ? (json[r'median'] as List).cast<double>() : const [],
-        variance: json[r'variance'] is List ? (json[r'variance'] as List).cast<double>() : const [],
+            ? (json[r'samples'] as List).map((e) => e == null ? const <num>[] : (e as List).cast<num>()).toList()
+            : const <List<num>>[],
+        min: json[r'min'] is List ? (json[r'min'] as List).cast<num>() : const [],
+        max: json[r'max'] is List ? (json[r'max'] as List).cast<num>() : const [],
+        mean: json[r'mean'] is List ? (json[r'mean'] as List).cast<num>() : const [],
+        median: json[r'median'] is List ? (json[r'median'] as List).cast<num>() : const [],
+        variance: json[r'variance'] is List ? (json[r'variance'] as List).cast<num>() : const [],
       );
     }
     return null;
