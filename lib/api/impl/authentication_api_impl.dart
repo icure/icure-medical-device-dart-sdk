@@ -128,7 +128,7 @@ class AuthenticationApiImpl extends AuthenticationApi {
   Future<void> _initPatientDelegationsAndSave(
       MedTechApi apiWithNewKeyPair, PatientDto modPat, UserDto user, DataOwnerApi<dynamic> dataOwnerApi) async {
     final ccPatient = patientCryptoConfig(apiWithNewKeyPair.crypto);
-    final dataOwnerWithDelegations = await DecryptedPatientDto.fromJson(toJsonDeep(modPat)).let((that) => that!.initDelegations(user, ccPatient));
+    final dataOwnerWithDelegations = await DecryptedPatientDto.fromJson(modPat.toJson()).let((that) => that!.initDelegations(user, ccPatient));
 
     final initialisedDataOwner = await apiWithNewKeyPair.basePatientApi.modifyPatient(user, dataOwnerWithDelegations, ccPatient);
     if (initialisedDataOwner == null) {

@@ -82,7 +82,7 @@ void main() {
       // Then
       assert(currentUser != null);
       assert(currentPatient != null);
-    });
+    }, timeout: Timeout(Duration(minutes: 10)));
 
     test("Connecting patient account", () async {
       final patApi = await TestUtils.medtechApi(credsFilePath: ".hkPatientCredentials", hcpId: "a37e0a71-07d2-4414-9b2b-2120ae9a16fc");

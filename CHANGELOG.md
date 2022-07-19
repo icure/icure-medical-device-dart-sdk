@@ -1,3 +1,7 @@
+# 1.4.9
+
+- Fixed an error when completing authentication
+
 # 1.4.8
 
 - Bumped icure-dart-sdk
