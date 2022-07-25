@@ -24,8 +24,19 @@ void main() {
   String hcpPrivateKey = "";
   MedTechApi? api;
 
-  MedicalDevice getMedicalDevice() =>
-      MedicalDevice(id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}), brand: 'Apple', model: '13 Pro', type: 'iPhone');
+  MedicalDevice getMedicalDevice() {
+    final hcpKeys = generateRandomPrivateAndPublicKeyPair();
+    return MedicalDevice(
+      id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}),
+      brand: 'Apple',
+      model: '13 Pro',
+      type: 'iPhone',
+      systemMetaData: new SystemMetaDataOwner(
+        publicKey: hcpKeys.item2
+      )
+    );
+  }
+
 
   setUpAll(() async {
     await backend.init();
@@ -102,6 +113,7 @@ void main() {
       expect(createdDevice.brand, device.brand);
       expect(createdDevice.type, device.type);
       expect(createdDevice.model, device.model);
+      expect(createdDevice.systemMetaData!.publicKey, device.systemMetaData!.publicKey);
     });
 
     test('test getDevice', () async {
@@ -118,6 +130,7 @@ void main() {
       expect(createdDevice.brand, gotDevice.brand);
       expect(createdDevice.type, gotDevice.type);
       expect(createdDevice.model, gotDevice.model);
+      expect(createdDevice.systemMetaData!.publicKey, gotDevice.systemMetaData!.publicKey);
     });
 
     test('test createDevice UPDATE', () async {
@@ -144,6 +157,7 @@ void main() {
       assert(device.model != updatedDevice!.model);
       assert(createdDevice.rev != updatedDevice!.rev);
       expect(createdDevice.model, updateModel);
+      expect(createdDevice.systemMetaData!.publicKey, updatedDevice!.systemMetaData!.publicKey);
     });
 
     test('test deleteDevice', () async {

@@ -239,90 +239,87 @@ void main() {
 
       assert(filteredHealthElement!.rows.length == 1);
     });
+
+    test("Sharing delegation patient to HCP", () async {
+
+      // Init: Creation of user and Hcp
+      final patMedtechApi = await createPatientWithUserAndApi(api!);
+      final createdUser = (await patMedtechApi.userApi.getLoggedUser())!;
+      final createdPatient = (await patMedtechApi.patientApi.getPatient(createdUser.patientId!))!;
+
+      final hcpMedtechApi = await createHCPWithUserAndApi(api!);
+      final hcpUser = (await hcpMedtechApi.userApi.getLoggedUser())!;
+
+      final delegatedPatient = await patMedtechApi.patientApi.giveAccessTo(createdPatient, hcpUser.healthcarePartyId!);
+      assert(delegatedPatient.systemMetaData!.delegations.containsKey(hcpUser.healthcarePartyId!));
+      assert(delegatedPatient.systemMetaData!.encryptionKeys.containsKey(hcpUser.healthcarePartyId!));
+
+      final hcpCurrentPatient = await hcpMedtechApi.patientApi.getPatient(createdUser.patientId!);
+      assert(hcpCurrentPatient != null);
+    });
+
+    test('Update patient lastname and first name', () async {
+      // Init
+      final patMedtechApi = await createPatientWithUserAndApi(api!);
+      final createdUser = (await patMedtechApi.userApi.getLoggedUser())!;
+      final patient = (await patMedtechApi.patientApi.getPatient(createdUser.patientId!))!;
+
+      print("BEFORE CHANGE :");
+      print("First name: ${patient!.firstName}");
+      print("Last name: ${patient.lastName}");
+      print("---");
+
+      // When
+      patient.lastName = uuid.v4(options: {'rng': UuidUtil.cryptoRNG}).substring(0, 8);
+      patient.firstName = uuid.v4(options: {'rng': UuidUtil.cryptoRNG}).substring(0, 8);
+
+      final updatedPatient = await patMedtechApi.patientApi.createOrModifyPatient(patient);
+      final gotPatient = await patMedtechApi.patientApi.getPatient(createdUser.dataOwnerId()!);
+
+      // Then
+      print("AFTER CHANGE :");
+      print("First name: ${updatedPatient!.firstName}");
+      print("Last name: ${updatedPatient.lastName}");
+      print("---");
+
+      expect(updatedPatient.firstName, equals(patient.firstName));
+      expect(updatedPatient.lastName, equals(patient.lastName));
+
+      print("AFTER GET :");
+      print("First name: ${gotPatient!.firstName}");
+      print("Last name: ${gotPatient.lastName}");
+      print("---");
+
+      expect(updatedPatient.lastName, equals(gotPatient.lastName));
+      expect(updatedPatient.firstName, equals(gotPatient.firstName));
+    });
+
+    test("Test eRSA encryption/decryption", () async {
+      var fileUri = Uri.file("test/resources/keys/a5af2d04-6ecc-44e8-8c93-38b9748d8d62-icc-priv.2048.key", windows: false);
+      var keyFile = File.fromUri(fileUri);
+      final privateKey = (await keyFile.readAsString(encoding: utf8)).trim().keyFromHexString();
+
+      final keyPair = RSAKeypair(RSAPrivateKey.fromString(base64.encoder.convert(privateKey)));
+      final publicKey = RSAPublicKey.fromString(base64.encoder.convert("xxx".fromHexString()));
+      final encryptorForDelegate = pointy.OAEPEncoding(pointy.RSAEngine())
+        ..init(true, pointy.PublicKeyParameter<pointy.RSAPublicKey>(publicKey.asPointyCastle));
+
+      final aesKey = Uint8List.fromList(List<int>.generate(32, (i) => random.nextInt(256)));
+
+      final encrypted = encryptorForDelegate.process(aesKey).toHexString();
+      final decryptor = pointy.OAEPEncoding(pointy.RSAEngine())
+        ..init(false, pointy.PrivateKeyParameter<pointy.RSAPrivateKey>(keyPair.privateKey.asPointyCastle));
+      final decrypted = decryptor.process(encrypted.fromHexString());
+
+      var aesKeyText = aesKey.toHexString();
+      var decryptedText = decrypted.toHexString();
+
+      final privateKeyAsHex =
+          base64Decode(keyPair.privateKey.toPEM().replaceAllMapped(RegExp(r'-----.+?-----'), (match) => '').replaceAll('\n', '')).toHexString();
+      final publicKeyAsHex =
+          base64Decode(keyPair.publicKey.toPEM().replaceAllMapped(RegExp(r'-----.+?-----'), (match) => '').replaceAll('\n', '')).toHexString();
+
+      assert(aesKeyText == decryptedText);
+    });
   });
-
-
-  test("Sharing delegation patient to HCP", () async {
-
-    // Init: Creation of user and Hcp
-    final patMedtechApi = await createPatientWithUserAndApi(api!);
-    final createdUser = (await patMedtechApi.userApi.getLoggedUser())!;
-    final createdPatient = (await patMedtechApi.patientApi.getPatient(createdUser.patientId!))!;
-
-    final hcpMedtechApi = await createHCPWithUserAndApi(api!);
-    final hcpUser = (await hcpMedtechApi.userApi.getLoggedUser())!;
-
-    final delegatedPatient = await patMedtechApi.patientApi.giveAccessTo(createdPatient, hcpUser.healthcarePartyId!);
-    assert(delegatedPatient.systemMetaData!.delegations.containsKey(hcpUser.healthcarePartyId!));
-    assert(delegatedPatient.systemMetaData!.encryptionKeys.containsKey(hcpUser.healthcarePartyId!));
-
-    final hcpCurrentPatient = await hcpMedtechApi.patientApi.getPatient(createdUser.patientId!);
-    assert(hcpCurrentPatient != null);
-  });
-
-
-  test('Update patient lastname and first name', () async {
-    // Init
-    final patMedtechApi = await createPatientWithUserAndApi(api!);
-    final createdUser = (await patMedtechApi.userApi.getLoggedUser())!;
-    final patient = (await patMedtechApi.patientApi.getPatient(createdUser.patientId!))!;
-
-    print("BEFORE CHANGE :");
-    print("First name: ${patient!.firstName}");
-    print("Last name: ${patient.lastName}");
-    print("---");
-
-    // When
-    patient.lastName = uuid.v4(options: {'rng': UuidUtil.cryptoRNG}).substring(0, 8);
-    patient.firstName = uuid.v4(options: {'rng': UuidUtil.cryptoRNG}).substring(0, 8);
-
-    final updatedPatient = await patMedtechApi.patientApi.createOrModifyPatient(patient);
-    final gotPatient = await patMedtechApi.patientApi.getPatient(createdUser.dataOwnerId()!);
-
-    // Then
-    print("AFTER CHANGE :");
-    print("First name: ${updatedPatient!.firstName}");
-    print("Last name: ${updatedPatient.lastName}");
-    print("---");
-
-    expect(updatedPatient.firstName, equals(patient.firstName));
-    expect(updatedPatient.lastName, equals(patient.lastName));
-
-    print("AFTER GET :");
-    print("First name: ${gotPatient!.firstName}");
-    print("Last name: ${gotPatient.lastName}");
-    print("---");
-
-    expect(updatedPatient.lastName, equals(gotPatient.lastName));
-    expect(updatedPatient.firstName, equals(gotPatient.firstName));
-  });
-
-  test("Test eRSA encryption/decryption", () async {
-    var fileUri = Uri.file("test/resources/keys/a5af2d04-6ecc-44e8-8c93-38b9748d8d62-icc-priv.2048.key", windows: false);
-    var keyFile = File.fromUri(fileUri);
-    final privateKey = (await keyFile.readAsString(encoding: utf8)).trim().keyFromHexString();
-
-    final keyPair = RSAKeypair(RSAPrivateKey.fromString(base64.encoder.convert(privateKey)));
-    final publicKey = RSAPublicKey.fromString(base64.encoder.convert("xxx".fromHexString()));
-    final encryptorForDelegate = pointy.OAEPEncoding(pointy.RSAEngine())
-      ..init(true, pointy.PublicKeyParameter<pointy.RSAPublicKey>(publicKey.asPointyCastle));
-
-    final aesKey = Uint8List.fromList(List<int>.generate(32, (i) => random.nextInt(256)));
-
-    final encrypted = encryptorForDelegate.process(aesKey).toHexString();
-    final decryptor = pointy.OAEPEncoding(pointy.RSAEngine())
-      ..init(false, pointy.PrivateKeyParameter<pointy.RSAPrivateKey>(keyPair.privateKey.asPointyCastle));
-    final decrypted = decryptor.process(encrypted.fromHexString());
-
-    var aesKeyText = aesKey.toHexString();
-    var decryptedText = decrypted.toHexString();
-
-    final privateKeyAsHex =
-        base64Decode(keyPair.privateKey.toPEM().replaceAllMapped(RegExp(r'-----.+?-----'), (match) => '').replaceAll('\n', '')).toHexString();
-    final publicKeyAsHex =
-        base64Decode(keyPair.publicKey.toPEM().replaceAllMapped(RegExp(r'-----.+?-----'), (match) => '').replaceAll('\n', '')).toHexString();
-
-    assert(aesKeyText == decryptedText);
-  });
-
 }
