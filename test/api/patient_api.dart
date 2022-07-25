@@ -6,13 +6,11 @@ import 'dart:typed_data';
 import 'package:icure_dart_sdk/api.dart' as base_api;
 import 'package:crypton/crypton.dart';
 import 'package:icure_medical_device_dart_sdk/api.dart';
-import 'package:icure_medical_device_dart_sdk/utils/net_utils.dart';
 import 'package:pointycastle/export.dart' as pointy;
 import "package:test/test.dart";
 import 'package:uuid/uuid.dart';
 import 'package:uuid/uuid_util.dart';
 
-import '../utils/test_utils.dart';
 import '../utils/test_utils_backend.dart';
 
 const int DB_PORT = 15984;
