@@ -35,7 +35,7 @@ final api = MedTechApiBuilder()
 .build();
 
 final coding_api = api.codingApi;
-final coding = Coding(); // Coding | 
+final coding = Coding(); // Coding |
 
 try {
     final result = coding_api.createOrModifyCoding(coding);
@@ -49,7 +49,7 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **coding** | [**Coding**](Coding.md)|  | 
+ **coding** | [**Coding**](Coding.md)|  |
 
 ### Return type
 
@@ -78,7 +78,7 @@ When modifying codings, you must ensure that the rev obtained when getting or cr
 import 'package:icure_medical_device_dart_sdk/api.dart';
 
 final coding_api = CodingApi();
-final coding = [List<Coding>()]; // List<Coding> | 
+final coding = [List<Coding>()]; // List<Coding> |
 
 try {
     final result = coding_api.createOrModifyCodings(coding);
@@ -92,7 +92,7 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **coding** | [**List<Coding>**](Coding.md)|  | 
+ **coding** | [**List<Coding>**](Coding.md)|  |
 
 ### Return type
 
@@ -144,9 +144,9 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **filter** | [**Filter**](Filter.md)| The Filter object that describes which condition(s) the elements whose the ids should be returned must fulfill | 
- **nextCodingId** | **String**| The id of the first coding in the next page | [optional] 
- **limit** | **int**| The number of codings to return in the queried page | [optional] 
+ **filter** | [**Filter**](Filter.md)| The Filter object that describes which condition(s) the elements whose the ids should be returned must fulfill |
+ **nextCodingId** | **String**| The id of the first coding in the next page | [optional]
+ **limit** | **int**| The number of codings to return in the queried page | [optional]
 
 ### Return type
 
@@ -182,7 +182,7 @@ final api = MedTechApiBuilder()
 .build();
 
 final coding_api = api.codingApi;
-final codingId = codingId_example; // String | 
+final codingId = codingId_example; // String |
 
 try {
     final result = coding_api.getCoding(codingId);
@@ -196,7 +196,7 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **codingId** | **String**|  | 
+ **codingId** | **String**|  |
 
 ### Return type
 
@@ -246,7 +246,7 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **filter** | [**Filter**](Filter.md)| The Filter object that describes which condition(s) the elements whose the ids should be returned must fulfill | 
+ **filter** | [**Filter**](Filter.md)| The Filter object that describes which condition(s) the elements whose the ids should be returned must fulfill |
 
 ### Return type
 
@@ -257,4 +257,3 @@ Name | Type | Description  | Notes
 The authorization is embedded in the api instance.
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-

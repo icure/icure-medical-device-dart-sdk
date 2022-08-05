@@ -16,5 +16,3 @@ Name | Type | Description | Notes
 **encryptionKeys** | [**Map<String, Set<Delegation>>**](Set.md) |  | [default to const {}]
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

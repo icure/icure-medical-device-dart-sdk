@@ -8,4 +8,3 @@ class MedicalDeviceByIdsFilter extends Filter<MedicalDevice> {
   @override String? description;
   Set<String> ids = {};
 }
-

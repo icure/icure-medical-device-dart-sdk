@@ -41,7 +41,7 @@ final api = MedTechApiBuilder()
 .build();
 
 final coding_api = api.codingApi;
-final coding = Coding(id: "typ|123|1"); 
+final coding = Coding(id: "typ|123|1");
 
 try {
     final result = coding_api.createOrModifyCoding(coding);
@@ -153,6 +153,3 @@ Class | Method | Description
 
 
 ## Author
-
-
-

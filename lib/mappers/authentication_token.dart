@@ -25,4 +25,3 @@ extension AuthenticationTokenMapper on AuthenticationToken {
         validity: this.validity,
       );
 }
-

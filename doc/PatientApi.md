@@ -35,7 +35,7 @@ final api = MedTechApiBuilder()
     .build();
 
 final patient_api = api.patientApi;
-final patient = Patient(); // Patient | 
+final patient = Patient(); // Patient |
 
 try {
     final result = patient_api.createOrModifyPatient(patient);
@@ -49,7 +49,7 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **patient** | [**Patient**](Patient.md)|  | 
+ **patient** | [**Patient**](Patient.md)|  |
 
 ### Return type
 
@@ -85,7 +85,7 @@ final api = MedTechApiBuilder()
     .build();
 
 final patient_api = api.patientApi;
-final patientId = patientId_example; // String | 
+final patientId = patientId_example; // String |
 
 try {
     final result = patient_api.deletePatient(patientId);
@@ -99,7 +99,7 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **patientId** | **String**|  | 
+ **patientId** | **String**|  |
 
 ### Return type
 
@@ -151,9 +151,9 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **filter** | [**Filter**](Filter.md)| The Filter object that describes which condition(s) the elements whose the ids should be returned must fulfill | 
- **nextPatientId** | **String**| The id of the first patient in the next page | [optional] 
- **limit** | **int**| The number of patients to return in the queried page | [optional] 
+ **filter** | [**Filter**](Filter.md)| The Filter object that describes which condition(s) the elements whose the ids should be returned must fulfill |
+ **nextPatientId** | **String**| The id of the first patient in the next page | [optional]
+ **limit** | **int**| The number of patients to return in the queried page | [optional]
 
 ### Return type
 
@@ -189,7 +189,7 @@ final api = MedTechApiBuilder()
     .build();
 
 final patient_api = api.patientApi;
-final patientId = patientId_example; // String | 
+final patientId = patientId_example; // String |
 
 try {
     final result = patient_api.getPatient(patientId);
@@ -203,7 +203,7 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **patientId** | **String**|  | 
+ **patientId** | **String**|  |
 
 ### Return type
 
@@ -253,7 +253,7 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **filter** | [**Filter**](Filter.md)| The Filter object that describes which condition(s) the elements whose the ids should be returned must fulfill | 
+ **filter** | [**Filter**](Filter.md)| The Filter object that describes which condition(s) the elements whose the ids should be returned must fulfill |
 
 ### Return type
 
@@ -269,4 +269,3 @@ No authorization required
  - **Accept**: */*
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-

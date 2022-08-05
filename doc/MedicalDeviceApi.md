@@ -37,7 +37,7 @@ final api = MedTechApiBuilder()
     .build();
 
 final medical_device_api = api.medicalDeviceApi;
-final medicalDevice = MedicalDevice(); // MedicalDevice | 
+final medicalDevice = MedicalDevice(); // MedicalDevice |
 
 try {
     final result = medical_device_api.createOrModifyMedicalDevice(medicalDevice);
@@ -51,7 +51,7 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **medicalDevice** | [**MedicalDevice**](MedicalDevice.md)|  | 
+ **medicalDevice** | [**MedicalDevice**](MedicalDevice.md)|  |
 
 ### Return type
 
@@ -87,7 +87,7 @@ final api = MedTechApiBuilder()
     .build();
 
 final medical_device_api = api.medicalDeviceApi;
-final medicalDevice = [List<MedicalDevice>()]; // List<MedicalDevice> | 
+final medicalDevice = [List<MedicalDevice>()]; // List<MedicalDevice> |
 
 try {
     final result = medical_device_api.createOrModifyMedicalDevices(medicalDevice);
@@ -101,7 +101,7 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **medicalDevice** | [**List<MedicalDevice>**](MedicalDevice.md)|  | 
+ **medicalDevice** | [**List<MedicalDevice>**](MedicalDevice.md)|  |
 
 ### Return type
 
@@ -137,7 +137,7 @@ final api = MedTechApiBuilder()
     .build();
 
 final medical_device_api = api.medicalDeviceApi;
-final medicalDeviceId = medicalDeviceId_example; // String | 
+final medicalDeviceId = medicalDeviceId_example; // String |
 
 try {
     final result = medical_device_api.deleteMedicalDevice(medicalDeviceId);
@@ -151,7 +151,7 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **medicalDeviceId** | **String**|  | 
+ **medicalDeviceId** | **String**|  |
 
 ### Return type
 
@@ -187,7 +187,7 @@ final api = MedTechApiBuilder()
     .build();
 
 final medical_device_api = api.medicalDeviceApi;
-final requestBody = [List<String>()]; // List<String> | 
+final requestBody = [List<String>()]; // List<String> |
 
 try {
     final result = medical_device_api.deleteMedicalDevices(requestBody);
@@ -201,7 +201,7 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **requestBody** | [**List<String>**](String.md)|  | 
+ **requestBody** | [**List<String>**](String.md)|  |
 
 ### Return type
 
@@ -253,9 +253,9 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **filter** | [**Filter**](Filter.md)| The Filter object that describes which condition(s) the elements whose the ids should be returned must fulfill | 
- **nextDeviceId** | **String**| The id of the first device in the next page | [optional] 
- **limit** | **int**| The number of devices to return in the queried page | [optional] 
+ **filter** | [**Filter**](Filter.md)| The Filter object that describes which condition(s) the elements whose the ids should be returned must fulfill |
+ **nextDeviceId** | **String**| The id of the first device in the next page | [optional]
+ **limit** | **int**| The number of devices to return in the queried page | [optional]
 
 ### Return type
 
@@ -291,7 +291,7 @@ final api = MedTechApiBuilder()
     .build();
 
 final medical_device_api = api.medicalDeviceApi;
-final medicalDeviceId = medicalDeviceId_example; // String | 
+final medicalDeviceId = medicalDeviceId_example; // String |
 
 try {
     final result = medical_device_api.getMedicalDevice(medicalDeviceId);
@@ -305,7 +305,7 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **medicalDeviceId** | **String**|  | 
+ **medicalDeviceId** | **String**|  |
 
 ### Return type
 
@@ -355,7 +355,7 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **filter** | [**Filter**](Filter.md)| The Filter object that describes which condition(s) the elements whose the ids should be returned must fulfill | 
+ **filter** | [**Filter**](Filter.md)| The Filter object that describes which condition(s) the elements whose the ids should be returned must fulfill |
 
 ### Return type
 
@@ -371,4 +371,3 @@ No authorization required
  - **Accept**: */*
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
