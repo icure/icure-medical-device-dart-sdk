@@ -46,8 +46,8 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **userId** | **String**| The UUID that identifies the user uniquely | 
- **token** | **String**| The token that will be checked | 
+ **userId** | **String**| The UUID that identifies the user uniquely |
+ **token** | **String**| The token that will be checked |
 
 ### Return type
 
@@ -90,7 +90,7 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **user** | [**User**](User.md)| The user that must be created in the database. | 
+ **user** | [**User**](User.md)| The user that must be created in the database. |
 
 ### Return type
 
@@ -133,7 +133,7 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **userId** | **String**| The UUID that identifies the user uniquely | 
+ **userId** | **String**| The UUID that identifies the user uniquely |
 
 ### Return type
 
@@ -176,7 +176,7 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **userId** | **String**| The UUID that uniquely identifies the user to be deleted. | 
+ **userId** | **String**| The UUID that uniquely identifies the user to be deleted. |
 
 ### Return type
 
@@ -221,9 +221,9 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **filter** | [**Filter**](Filter.md)| The Filter object that describes which condition(s) the elements whose the ids should be returned must fulfill | 
- **nextUserId** | **String**| The id of the first User in the next page | [optional] 
- **limit** | **int**| The number of users to return in the queried page | [optional] 
+ **filter** | [**Filter**](Filter.md)| The Filter object that describes which condition(s) the elements whose the ids should be returned must fulfill |
+ **nextUserId** | **String**| The id of the first User in the next page | [optional]
+ **limit** | **int**| The number of users to return in the queried page | [optional]
 
 ### Return type
 
@@ -305,7 +305,7 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **userId** | **String**| The UUID that identifies the user uniquely | 
+ **userId** | **String**| The UUID that identifies the user uniquely |
 
 ### Return type
 
@@ -348,7 +348,7 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **filter** | [**Filter**](Filter.md)| The Filter object that describes which condition(s) the elements whose the ids should be returned must fulfill | 
+ **filter** | [**Filter**](Filter.md)| The Filter object that describes which condition(s) the elements whose the ids should be returned must fulfill |
 
 ### Return type
 
@@ -364,4 +364,3 @@ No authorization required
  - **Accept**: */*
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-

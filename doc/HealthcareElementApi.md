@@ -34,7 +34,7 @@ final api = MedTechApiBuilder()
 .build();
 
 final healthcare_element_api = api.healthcareElementApi;
-final healthcareElement = HealthcareElement(); // HealthcareElement | 
+final healthcareElement = HealthcareElement(); // HealthcareElement |
 
 try {
     final result = api_instance.createOrModifyHealthcareElement(healthcareElement);
@@ -48,7 +48,7 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **healthcareElement** | [**HealthcareElement**](HealthcareElement.md)|  | 
+ **healthcareElement** | [**HealthcareElement**](HealthcareElement.md)|  |
 
 ### Return type
 
@@ -82,7 +82,7 @@ final api = MedTechApiBuilder()
 .build();
 
 final healthcare_element_api = api.healthcareElementApi;
-final healthcareElement = [List<HealthcareElement>()]; // List<HealthcareElement> | 
+final healthcareElement = [List<HealthcareElement>()]; // List<HealthcareElement> |
 
 try {
     final result = api_instance.createOrModifyHealthcareElements(healthcareElement);
@@ -96,7 +96,7 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **healthcareElement** | [**List<HealthcareElement>**](HealthcareElement.md)|  | 
+ **healthcareElement** | [**List<HealthcareElement>**](HealthcareElement.md)|  |
 
 ### Return type
 
@@ -130,7 +130,7 @@ final api = MedTechApiBuilder()
 .build();
 
 final healthcare_element_api = api.healthcareElementApi;
-final id = id_example; // String | 
+final id = id_example; // String |
 
 try {
     final result = api_instance.deleteHealthcareElement(id);
@@ -144,7 +144,7 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **id** | **String**|  | 
+ **id** | **String**|  |
 
 ### Return type
 
@@ -178,7 +178,7 @@ final api = MedTechApiBuilder()
 .build();
 
 final healthcare_element_api = api.healthcareElementApi;
-final filter = Filter(); // Filter | 
+final filter = Filter(); // Filter |
 
 try {
     final result = api_instance.filterHealthcareElement(filter);
@@ -192,7 +192,7 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **filter** | [**Filter**](Filter.md)|  | 
+ **filter** | [**Filter**](Filter.md)|  |
 
 ### Return type
 
@@ -226,7 +226,7 @@ final api = MedTechApiBuilder()
 .build();
 
 final healthcare_element_api = api.healthcareElementApi;
-final id = id_example; // String | 
+final id = id_example; // String |
 
 try {
     final result = api_instance.getHealthcareElement(id);
@@ -240,7 +240,7 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **id** | **String**|  | 
+ **id** | **String**|  |
 
 ### Return type
 
@@ -274,7 +274,7 @@ final api = MedTechApiBuilder()
 .build();
 
 final healthcare_element_api = api.healthcareElementApi;
-final filter = Filter(); // Filter | 
+final filter = Filter(); // Filter |
 
 try {
     final result = api_instance.matchHealthcareElement(filter);
@@ -288,7 +288,7 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **filter** | [**Filter**](Filter.md)|  | 
+ **filter** | [**Filter**](Filter.md)|  |
 
 ### Return type
 
@@ -304,4 +304,3 @@ No authorization required
  - **Accept**: */*
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-

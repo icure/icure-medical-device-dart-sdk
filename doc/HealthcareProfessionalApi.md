@@ -49,7 +49,7 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **healthcareProfessional** | [**HealthcareProfessional**](HealthcareProfessional.md)| Thehealthcare professional that must be created in the database. | 
+ **healthcareProfessional** | [**HealthcareProfessional**](HealthcareProfessional.md)| Thehealthcare professional that must be created in the database. |
 
 ### Return type
 
@@ -99,7 +99,7 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **hcpId** | **String**| The UUID that uniquely identifies thehealthcare professional to be deleted. | 
+ **hcpId** | **String**| The UUID that uniquely identifies thehealthcare professional to be deleted. |
 
 ### Return type
 
@@ -151,9 +151,9 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **filter** | [**Filter**](Filter.md)| The Filter object that describes which condition(s) the elements whose the ids should be returned must fulfill | 
- **nextHcpId** | **String**| The id of the first Healthcare professional in the next page | [optional] 
- **limit** | **int**| The number of healthcare professionals to return in the queried page | [optional] 
+ **filter** | [**Filter**](Filter.md)| The Filter object that describes which condition(s) the elements whose the ids should be returned must fulfill |
+ **nextHcpId** | **String**| The id of the first Healthcare professional in the next page | [optional]
+ **limit** | **int**| The number of healthcare professionals to return in the queried page | [optional]
 
 ### Return type
 
@@ -203,7 +203,7 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **hcpId** | **String**| The UUID that identifies thehealthcare professional uniquely | 
+ **hcpId** | **String**| The UUID that identifies thehealthcare professional uniquely |
 
 ### Return type
 
@@ -253,7 +253,7 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **filter** | [**Filter**](Filter.md)| The Filter object that describes which condition(s) the elements whose the ids should be returned must fulfill | 
+ **filter** | [**Filter**](Filter.md)| The Filter object that describes which condition(s) the elements whose the ids should be returned must fulfill |
 
 ### Return type
 
@@ -269,4 +269,3 @@ No authorization required
  - **Accept**: */*
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-

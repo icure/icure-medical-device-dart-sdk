@@ -8,4 +8,3 @@ class AllHealthcareProfessionalsFilter extends Filter<HealthcareProfessional> {
 
   @override String? description;
 }
-

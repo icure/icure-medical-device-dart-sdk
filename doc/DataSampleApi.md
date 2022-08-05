@@ -41,8 +41,8 @@ final api = MedTechApiBuilder()
 .build();
 
 final data_sample_api = api.dataSampleApi;
-final patientId = patientId_example; // String | 
-final dataSample = DataSample(); // DataSample | 
+final patientId = patientId_example; // String |
+final dataSample = DataSample(); // DataSample |
 
 try {
     final result = data_sample_api.createOrModifyDataSampleFor(patientId, dataSample);
@@ -56,8 +56,8 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **patientId** | **String**|  | 
- **dataSample** | [**DataSample**](DataSample.md)|  | 
+ **patientId** | **String**|  |
+ **dataSample** | [**DataSample**](DataSample.md)|  |
 
 ### Return type
 
@@ -79,7 +79,7 @@ No authorization required
 
 Create or update a batch of [DataSample] for a patient
 
-All the provided data samples will be created in the same batch. If you are trying to update some data samples, then those ones need to come from the same batch.                  When modifying a data sample, you can't update the patient of it : For this, you need to delete the faulty data sample and create a new one. When modifying the data sample, you also need to keep the same batchId : It is not possible to change the batch of a data sample.                 
+All the provided data samples will be created in the same batch. If you are trying to update some data samples, then those ones need to come from the same batch.                  When modifying a data sample, you can't update the patient of it : For this, you need to delete the faulty data sample and create a new one. When modifying the data sample, you also need to keep the same batchId : It is not possible to change the batch of a data sample.
 
 ### Example
 ```dart
@@ -93,8 +93,8 @@ final api = MedTechApiBuilder()
 .build();
 
 final data_sample_api = api.dataSampleApi;
-final patientId = patientId_example; // String | 
-final dataSample = [List<DataSample>()]; // List<DataSample> | 
+final patientId = patientId_example; // String |
+final dataSample = [List<DataSample>()]; // List<DataSample> |
 
 try {
     final result = data_sample_api.createOrModifyDataSamplesFor(patientId, dataSample);
@@ -108,8 +108,8 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **patientId** | **String**|  | 
- **dataSample** | [**List<DataSample>**](DataSample.md)|  | 
+ **patientId** | **String**|  |
+ **dataSample** | [**List<DataSample>**](DataSample.md)|  |
 
 ### Return type
 
@@ -145,8 +145,8 @@ final api = MedTechApiBuilder()
 .build();
 
 final data_sample_api = api.dataSampleApi;
-final dataSampleId = dataSampleId_example; // String | 
-final documentId = documentId_example; // String | 
+final dataSampleId = dataSampleId_example; // String |
+final documentId = documentId_example; // String |
 
 try {
     final result = data_sample_api.deleteAttachment(dataSampleId, documentId);
@@ -160,8 +160,8 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **dataSampleId** | **String**|  | 
- **documentId** | **String**|  | 
+ **dataSampleId** | **String**|  |
+ **documentId** | **String**|  |
 
 ### Return type
 
@@ -197,7 +197,7 @@ final api = MedTechApiBuilder()
 .build();
 
 final data_sample_api = api.dataSampleApi;
-final dataSampleId = dataSampleId_example; // String | 
+final dataSampleId = dataSampleId_example; // String |
 
 try {
     final result = data_sample_api.deleteDataSample(dataSampleId);
@@ -211,7 +211,7 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **dataSampleId** | **String**|  | 
+ **dataSampleId** | **String**|  |
 
 ### Return type
 
@@ -247,7 +247,7 @@ final api = MedTechApiBuilder()
 .build();
 
 final data_sample_api = api.dataSampleApi;
-final requestBody = [List<String>()]; // List<String> | 
+final requestBody = [List<String>()]; // List<String> |
 
 try {
     final result = data_sample_api.deleteDataSamples(requestBody);
@@ -261,7 +261,7 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **requestBody** | [**List<String>**](String.md)|  | 
+ **requestBody** | [**List<String>**](String.md)|  |
 
 ### Return type
 
@@ -311,7 +311,7 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **filter** | [**Filter**](Filter.md)| The Filter object that describes which condition(s) the elements whose the ids should be returned must fulfill | 
+ **filter** | [**Filter**](Filter.md)| The Filter object that describes which condition(s) the elements whose the ids should be returned must fulfill |
 
 ### Return type
 
@@ -347,7 +347,7 @@ final api = MedTechApiBuilder()
 .build();
 
 final data_sample_api = api.dataSampleApi;
-final dataSampleId = dataSampleId_example; // String | 
+final dataSampleId = dataSampleId_example; // String |
 
 try {
     final result = data_sample_api.getDataSample(dataSampleId);
@@ -361,7 +361,7 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **dataSampleId** | **String**|  | 
+ **dataSampleId** | **String**|  |
 
 ### Return type
 
@@ -397,9 +397,9 @@ final api = MedTechApiBuilder()
 .build();
 
 final data_sample_api = api.dataSampleApi;
-final dataSampleId = dataSampleId_example; // String | 
-final documentId = documentId_example; // String | 
-final attachmentId = attachmentId_example; // String | 
+final dataSampleId = dataSampleId_example; // String |
+final documentId = documentId_example; // String |
+final attachmentId = attachmentId_example; // String |
 
 try {
     final result = data_sample_api.getDataSampleAttachmentContent(dataSampleId, documentId, attachmentId);
@@ -413,9 +413,9 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **dataSampleId** | **String**|  | 
- **documentId** | **String**|  | 
- **attachmentId** | **String**|  | 
+ **dataSampleId** | **String**|  |
+ **documentId** | **String**|  |
+ **attachmentId** | **String**|  |
 
 ### Return type
 
@@ -451,8 +451,8 @@ final api = MedTechApiBuilder()
 .build();
 
 final data_sample_api = api.dataSampleApi;
-final dataSampleId = dataSampleId_example; // String | 
-final documentId = documentId_example; // String | 
+final dataSampleId = dataSampleId_example; // String |
+final documentId = documentId_example; // String |
 
 try {
     final result = data_sample_api.getDataSampleAttachmentDocument(dataSampleId, documentId);
@@ -466,8 +466,8 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **dataSampleId** | **String**|  | 
- **documentId** | **String**|  | 
+ **dataSampleId** | **String**|  |
+ **documentId** | **String**|  |
 
 ### Return type
 
@@ -517,7 +517,7 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **filter** | [**Filter**](Filter.md)| The Filter object that describes which condition(s) the elements whose the ids should be returned must fulfill | 
+ **filter** | [**Filter**](Filter.md)| The Filter object that describes which condition(s) the elements whose the ids should be returned must fulfill |
 
 ### Return type
 
@@ -553,12 +553,12 @@ final api = MedTechApiBuilder()
 .build();
 
 final data_sample_api = api.dataSampleApi;
-final dataSampleId = dataSampleId_example; // String | 
-final body = MultipartFile(); // MultipartFile | 
-final documentName = documentName_example; // String | 
-final documentVersion = documentVersion_example; // String | 
-final documentExternalUuid = documentExternalUuid_example; // String | 
-final documentLanguage = documentLanguage_example; // String | 
+final dataSampleId = dataSampleId_example; // String |
+final body = MultipartFile(); // MultipartFile |
+final documentName = documentName_example; // String |
+final documentVersion = documentVersion_example; // String |
+final documentExternalUuid = documentExternalUuid_example; // String |
+final documentLanguage = documentLanguage_example; // String |
 
 try {
     final result = data_sample_api.setDataSampleAttachment(dataSampleId, body, documentName, documentVersion, documentExternalUuid, documentLanguage);
@@ -572,12 +572,12 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **dataSampleId** | **String**|  | 
- **body** | **MultipartFile**|  | 
- **documentName** | **String**|  | [optional] 
- **documentVersion** | **String**|  | [optional] 
- **documentExternalUuid** | **String**|  | [optional] 
- **documentLanguage** | **String**|  | [optional] 
+ **dataSampleId** | **String**|  |
+ **body** | **MultipartFile**|  |
+ **documentName** | **String**|  | [optional]
+ **documentVersion** | **String**|  | [optional]
+ **documentExternalUuid** | **String**|  | [optional]
+ **documentLanguage** | **String**|  | [optional]
 
 ### Return type
 
@@ -593,4 +593,3 @@ No authorization required
  - **Accept**: */*
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
