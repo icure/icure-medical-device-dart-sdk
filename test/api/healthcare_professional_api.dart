@@ -5,31 +5,19 @@ import 'package:icure_medical_device_dart_sdk/api.dart';
 import "package:test/test.dart";
 import 'package:uuid/uuid.dart';
 import 'package:uuid/uuid_util.dart';
-import 'package:icure_dart_sdk/api.dart' as base_api;
-
-import '../utils/test_utils_backend.dart';
 
 final Uuid uuid = Uuid();
-const int DB_PORT = 15984;
-const int AS_PORT = 16044;
-const adminHash = "{R0DLKxxRDxdtpfY542gOUZbvWkfv1KWO9QOi9yvr/2c=}39a484cbf9057072623177422172e8a173bd826d68a2b12fa8e36ff94a44a0d7";
-// final TestBackend backend = DockerTestBackend.getInstance(DB_PORT, AS_PORT, "icure", "icure", "admin", "admin");
-final TestBackend backend = RemoteTestBackend.getInstance(Platform.environment["KRAKEN_USR"]!, Platform.environment["KRAKEN_PWD"]!);
 
 void main() {
 
-  final userLogin = "hcp-${uuid.v4(options: {'rng': UuidUtil.cryptoRNG})}-delegate";
-
-  HealthcareProfessional? delegateHcp;
-  String hcpPrivateKey = "";
   MedTechApi? api;
 
   HealthcareProfessional getHcp() {
     final hcpKeys = generateRandomPrivateAndPublicKeyPair();
     return HealthcareProfessional(
         id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}),
-        name: 'Wick',
-        firstName: 'John',
+        name: 'Mark',
+        firstName: 'Lister',
         gender: HealthcareProfessionalGenderEnum.male,
         systemMetaData: new SystemMetaDataOwner(
           publicKey: hcpKeys.item2
@@ -38,61 +26,14 @@ void main() {
   }
 
     setUpAll(() async {
-      await backend.init();
-
-      final client = base_api.ApiClient.basic(backend.iCureURL, backend.iCureUser, backend.iCurePwd);
-      final hcpKeys = generateRandomPrivateAndPublicKeyPair();
-      final initialHcp = await base_api.HealthcarePartyApi(client).createHealthcareParty(
-          new base_api.HealthcarePartyDto(id: uuid.v4(), publicKey: hcpKeys.item2, firstName: "test", lastName: "test")
-      );
-      assert(initialHcp != null);
-      final tmpUserLogin = "hcp-${uuid.v4(options: {'rng': UuidUtil.cryptoRNG})}-delegate";
-      final user = await base_api.UserApi(client).createUser(
-          new base_api.UserDto(
-              id: "user-${uuid.v4(options: {'rng': UuidUtil.cryptoRNG})}-hcp",
-              login: tmpUserLogin,
-              status: base_api.UserDtoStatusEnum.ACTIVE,
-              passwordHash: adminHash,
-              healthcarePartyId: initialHcp!.id
-          )
-      );
-
-      expect(user != null, true);
-
-      final initialApi = await MedTechApiBuilder.newBuilder()
-          .withICureBasePath(backend.iCureURL)
-          .withUserName(tmpUserLogin)
-          .withPassword("admin")
-          .addKeyPair(initialHcp.id, hcpKeys.item1.keyFromHexString())
-          .build();
-
-      final professionalKeys = generateRandomPrivateAndPublicKeyPair();
-      hcpPrivateKey = professionalKeys.item1;
-      final hcpToAdd = new HealthcareProfessional(
-          firstName: "Svlad",
-          lastName: "Cjelli",
-          systemMetaData: new SystemMetaDataOwner(
-              publicKey: professionalKeys.item2
-          )
-      );
-
-      delegateHcp = await initialApi.healthcareProfessionalApi.createOrModifyHealthcareProfessional(hcpToAdd);
-
-      final hcpUser = await initialApi.userApi.createOrModifyUser(
-          new User(
-              id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}),
-              login: userLogin,
-              status: UserStatus.ACTIVE,
-              passwordHash: adminHash,
-              healthcarePartyId: delegateHcp!.id
-          )
-      );
-
       api = await MedTechApiBuilder.newBuilder()
-          .withICureBasePath(backend.iCureURL)
-          .withUserName(userLogin)
-          .withPassword("admin")
-          .addKeyPair(delegateHcp!.id!, hcpPrivateKey.keyFromHexString())
+          .withICureBasePath(Platform.environment["ICURE_DART_TEST_URL"]!)
+          .withUserName(Platform.environment["ICURE_TS_TEST_HCP_USER"]!)
+          .withPassword(Platform.environment["ICURE_TS_TEST_HCP_PWD"]!)
+          .addKeyPair(
+            Platform.environment["ICURE_TS_TEST_HCP_ID"]!,
+            Platform.environment["ICURE_TS_TEST_HCP_PRIV_KEY"]!.keyFromHexString()
+          )
           .build();
 
       print("Successfully set up test backend!");
@@ -112,7 +53,7 @@ void main() {
         expect(createdHcp.name, healthcareProfessional.name);
         expect(createdHcp.firstName, healthcareProfessional.firstName);
         expect(createdHcp.gender, healthcareProfessional.gender);
-        expect(createdHcp.systemMetaData!.publicKey, createdHcp.systemMetaData!.publicKey);
+        expect(createdHcp.systemMetaData!.publicKey, healthcareProfessional.systemMetaData!.publicKey);
       });
 
       test('test getHealthcareProfessional', () async {

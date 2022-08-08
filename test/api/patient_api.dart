@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:icure_dart_sdk/api.dart' as base_api;
 import 'package:crypton/crypton.dart';
 import 'package:icure_medical_device_dart_sdk/api.dart';
 import 'package:pointycastle/export.dart' as pointy;
@@ -11,21 +10,14 @@ import "package:test/test.dart";
 import 'package:uuid/uuid.dart';
 import 'package:uuid/uuid_util.dart';
 
-import '../utils/test_utils_backend.dart';
-
-const int DB_PORT = 15984;
-const int AS_PORT = 16044;
-const adminHash = "{R0DLKxxRDxdtpfY542gOUZbvWkfv1KWO9QOi9yvr/2c=}39a484cbf9057072623177422172e8a173bd826d68a2b12fa8e36ff94a44a0d7";
 final Uuid uuid = Uuid();
-// final TestBackend backend = DockerTestBackend.getInstance(DB_PORT, AS_PORT, "icure", "icure", "admin", "admin");
-final TestBackend backend = RemoteTestBackend.getInstance(Platform.environment["KRAKEN_USR"]!, Platform.environment["KRAKEN_PWD"]!);
 
 Future<MedTechApi> createPatientWithUserAndApi(MedTechApi initialApi) async {
   final userKeyPair = generateRandomPrivateAndPublicKeyPair();
 
   final Patient patient = Patient(
-      firstName: 'John',
-      lastName: 'Doe',
+      firstName: 'Dirk',
+      lastName: 'Gently',
       systemMetaData: new SystemMetaDataOwnerEncrypted(
           publicKey: userKeyPair.item2
       )
@@ -40,16 +32,17 @@ Future<MedTechApi> createPatientWithUserAndApi(MedTechApi initialApi) async {
           id: idUser,
           login: idUser.substring(0, 8),
           patientId: createdPatient!.id,
-          passwordHash: adminHash
       )
   );
 
-  final delegatedPatient = await initialApi.patientApi.giveAccessTo(createdPatient, createdPatient.id!);
+  final token = await initialApi.userApi.createToken(createdUser!.id!);
+
+  await initialApi.patientApi.giveAccessTo(createdPatient, createdPatient.id!);
 
   return await MedTechApiBuilder.newBuilder()
-      .withICureBasePath(backend.iCureURL)
-      .withUserName(createdUser!.login!)
-      .withPassword("admin")
+      .withICureBasePath(Platform.environment["ICURE_DART_TEST_URL"]!)
+      .withUserName(createdUser.login!)
+      .withPassword(token!)
       .addKeyPair(createdPatient.id!, userKeyPair.item1.keyFromHexString())
       .build();
 
@@ -59,8 +52,8 @@ Future<MedTechApi> createHCPWithUserAndApi(MedTechApi initialApi) async {
   final userKeyPair = generateRandomPrivateAndPublicKeyPair();
 
   final HealthcareProfessional hcp = HealthcareProfessional(
-      firstName: 'John',
-      lastName: 'Doe',
+      firstName: 'Amanda',
+      lastName: 'Green',
       systemMetaData: new SystemMetaDataOwner(
           publicKey: userKeyPair.item2
       )
@@ -75,24 +68,21 @@ Future<MedTechApi> createHCPWithUserAndApi(MedTechApi initialApi) async {
           id: idUser,
           login: idUser.substring(0, 8),
           healthcarePartyId: createdHCP!.id,
-          passwordHash: adminHash
       )
   );
 
+  final token = await initialApi.userApi.createToken(createdUser!.id!);
+
   return await MedTechApiBuilder.newBuilder()
-      .withICureBasePath(backend.iCureURL)
-      .withUserName(createdUser!.login!)
-      .withPassword("admin")
+      .withICureBasePath(Platform.environment["ICURE_DART_TEST_URL"]!)
+      .withUserName(createdUser.login!)
+      .withPassword(token!)
       .addKeyPair(createdHCP.id!, userKeyPair.item1.keyFromHexString())
       .build();
 }
 
 void main() {
-
-  final userLogin = "hcp-${uuid.v4(options: {'rng': UuidUtil.cryptoRNG})}-delegate";
-
-  HealthcareProfessional? delegateHcp;
-  String hcpPrivateKey = "";
+  
   MedTechApi? api;
 
   HealthcareElement getHealthElementDto() => HealthcareElement(note: 'Premature optimization is the root of all evil');
@@ -100,61 +90,46 @@ void main() {
   Patient getPatient() => Patient(firstName: 'John', lastName: 'Doe', note: 'Premature optimization is the root of all evil');
 
   setUpAll(() async {
-    await backend.init();
-
-    final client = base_api.ApiClient.basic(backend.iCureURL, backend.iCureUser, backend.iCurePwd);
-    final hcpKeys = generateRandomPrivateAndPublicKeyPair();
-    final initialHcp = await base_api.HealthcarePartyApi(client).createHealthcareParty(
-        new base_api.HealthcarePartyDto(id: uuid.v4(), publicKey: hcpKeys.item2, firstName: "test", lastName: "test")
-    );
-    assert(initialHcp != null);
-    final tmpUserLogin = "hcp-${uuid.v4(options: {'rng': UuidUtil.cryptoRNG})}-delegate";
-    final user = await base_api.UserApi(client).createUser(
-        new base_api.UserDto(
-            id: "user-${uuid.v4(options: {'rng': UuidUtil.cryptoRNG})}-hcp",
-            login: tmpUserLogin,
-            status: base_api.UserDtoStatusEnum.ACTIVE,
-            passwordHash: adminHash,
-            healthcarePartyId: initialHcp!.id
-        )
-    );
-
-    expect(user != null, true);
-
     final initialApi = await MedTechApiBuilder.newBuilder()
-        .withICureBasePath(backend.iCureURL)
-        .withUserName(tmpUserLogin)
-        .withPassword("admin")
-        .addKeyPair(initialHcp.id, hcpKeys.item1.keyFromHexString())
+        .withICureBasePath(Platform.environment["ICURE_DART_TEST_URL"]!)
+        .withUserName(Platform.environment["ICURE_TS_TEST_HCP_USER"]!)
+        .withPassword(Platform.environment["ICURE_TS_TEST_HCP_PWD"]!)
+        .addKeyPair(
+          Platform.environment["ICURE_TS_TEST_HCP_ID"]!,
+          Platform.environment["ICURE_TS_TEST_HCP_PRIV_KEY"]!.keyFromHexString()
+        )
         .build();
 
     final professionalKeys = generateRandomPrivateAndPublicKeyPair();
-    hcpPrivateKey = professionalKeys.item1;
-    final hcpToAdd = new HealthcareProfessional(
-      firstName: "Svlad",
-      lastName: "Cjelli",
-      systemMetaData: new SystemMetaDataOwner(
-        publicKey: professionalKeys.item2
+    final delegateHcp = await initialApi.healthcareProfessionalApi.createOrModifyHealthcareProfessional(
+      new HealthcareProfessional(
+        firstName: "Arthur",
+        lastName: "Dent",
+        systemMetaData: new SystemMetaDataOwner(
+          publicKey: professionalKeys.item2
+        )
       )
     );
 
-    delegateHcp = await initialApi.healthcareProfessionalApi.createOrModifyHealthcareProfessional(hcpToAdd);
-
     final hcpUser = await initialApi.userApi.createOrModifyUser(
-        new User(
-            id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}),
-            login: userLogin,
-            status: UserStatus.ACTIVE,
-            passwordHash: adminHash,
-            healthcarePartyId: delegateHcp!.id
-        )
+      new User(
+        id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}),
+        login: "hcp-${uuid.v4(options: {'rng': UuidUtil.cryptoRNG})}-delegate",
+        status: UserStatus.ACTIVE,
+        healthcarePartyId: delegateHcp!.id
+      )
     );
 
+    final token = await initialApi.userApi.createToken(hcpUser!.id!);
+
     api = await MedTechApiBuilder.newBuilder()
-        .withICureBasePath(backend.iCureURL)
-        .withUserName(userLogin)
-        .withPassword("admin")
-        .addKeyPair(delegateHcp!.id!, hcpPrivateKey.keyFromHexString())
+        .withICureBasePath(Platform.environment["ICURE_DART_TEST_URL"]!)
+        .withUserName(hcpUser.login!)
+        .withPassword(token!)
+        .addKeyPair(
+        hcpUser.healthcarePartyId!,
+        professionalKeys.item1.keyFromHexString()
+        )
         .build();
 
     print("Successfully set up test backend!");
@@ -176,6 +151,7 @@ void main() {
       expect(createdPatient.firstName, patient.firstName);
       expect(createdPatient.lastName, patient.lastName);
       expect(createdPatient.note, patient.note);
+      expect(createdPatient.systemMetaData?.publicKey, userKeyPair.item2);
     });
 
     test('test getPatient', () async {
@@ -229,6 +205,8 @@ void main() {
       expect(modPat.firstName, createdPatient.firstName);
       expect(modPat.lastName, createdPatient.lastName);
       expect(modPat.note, createdPatient.note);
+      expect(modPat.systemMetaData?.publicKey != null, true);
+      expect(modPat.systemMetaData!.publicKey, createdPatient.systemMetaData?.publicKey);
 
       // Init
       final HealthcareElement hE = getHealthElementDto();
@@ -265,7 +243,7 @@ void main() {
       final patient = (await patMedtechApi.patientApi.getPatient(createdUser.patientId!))!;
 
       print("BEFORE CHANGE :");
-      print("First name: ${patient!.firstName}");
+      print("First name: ${patient.firstName}");
       print("Last name: ${patient.lastName}");
       print("---");
 
