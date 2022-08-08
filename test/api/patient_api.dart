@@ -82,7 +82,7 @@ Future<MedTechApi> createHCPWithUserAndApi(MedTechApi initialApi) async {
 }
 
 void main() {
-  
+
   MedTechApi? api;
 
   HealthcareElement getHealthElementDto() => HealthcareElement(note: 'Premature optimization is the root of all evil');
@@ -273,12 +273,11 @@ void main() {
     });
 
     test("Test eRSA encryption/decryption", () async {
-      var fileUri = Uri.file("test/resources/keys/a5af2d04-6ecc-44e8-8c93-38b9748d8d62-icc-priv.2048.key", windows: false);
-      var keyFile = File.fromUri(fileUri);
-      final privateKey = (await keyFile.readAsString(encoding: utf8)).trim().keyFromHexString();
+      final keys = generateRandomPrivateAndPublicKeyPair();
+      final privateKey = keys.item1.keyFromHexString();
 
       final keyPair = RSAKeypair(RSAPrivateKey.fromString(base64.encoder.convert(privateKey)));
-      final publicKey = RSAPublicKey.fromString(base64.encoder.convert("xxx".fromHexString()));
+      final publicKey = RSAPublicKey.fromString(base64.encoder.convert(keys.item2.fromHexString()));
       final encryptorForDelegate = pointy.OAEPEncoding(pointy.RSAEngine())
         ..init(true, pointy.PublicKeyParameter<pointy.RSAPublicKey>(publicKey.asPointyCastle));
 
