@@ -1,82 +1,108 @@
 @Timeout(Duration(hours: 1))
+import 'dart:io';
+
 import 'package:icure_medical_device_dart_sdk/api.dart';
 import "package:test/test.dart";
 import 'package:uuid/uuid.dart';
 import 'package:uuid/uuid_util.dart';
 
-import '../utils/test_utils.dart';
+final Uuid uuid = Uuid();
 
 void main() {
-  final Uuid uuid = Uuid();
 
-  Future<MedTechApi> medtechApi() async {
-    return await TestUtils.medtechApi();
+  MedTechApi? api;
+
+  HealthcareProfessional getHcp() {
+    final hcpKeys = generateRandomPrivateAndPublicKeyPair();
+    return HealthcareProfessional(
+        id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}),
+        name: 'Mark',
+        firstName: 'Lister',
+        gender: HealthcareProfessionalGenderEnum.male,
+        systemMetaData: new SystemMetaDataOwner(
+          publicKey: hcpKeys.item2
+        )
+    );
   }
 
-  HealthcareProfessional getHcp() => HealthcareProfessional(
-      id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}), name: 'Wick', firstName: 'John', gender: HealthcareProfessionalGenderEnum.male);
+    setUpAll(() async {
+      api = await MedTechApiBuilder.newBuilder()
+          .withICureBasePath(Platform.environment["ICURE_DART_TEST_URL"]!)
+          .withUserName(Platform.environment["ICURE_TS_TEST_HCP_USER"]!)
+          .withPassword(Platform.environment["ICURE_TS_TEST_HCP_PWD"]!)
+          .addKeyPair(
+            Platform.environment["ICURE_TS_TEST_HCP_ID"]!,
+            Platform.environment["ICURE_TS_TEST_HCP_PRIV_KEY"]!.keyFromHexString()
+          )
+          .build();
 
-  group('tests for HealthcareProfessionalApi', () {
-    test('test createOrModifyHealthcareProfessional', () async {
+      print("Successfully set up test backend!");
+    });
+
+    group('tests for HealthcareProfessionalApi', () {
+      test('test createOrModifyHealthcareProfessional', () async {
+        // Init
+
+        final HealthcareProfessional healthcareProfessional = getHcp();
+
+        // When
+        final HealthcareProfessional? createdHcp = await api!.healthcareProfessionalApi.createOrModifyHealthcareProfessional(healthcareProfessional);
+
+        // Then
+        expect(createdHcp!.id, healthcareProfessional.id);
+        expect(createdHcp.name, healthcareProfessional.name);
+        expect(createdHcp.firstName, healthcareProfessional.firstName);
+        expect(createdHcp.gender, healthcareProfessional.gender);
+        expect(createdHcp.systemMetaData!.publicKey, healthcareProfessional.systemMetaData!.publicKey);
+      });
+
+      test('test getHealthcareProfessional', () async {
+        // Init
+        expect(api != null, true);
+        final HealthcareProfessional healthcareProfessional = getHcp();
+
+        // When
+        final HealthcareProfessional? createdHcp = await api!.healthcareProfessionalApi.createOrModifyHealthcareProfessional(healthcareProfessional);
+        final HealthcareProfessional? gotHcp = await api!.healthcareProfessionalApi.getHealthcareProfessional(createdHcp!.id!);
+
+        // Then
+        expect(createdHcp.id, gotHcp!.id);
+        expect(createdHcp.rev, gotHcp.rev);
+        expect(createdHcp.name, gotHcp.name);
+        expect(createdHcp.firstName, gotHcp.firstName);
+        expect(createdHcp.systemMetaData!.publicKey, gotHcp.systemMetaData!.publicKey);
+      });
+    });
+
+    test('test createOrModifyHealthcareProfessional UPDATE', () async {
       // Init
-      final MedTechApi api = await medtechApi();
+      expect(api != null, true);
+      final updateFirstname = "Johnny";
       final HealthcareProfessional healthcareProfessional = getHcp();
 
       // When
-      final HealthcareProfessional? createdHcp = await api.healthcareProfessionalApi.createOrModifyHealthcareProfessional(healthcareProfessional);
+      final HealthcareProfessional? createdHcp = await api!.healthcareProfessionalApi.createOrModifyHealthcareProfessional(healthcareProfessional);
+      createdHcp!.firstName = updateFirstname;
+      final HealthcareProfessional? updatedHcp = await api!.healthcareProfessionalApi.createOrModifyHealthcareProfessional(createdHcp);
 
       // Then
-      expect(createdHcp!.id, healthcareProfessional.id);
-      expect(createdHcp.name, healthcareProfessional.name);
-      expect(createdHcp.firstName, healthcareProfessional.firstName);
-      expect(createdHcp.gender, healthcareProfessional.gender);
+      expect(createdHcp.id, updatedHcp!.id);
+      assert(healthcareProfessional.firstName != updatedHcp.firstName);
+      assert(createdHcp.rev != updatedHcp.rev);
+      expect(createdHcp.name, updatedHcp.name);
+      expect(createdHcp.systemMetaData!.publicKey, updatedHcp.systemMetaData!.publicKey);
     });
 
-    test('test getHealthcareProfessional', () async {
+    test('test deleteHealthcareProfessional', () async {
       // Init
-      final MedTechApi api = await medtechApi();
+      expect(api != null, true);
       final HealthcareProfessional healthcareProfessional = getHcp();
 
       // When
-      final HealthcareProfessional? createdHcp = await api.healthcareProfessionalApi.createOrModifyHealthcareProfessional(healthcareProfessional);
-      final HealthcareProfessional? gotHcp = await api.healthcareProfessionalApi.getHealthcareProfessional(createdHcp!.id!);
+      final HealthcareProfessional? createdHcp = await api!.healthcareProfessionalApi.createOrModifyHealthcareProfessional(healthcareProfessional);
+      final String? deletedHcpRev = await api!.healthcareProfessionalApi.deleteHealthcareProfessional(createdHcp!.id!);
 
       // Then
-      expect(createdHcp.id, gotHcp!.id);
-      expect(createdHcp.rev, gotHcp.rev);
-      expect(createdHcp.name, gotHcp.name);
-      expect(createdHcp.firstName, gotHcp.firstName);
+      assert(deletedHcpRev != null);
     });
-  });
-
-  test('test createOrModifyHealthcareProfessional UPDATE', () async {
-    // Init
-    final MedTechApi api = await medtechApi();
-    final updateFirstname = "Johnny";
-    final HealthcareProfessional healthcareProfessional = getHcp();
-
-    // When
-    final HealthcareProfessional? createdHcp = await api.healthcareProfessionalApi.createOrModifyHealthcareProfessional(healthcareProfessional);
-    createdHcp!.firstName = updateFirstname;
-    final HealthcareProfessional? updatedHcp = await api.healthcareProfessionalApi.createOrModifyHealthcareProfessional(createdHcp);
-
-    // Then
-    expect(createdHcp.id, updatedHcp!.id);
-    assert(healthcareProfessional.firstName != updatedHcp.firstName);
-    assert(createdHcp.rev != updatedHcp.rev);
-    expect(createdHcp.name, updatedHcp.name);
-  });
-
-  test('test deleteHealthcareProfessional', () async {
-    // Init
-    final MedTechApi api = await medtechApi();
-    final HealthcareProfessional healthcareProfessional = getHcp();
-
-    // When
-    final HealthcareProfessional? createdHcp = await api.healthcareProfessionalApi.createOrModifyHealthcareProfessional(healthcareProfessional);
-    final String? deletedHcpRev = await api.healthcareProfessionalApi.deleteHealthcareProfessional(createdHcp!.id!);
-
-    // Then
-    assert(deletedHcpRev != null);
-  });
 }
