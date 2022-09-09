@@ -1,3 +1,7 @@
+# 1.5.0
+- Add Check to bypass token in case a user need to use authentication instead (Google Store submission)
+- Enable authentication by SMS
+
 # 1.4.9
 
 - Fixed an error when completing authentication
