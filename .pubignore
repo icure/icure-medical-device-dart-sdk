@@ -1,5 +1,7 @@
 analysis_options.yaml
 git_push.sh
+fake-secrets.txt
 test/resources/creds/
 test/resources/keys/
 template/
+icure-pre-commit/
