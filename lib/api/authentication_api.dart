@@ -19,16 +19,17 @@ abstract class AuthenticationApi {
    *  - [healthcareProfessionalId] The id of the healthcare professional that wants to invite the user for its authentication. Use the id of the hcp in charge of the database where you want to add this new user
    *  - [firstName] The firstname of the user to authenticate
    *  - [lastName] The lastname of the user to authenticate
-   *  - [email] The email of the user to authenticate
    *  - [recaptcha] The recaptcha key used during authentication process
+   *  - [bypassTokenCheck] Prevent the token check during the validation process
+   *  - [email] The email of the user to authenticate
    *  - [mobilePhone] The mobile phone of the user to authenticate
    *
    * ## Returns
    *  - The [AuthenticationProcess] information needed to complete the authentication in the [completeAuthentication] service
    */
-  Future<AuthenticationProcess?> startAuthentication(
-      String healthcareProfessionalId, String firstName, String lastName, String email, String recaptcha,
-      {String? mobilePhone});
+  Future<AuthenticationProcess> startAuthentication(
+      String healthcareProfessionalId, String firstName, String lastName, String recaptcha, bool bypassTokenCheck,
+      {String? email, String? mobilePhone});
 
   /**
    * Completes the authentication process of a user, by verifying the provided validation code and :

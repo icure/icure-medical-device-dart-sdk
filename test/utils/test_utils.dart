@@ -13,8 +13,8 @@ class TestUtils {
         .withICureBasePath(iCureBackendUrl)
         .withUserName(creds.username)
         .withPassword(creds.password)
-        .withAuthServerUrl("https://msg-gw.icure.cloud/km")
-        .withAuthProcessId("f0ced6c6-d7cb-4f78-841e-2674ad09621e")
+        .withAuthServerUrl(Platform.environment["AUTH_SERVER_URL"])
+        .withAuthProcessId(Platform.environment["ICURE_PAT_AUTH_PROCESS_ID"])
         .addKeyPair(hcpId, await TestUtils.keyFromFile(keyFileName: "${hcpId}-icc-priv.2048.key"))
         .build();
   }
@@ -35,9 +35,9 @@ class TestUtils {
 
   static Future<MedTechApi> getApiFromCredentialsToken(
       {String credentialsFilePath = ".credentials",
-      String authServer = "https://msg-gw.icure.cloud/km",
-      String authProcessId = "f0ced6c6-d7cb-4f78-841e-2674ad09621e",
-      String host = "https://kraken.icure.dev"}) async {
+        String authServer = "https://msg-gw.icure.cloud/km",
+        String authProcessId = "f0ced6c6-d7cb-4f78-841e-2674ad09621e",
+        String host = "https://kraken.icure.dev"}) async {
     final fileUri = Uri.file("test/resources/creds/$credentialsFilePath", windows: false);
     final credentialsFile = File.fromUri(fileUri);
     final user = UsernameTokenDataOwnerId.fromJson(json.decode(await credentialsFile.readAsString(encoding: utf8)));
@@ -51,11 +51,52 @@ class TestUtils {
         .build();
   }
 
-  static AnonymousMedTechApi getAnonymousApi(
-      {String authServer = "https://msg-gw.icure.cloud/km",
-      String authProcessId = "f0ced6c6-d7cb-4f78-841e-2674ad09621e",
-      String host = "https://kraken.icure.dev"}) {
+  static AnonymousMedTechApi getAnonymousApi({String host = "https://kraken.icure.dev", String? authServer, String? authProcessId}) {
     return AnonymousMedTechApi(host, authServer, authProcessId);
+  }
+
+  static Future<EmailBody> getEmailFromMsgGtw(String msgGtwUrl, String email) async {
+    final client = ApiClient(basePath: msgGtwUrl);
+
+    Object? postBody;
+    final response = await client.invokeAPI(
+        "/lastEmail/${email}",
+        'GET',
+        <QueryParam>[],
+        postBody,
+        <String, String>{},
+        <String, String>{},
+        null,
+        <String>[]
+    );
+
+    if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
+      return EmailBody.fromJson(jsonDecode(response.body))!;
+    } else {
+      throw Exception("Could not retrieve the email sent by the MSG-GTW");
+    }
+  }
+}
+
+
+class EmailBody {
+  EmailBody({required this.from, required this.subject, this.html});
+
+  String from;
+  String subject;
+  String? html;
+
+  static EmailBody? fromJson(dynamic value) {
+    if (value is Map) {
+      final json = value.cast<String, dynamic>();
+
+      return EmailBody(
+          from: mapValueOfType<String>(json, r'from')!,
+          subject: mapValueOfType<String>(json, r'subject')!,
+          html: mapValueOfType<String>(json, r'html')
+      );
+    }
+    return null;
   }
 }
 

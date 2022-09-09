@@ -1,4 +1,7 @@
 @Timeout(Duration(hours: 1))
+import 'dart:io';
+import 'dart:math';
+
 import 'package:icure_medical_device_dart_sdk/api.dart';
 import 'package:icure_medical_device_dart_sdk/utils/net_utils.dart';
 import "package:test/test.dart";
@@ -10,22 +13,11 @@ import '../utils/test_utils.dart';
 
 void main() {
   final Uuid uuid = Uuid();
+  final authProcessHcpId = Platform.environment["ICURE_AUTH_PROCESS_HCP_ID"]!;
+  final authRecaptcha = Platform.environment["ICURE_AUTH_RECAPTCHA"]!;
 
-  final String userEmail = "original-so@bxzzdcq0.mailosaur.net";
-  final String processId = "bdc0a635-8d72-4343-bead-1f771072f00c";
-  final String userValidationCode = "377443";
-
-  Future<MedTechApi> medtechApi() async {
-    final creds = await TestUtils.credentials(credentialsFilePath: ".hkcredentials");
-
-    return MedTechApiBuilder()
-        .withICureBasePath("https://kraken.icure.dev")
-        .withUserName(creds.username)
-        .withPassword(creds.password)
-        .withAuthServerUrl("https://msg-gw.icure.cloud/km")
-        .withAuthProcessId("f0ced6c6-d7cb-4f78-841e-2674ad09621e")
-        .addKeyPair("171f186a-7a2a-40f0-b842-b486428c771b", await TestUtils.keyFromFile(keyFileName: "171f186a-7a2a-40f0-b842-b486428c771b-icc-priv.2048.key"))
-        .build();
+  Future<AnonymousMedTechApi> anonymousMedtechApi() async {
+    return AnonymousMedTechApi(Platform.environment["ICURE_DART_TEST_URL"]!, Platform.environment["AUTH_SERVER_URL"]!, Platform.environment["ICURE_PAT_AUTH_PROCESS_ID"]!);
   }
 
   DataSample getHeightDataSample() => DataSample(
@@ -46,120 +38,108 @@ void main() {
   group('tests for RegistrationApi', () {
     test('test signup', () async {
       // Init
-      final MedTechApi api = await medtechApi();
-      final AuthenticationApi authenthicationApi = api.authenticationApi;
+      final String userEmail = "${uuid.v4()}@icure.test";
+
+      final AnonymousMedTechApi api = await anonymousMedtechApi();
+      final AuthenticationApi authenticationApi = api.authenticationApi;
 
       // When
-      final registrationProcess = await authenthicationApi.startAuthentication(
-          "171f186a-7a2a-40f0-b842-b486428c771b", "justin_th", "", userEmail, "a58afe0e-02dc-431b-8155-0351140099e4");
+      final registrationProcess = await authenticationApi.startAuthentication(
+          authProcessHcpId, "justin_th", "", authRecaptcha, false, email: userEmail);
 
       // Then
-      print("Login : ${registrationProcess!.login}");
-      print("Process ID : ${registrationProcess.requestId}");
+      final validationCode = (await TestUtils.getEmailFromMsgGtw(api.authServerUrl!, userEmail)).subject;
+      final keyPair = generateRandomPrivateAndPublicKeyPair();
+
+      Future<Tuple3<String, String, String>?> Function(String, String) tokenAndKeyPairProvider = (String groupId, String userId) async => null;
+
+      // When
+      final registrationResult = await authenticationApi.completeAuthentication(registrationProcess, validationCode, keyPair, tokenAndKeyPairProvider);
+
+      // Init
+      var patMedtechApi = registrationResult.medTechApi;
+      final patUser = await retry(() => patMedtechApi.userApi.getLoggedUser());
+      final pat = await patMedtechApi.patientApi.getPatient(patUser!.patientId!);
+
+      // When
+      pat!.firstName = "John";
+      pat.lastName = "Smith";
+      pat.gender = PatientGenderEnum.male;
+      pat.dateOfBirth = 19921028;
+      pat.note = "Secret";
+
+      final modPat = await patMedtechApi.patientApi.createOrModifyPatient(pat);
+
+      // Then
+      expect(modPat!.id, pat.id);
+      expect(modPat.firstName, pat.firstName);
+      expect(modPat.lastName, pat.lastName);
+      expect(modPat.note, pat.note);
+
+      // Init
+      final DataSample weight = getWeightDataSample();
+      final DataSample height = getHeightDataSample();
+      final dataSamples = [weight, height];
+
+      final patDataSamples = await patMedtechApi.dataSampleApi.createOrModifyDataSamplesFor(modPat.id!, dataSamples);
+
+      assert(patDataSamples != null);
     });
-  });
 
-  test('test complete signUp', () async {
-    final MedTechApi api = await medtechApi();
-    final AuthenticationApi authenticationApi = api.authenticationApi;
-    final registrationProcess = AuthenticationProcess(processId, userEmail);
-    final validationCode = userValidationCode;
+    test('Can authenticate when bypassing token check', () async {
+      // Init
+      final String userEmail = "${uuid.v4()}@icure.test";
 
-    final keyPair = generateRandomPrivateAndPublicKeyPair();
-    print("User Private Key is : ${keyPair.item1}");
-    print("User Public Key is : ${keyPair.item2}");
+      final AnonymousMedTechApi api = await anonymousMedtechApi();
+      final AuthenticationApi authenticationApi = api.authenticationApi;
 
-    Future<Tuple3<String, String, String>?> Function(String, String) tokenAndKeyPairProvider = (String groupId, String userId) async => null;
+      // When
+      final registrationProcess = await authenticationApi.startAuthentication(
+          authProcessHcpId, "justin_th", "", authRecaptcha, false, email: userEmail);
 
-    // When
-    final registrationResult = await authenticationApi.completeAuthentication(registrationProcess, validationCode, keyPair, tokenAndKeyPairProvider);
+      // Then
+      final validationCode = (await TestUtils.getEmailFromMsgGtw(api.authServerUrl!, userEmail)).subject;
+      final keyPair = generateRandomPrivateAndPublicKeyPair();
+      Future<Tuple3<String, String, String>?> Function(String, String) tokenAndKeyPairProvider = (String groupId, String userId) async => null;
 
-    // Init
-    var patMedtechApi = registrationResult.medTechApi;
-    final patUser = await retry(() => patMedtechApi.userApi.getLoggedUser());
-    final pat = await patMedtechApi.patientApi.getPatient(patUser!.patientId!);
+      // When
+      final registrationResult = await authenticationApi.completeAuthentication(registrationProcess, validationCode, keyPair, tokenAndKeyPairProvider);
 
-    // When
-    pat!.firstName = "John";
-    pat.lastName = "Smith";
-    pat.gender = PatientGenderEnum.male;
-    pat.dateOfBirth = 19921028;
-    pat.note = "Secret";
+      // Then
+      final patUser = await retry(() => registrationResult.medTechApi.userApi.getLoggedUser());
+      assert(patUser != null);
 
-    final modPat = await patMedtechApi.patientApi.createOrModifyPatient(pat);
+      // Init second authentication
+      final secondAuthenticationProcess = await authenticationApi.startAuthentication(
+          authProcessHcpId, "justin_th", "", authRecaptcha, true, email: userEmail);
 
-    // Then
-    expect(modPat!.id, pat.id);
-    expect(modPat.firstName, pat.firstName);
-    expect(modPat.lastName, pat.lastName);
-    expect(modPat.note, pat.note);
+      // When
+      final secondAuthenticationResult = await authenticationApi.completeAuthentication(secondAuthenticationProcess, validationCode, keyPair, tokenAndKeyPairProvider);
 
-    // Init
-    final DataSample weight = getWeightDataSample();
-    final DataSample height = getHeightDataSample();
-    final dataSamples = [weight, height];
+      // Then
+      final secondPatUser = await retry(() => secondAuthenticationResult.medTechApi.userApi.getLoggedUser());
+      assert(secondPatUser != null);
 
-    final patDataSamples = await patMedtechApi.dataSampleApi.createOrModifyDataSamplesFor(modPat.id!, dataSamples);
+      assert(patUser!.id == secondPatUser!.id);
+    });
 
-    assert(patDataSamples != null);
-  });
+    test('Can not authenticate with an invalid validationCode', () async {
+      // Init
+      final String userEmail = "${uuid.v4()}@icure.test";
+      final AnonymousMedTechApi api = await anonymousMedtechApi();
+      final AuthenticationApi authenticationApi = api.authenticationApi;
 
-  test('test start login without password', () async {
-    final MedTechApi api = await medtechApi();
-    final AuthenticationApi authenticationApi = api.authenticationApi;
+      // When
+      final registrationProcess = await authenticationApi.startAuthentication(
+          authProcessHcpId, "justin_th", "", authRecaptcha, false, email: userEmail);
 
-    // When
-    final loginProcess = await authenticationApi.startAuthentication(
-        "171f186a-7a2a-40f0-b842-b486428c771b", "justin_th", "", userEmail, "a58afe0e-02dc-431b-8155-0351140099e4");
+      // Then
+      final keyPair = generateRandomPrivateAndPublicKeyPair();
 
-    // Then
-    print("Login : ${loginProcess!.login}");
-    print("Process ID : ${loginProcess.requestId}");
-  });
+      Future<Tuple3<String, String, String>?> Function(String, String) tokenAndKeyPairProvider = (String groupId, String userId) async => null;
 
-  test('test complete login on new device', () async {
-    final MedTechApi api = await medtechApi();
-    final AuthenticationApi authenticationApi = api.authenticationApi;
-    final registrationProcess = AuthenticationProcess(processId, userEmail);
-    final validationCode = userValidationCode;
-
-    final keyPair = generateRandomPrivateAndPublicKeyPair();
-    print("User New Private Key is : ${keyPair.item1}");
-    print("User New Public Key is : ${keyPair.item2}");
-
-    Future<Tuple3<String, String, String>?> Function(String, String) tokenAndKeyPairProvider = (String groupId, String userId) async => null;
-
-    // When
-    final registrationResult = await authenticationApi.completeAuthentication(registrationProcess, validationCode, keyPair, tokenAndKeyPairProvider);
-
-    // Init
-    var patMedtechApi = registrationResult.medTechApi;
-    final patUser = await retry(() => patMedtechApi.userApi.getLoggedUser());
-
-    // Can not decrypt protected data, as key has been lost
-    final pat = await patMedtechApi.patientApi.getPatient(patUser!.patientId!);
-
-    // When
-    pat!.note = "Other";
-
-    // Then
-    // If we do this, we loose previous data
-    final modPat = await patMedtechApi.patientApi.createOrModifyPatient(pat);
-
-    // Then
-    expect(modPat!.id, pat.id);
-    expect(modPat.firstName, pat.firstName);
-    expect(modPat.lastName, pat.lastName);
-    expect(modPat.note, pat.note);
-
-    // Init
-    final DataSample weight = getWeightDataSample();
-    final DataSample height = getHeightDataSample();
-    final dataSamples = [weight, height];
-
-    // As new delegation has been created for Patient, should be able to create new data
-    final patDataSamples = await patMedtechApi.dataSampleApi.createOrModifyDataSamplesFor(modPat.id!, dataSamples);
-
-    assert(patDataSamples != null);
+      // When & Then
+      expect(() async => await authenticationApi.completeAuthentication(registrationProcess, "bad_code", keyPair, tokenAndKeyPairProvider), throwsA(isA<FormatException>()));
+    });
   });
 }

@@ -20,9 +20,14 @@ class AuthenticationApiImpl extends AuthenticationApi {
   final DataOwnerApiFactory? dataOwnerApiFactory;
 
   @override
-  Future<AuthenticationProcess?> startAuthentication(
-      String healthcareProfessionalId, String firstName, String lastName, String email, String recaptcha,
-      {String? mobilePhone}) async {
+  Future<AuthenticationProcess> startAuthentication(
+      String healthcareProfessionalId, String firstName, String lastName, String recaptcha, bool bypassTokenCheck,
+      {String? email, String? mobilePhone}) async {
+
+    if (email == null && mobilePhone == null) {
+      throw FormatException("In order to start authentication of a user, you should at least provide its email OR its mobilePhone");
+    }
+
     final requestId = Uuid().v4(options: {'rng': UuidUtil.cryptoRNG});
     final date = DateTime.now().millisecondsSinceEpoch ~/ 60000;
     final String recaptchaHash = sha256.convert((date.toString() + ':' + recaptcha).codeUnits).toString();
@@ -34,24 +39,23 @@ class AuthenticationApiImpl extends AuthenticationApi {
           'g-recaptcha-response': recaptchaHash,
           'firstName': firstName,
           'lastName': lastName,
-          'from': email,
+          'from': email ?? mobilePhone,
           'mobilePhone': mobilePhone,
+          'email': email,
           'hcpId': healthcareProfessionalId
         }));
 
     if (res.statusCode < 400) {
-      return AuthenticationProcess(requestId, email);
+      return AuthenticationProcess(requestId, (email ?? mobilePhone)!, bypassTokenCheck);
     }
 
-    return null;
+    throw Exception("Could not start authentication process");
   }
 
   @override
   Future<AuthenticationResult> completeAuthentication(AuthenticationProcess process, String validationCode, Tuple2<String, String> userKeyPair,
       Future<Tuple3<String, String, String>?> Function(String, String) tokenAndKeyPairProvider) async {
-    var client = Client();
-    final Response res = await client
-        .get(Uri.parse('${authServerUrl}/process/validate/${process.requestId}-${validationCode}'), headers: {'Content-Type': 'application/json'});
+    final Response res = await _validateAuthenticationProcess(process.requestId, validationCode, process.bypassTokenCheck);
 
     if (res.statusCode < 400) {
       final Tuple2<MedTechApi, ApiInitialisationResult> initInfo =
@@ -66,6 +70,18 @@ class AuthenticationApiImpl extends AuthenticationApi {
 
     throw FormatException("Invalid validation code");
   }
+
+  Future<Response> _validateAuthenticationProcess(String processRequestId, String validationCode, bool bypassTokenCheck) async {
+    var client = Client();
+    try {
+      final resp = await client
+          .get(Uri.parse('${authServerUrl}/process/validate/${processRequestId}-${validationCode}'), headers: {'Content-Type': 'application/json'});
+      return (resp.statusCode >= 400 && bypassTokenCheck) ? Response("", 200) : resp;
+    } catch (e) {
+      return (bypassTokenCheck) ? Response("", 200) : throw e;
+    }
+  }
+
 
   Future<Tuple2<MedTechApi, ApiInitialisationResult>> _initApiAndUserAuthenticationToken(AuthenticationProcess process, String validationCode,
       Future<Tuple3<String, String, String>?> Function(String, String) tokenAndKeyPairProvider) async {
@@ -128,7 +144,8 @@ class AuthenticationApiImpl extends AuthenticationApi {
   Future<void> _initPatientDelegationsAndSave(
       MedTechApi apiWithNewKeyPair, PatientDto modPat, UserDto user, DataOwnerApi<dynamic> dataOwnerApi) async {
     final ccPatient = patientCryptoConfig(apiWithNewKeyPair.crypto);
-    final dataOwnerWithDelegations = await DecryptedPatientDto.fromJson(modPat.toJson()).let((that) => that!.initDelegations(user, ccPatient));
+    final dataOwnerWithDelegations = await apiWithNewKeyPair.basePatientApi.rawGetPatient(modPat.id)
+        .then((updatedPatient) => DecryptedPatientDto.fromJson(updatedPatient!.toJson()).let((that) => that!.initDelegations(user, ccPatient)));
 
     final initialisedDataOwner = await apiWithNewKeyPair.basePatientApi.modifyPatient(user, dataOwnerWithDelegations, ccPatient);
     if (initialisedDataOwner == null) {

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:icure_medical_device_dart_sdk/api.dart';
 import 'package:icure_medical_device_dart_sdk/mappers/user.dart';
 import "package:test/test.dart";
@@ -41,12 +43,12 @@ void main() {
       final username = Uuid(options: {'rng': UuidUtil.cryptoRNG}).v4().toString().substring(0, 6);
 
       // final AnonymousMedTechApi api = TestUtils.getAnonymousApi(authProcessId: "6a355458dbfa392cb56244031907f47a");
-      final AnonymousMedTechApi api = TestUtils.getAnonymousApi();
+      final AnonymousMedTechApi api = TestUtils.getAnonymousApi(host: Platform.environment["ICURE_DART_TEST_URL"]!, authServer: Platform.environment["AUTH_SERVER_URL"], authProcessId: Platform.environment["ICURE_PAT_AUTH_PROCESS_ID"]);
 
       print("Username: ${username}");
       print("email: ${email}");
 
-      final proc = await api.authenticationApi.startAuthentication("XXX", username, '', email, "XXX");
+      final proc = await api.authenticationApi.startAuthentication("XXX", username, '', "XXX", false, email: email);
       print("processId id: ${proc?.requestId}");
 
       assert(proc != null);
@@ -57,9 +59,7 @@ void main() {
       final validationCode = "XXX";
       final processId = "XXX";
 
-      final AnonymousMedTechApi api = TestUtils.getAnonymousApi();
-      // final AnonymousMedTechApi api = TestUtils.getAnonymousApi(authProcessId: "6a355458dbfa392cb56244031907f47a");
-
+      final AnonymousMedTechApi api = TestUtils.getAnonymousApi(host: Platform.environment["ICURE_DART_TEST_URL"]!, authServer: Platform.environment["AUTH_SERVER_URL"], authProcessId: Platform.environment["ICURE_PAT_AUTH_PROCESS_ID"]);
       final keyPair = generateRandomPrivateAndPublicKeyPair();
 
       final tokenAndKeyProvider = (String userId, String groupId) async {
@@ -69,7 +69,7 @@ void main() {
       print("Public  Key : ${keyPair.item2}");
 
       final result =
-          await api.authenticationApi.completeAuthentication(AuthenticationProcess(processId, email), validationCode, keyPair, tokenAndKeyProvider);
+          await api.authenticationApi.completeAuthentication(AuthenticationProcess(processId, email, false), validationCode, keyPair, tokenAndKeyProvider);
 
       var patMedtechApi = result.medTechApi;
 
