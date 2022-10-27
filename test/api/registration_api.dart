@@ -1,6 +1,5 @@
 @Timeout(Duration(hours: 1))
 import 'dart:io';
-import 'dart:math';
 
 import 'package:icure_medical_device_dart_sdk/api.dart';
 import 'package:icure_medical_device_dart_sdk/utils/net_utils.dart';
@@ -13,11 +12,11 @@ import '../utils/test_utils.dart';
 
 void main() {
   final Uuid uuid = Uuid();
-  final authProcessHcpId = Platform.environment["ICURE_AUTH_PROCESS_HCP_ID"]!;
-  final authRecaptcha = Platform.environment["ICURE_AUTH_RECAPTCHA"]!;
+  final authProcessHcpId = Platform.environment["AUTH_PROCESS_HCP_ID"]!;
+  final authRecaptcha = Platform.environment["AUTH_RECAPTCHA"] ?? "fake-recaptcha" ;
 
   Future<AnonymousMedTechApi> anonymousMedtechApi() async {
-    return AnonymousMedTechApi(Platform.environment["ICURE_DART_TEST_URL"]!, Platform.environment["AUTH_SERVER_URL"]!, Platform.environment["ICURE_PAT_AUTH_PROCESS_ID"]!);
+    return AnonymousMedTechApi(Platform.environment["ICURE_URL"]!, Platform.environment["MSG_GTW_URL"]!, Platform.environment["PAT_AUTH_PROCESS_ID"]!);
   }
 
   DataSample getHeightDataSample() => DataSample(

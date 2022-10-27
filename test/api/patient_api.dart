@@ -10,6 +10,8 @@ import "package:test/test.dart";
 import 'package:uuid/uuid.dart';
 import 'package:uuid/uuid_util.dart';
 
+import '../utils/test_utils.dart';
+
 final Uuid uuid = Uuid();
 
 Future<MedTechApi> createPatientWithUserAndApi(MedTechApi initialApi) async {
@@ -40,7 +42,7 @@ Future<MedTechApi> createPatientWithUserAndApi(MedTechApi initialApi) async {
   await initialApi.patientApi.giveAccessTo(createdPatient, createdPatient.id!);
 
   return await MedTechApiBuilder.newBuilder()
-      .withICureBasePath(Platform.environment["ICURE_DART_TEST_URL"]!)
+      .withICureBasePath(Platform.environment["ICURE_URL"]!)
       .withUserName(createdUser.login!)
       .withPassword(token!)
       .addKeyPair(createdPatient.id!, userKeyPair.item1.keyFromHexString())
@@ -74,7 +76,7 @@ Future<MedTechApi> createHCPWithUserAndApi(MedTechApi initialApi) async {
   final token = await initialApi.userApi.createToken(createdUser!.id!);
 
   return await MedTechApiBuilder.newBuilder()
-      .withICureBasePath(Platform.environment["ICURE_DART_TEST_URL"]!)
+      .withICureBasePath(Platform.environment["ICURE_URL"]!)
       .withUserName(createdUser.login!)
       .withPassword(token!)
       .addKeyPair(createdHCP.id!, userKeyPair.item1.keyFromHexString())
@@ -90,15 +92,11 @@ void main() {
   Patient getPatient() => Patient(firstName: 'John', lastName: 'Doe', note: 'Premature optimization is the root of all evil');
 
   setUpAll(() async {
-    final initialApi = await MedTechApiBuilder.newBuilder()
-        .withICureBasePath(Platform.environment["ICURE_DART_TEST_URL"]!)
-        .withUserName(Platform.environment["ICURE_TS_TEST_HCP_USER"]!)
-        .withPassword(Platform.environment["ICURE_TS_TEST_HCP_PWD"]!)
-        .addKeyPair(
-          Platform.environment["ICURE_TS_TEST_HCP_ID"]!,
-          Platform.environment["ICURE_TS_TEST_HCP_PRIV_KEY"]!.keyFromHexString()
-        )
-        .build();
+    final initialApi = await TestUtils.medtechApi(
+        userName: Platform.environment["HCP_1_USERNAME"]!,
+        userPassword: Platform.environment["HCP_1_PASSWORD"]!,
+        userPrivKey: Platform.environment["HCP_1_PRIV_KEY"]!
+    );
 
     final professionalKeys = generateRandomPrivateAndPublicKeyPair();
     final delegateHcp = await initialApi.healthcareProfessionalApi.createOrModifyHealthcareProfessional(
@@ -123,7 +121,7 @@ void main() {
     final token = await initialApi.userApi.createToken(hcpUser!.id!);
 
     api = await MedTechApiBuilder.newBuilder()
-        .withICureBasePath(Platform.environment["ICURE_DART_TEST_URL"]!)
+        .withICureBasePath(Platform.environment["ICURE_URL"]!)
         .withUserName(hcpUser.login!)
         .withPassword(token!)
         .addKeyPair(

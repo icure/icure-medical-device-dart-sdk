@@ -1,8 +1,7 @@
 @Timeout(Duration(hours: 1))
+import 'dart:io';
 import 'dart:math';
 
-import 'package:icure_dart_sdk/api.dart';
-import 'package:icure_dart_sdk/util/collection_utils.dart';
 import 'package:icure_medical_device_dart_sdk/api.dart';
 import 'package:icure_medical_device_dart_sdk/utils/iterable_utils.dart';
 import "package:test/test.dart";
@@ -15,9 +14,9 @@ void main() {
   final Uuid uuid = Uuid();
   final rnd = Random();
 
-  Future<MedTechApi> medtechApi() async {
-    return TestUtils.medtechApi();
-  }
+  final hcpUsername = Platform.environment["HCP_2_USERNAME"]!;
+  final hcpPassword = Platform.environment["HCP_2_PASSWORD"]!;
+  final hcpPrivKey = Platform.environment["HCP_2_PRIV_KEY"]!;
 
   DataSample getHeightDataSample() => DataSample(
         id: uuid.v4(options: {'rng': UuidUtil.cryptoRNG}),
@@ -75,8 +74,7 @@ void main() {
   group('tests for DataSampleApi', () {
     test('test createOrModifyDataSampleFor CREATE', () async {
       // Init
-      final api = await TestUtils.medtechApi(
-          iCureBackendUrl: "http://localhost:16043", credsFilePath: ".hkCredentials", hcpId: "171f186a-7a2a-40f0-b842-b486428c771b");
+      final api = await TestUtils.medtechApi(userName: hcpUsername, userPassword: hcpPassword, userPrivKey: hcpPrivKey);
       final DataSample weight = getWeightDataSample();
       final DataSample height = getHeightDataSample();
       final dataSamples = [weight, height];
@@ -95,7 +93,7 @@ void main() {
 
     test('test createOrModifyDataSampleFor compounded CREATE', () async {
       // Init
-      final api = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "pat_test-6ounpaaem.json");
+      final api = (await TestUtils.createAPatientUser("${uuid.v4()}@icure-test.com")).medTechApi;
       final dataSamples = [getCompoundedDataSample()];
 
       final currentUser = await api.userApi.getLoggedUser();
@@ -111,7 +109,7 @@ void main() {
 
     test('test createOrModifyDataSampleFor UPDATE', () async {
       // Init
-      final MedTechApi api = await medtechApi();
+      final api = await TestUtils.medtechApi(userName: hcpUsername, userPassword: hcpPassword, userPrivKey: hcpPrivKey);
       final DataSample weight = getWeightDataSample();
       final Patient patient = getPatient();
       final updateContent = {"en": Content(numberValue: 60.0)};
@@ -131,7 +129,7 @@ void main() {
 
     test('test getDataSample', () async {
       // Init
-      final MedTechApi api = await medtechApi();
+      final api = await TestUtils.medtechApi(userName: hcpUsername, userPassword: hcpPassword, userPrivKey: hcpPrivKey);
       final DataSample weight = getWeightDataSample();
       final Patient patient = getPatient();
 
@@ -148,7 +146,7 @@ void main() {
 
     test('test filterDataSample', () async {
       // Init
-      final MedTechApi api = await medtechApi();
+      final api = await TestUtils.medtechApi(userName: hcpUsername, userPassword: hcpPassword, userPrivKey: hcpPrivKey);
       final DataSample weight = getWeightDataSample();
       final Patient patient = getPatient();
 
@@ -170,7 +168,7 @@ void main() {
 
     test('test deleteDataSample', () async {
       // Init
-      final MedTechApi api = await medtechApi();
+      final api = await TestUtils.medtechApi(userName: hcpUsername, userPassword: hcpPassword, userPrivKey: hcpPrivKey);
       final DataSample weight = getWeightDataSample();
       final Patient patient = getEmptyPatient();
 
@@ -185,34 +183,39 @@ void main() {
   });
 
   test("Sharing delegation of DataSample patient to HCP", () async {
-    final patApi = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "pat_rikah54178_kino.json");
-    final hcpApi = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "hcp_sobehex999_kino.json");
+    final masterApi = await TestUtils.medtechApi(userName: hcpUsername, userPassword: hcpPassword, userPrivKey: hcpPrivKey);
+    final patApi = (await TestUtils.createAPatientUser("${uuid.v4()}@icure-test.com")).medTechApi;
+    final hcpApi = (await TestUtils.createAHcpUser(masterApi)).medTechApi;
 
     final currentUser = await patApi.userApi.getLoggedUser();
-    final currentHcp = await hcpApi.userApi.getLoggedUser();
+    final currentHcpUser = await hcpApi.userApi.getLoggedUser();
 
     final currentPatient = await patApi.patientApi.getPatient(currentUser!.patientId!);
+    await patApi.patientApi.giveAccessTo(currentPatient!, currentHcpUser!.healthcarePartyId!);
 
     final ds = getHeightDataSample();
 
-    final createdDs = await patApi.dataSampleApi.createOrModifyDataSampleFor(currentPatient!.id!, ds);
-    final sharedDs = await patApi.dataSampleApi.giveAccessTo(createdDs!, currentHcp!.healthcarePartyId!);
+    final createdDs = await patApi.dataSampleApi.createOrModifyDataSampleFor(currentPatient.id!, ds);
+    final sharedDs = await patApi.dataSampleApi.giveAccessTo(createdDs!, currentHcpUser.healthcarePartyId!);
 
     final hcpDs = await hcpApi.dataSampleApi.getDataSample(sharedDs.id!);
     assert(hcpDs != null);
   });
 
   test("Sharing delegation of DataSample HCP to Patient", () async {
-    final hcpApi = await TestUtils.medtechApi(credsFilePath: ".hkCredentials", hcpId: "171f186a-7a2a-40f0-b842-b486428c771b");
-    final patApi = await TestUtils.medtechApi(credsFilePath: ".hkPatientCredentials", hcpId: "a37e0a71-07d2-4414-9b2b-2120ae9a16fc");
+    final masterApi = await TestUtils.medtechApi(userName: hcpUsername, userPassword: hcpPassword, userPrivKey: hcpPrivKey);
+    final patApi = (await TestUtils.createAPatientUser("${uuid.v4()}@icure-test.com")).medTechApi;
+    final hcpApi = (await TestUtils.createAHcpUser(masterApi)).medTechApi;
 
     final currentUser = await patApi.userApi.getLoggedUser();
+    final currentHcpUser = await hcpApi.userApi.getLoggedUser();
 
     final currentPatient = await patApi.patientApi.getPatient(currentUser!.patientId!);
+    await patApi.patientApi.giveAccessTo(currentPatient!, currentHcpUser!.healthcarePartyId!);
 
     final ds = getHeightDataSample();
 
-    final createdDs = await hcpApi.dataSampleApi.createOrModifyDataSampleFor(currentPatient!.id!, ds);
+    final createdDs = await hcpApi.dataSampleApi.createOrModifyDataSampleFor(currentPatient.id!, ds);
     final sharedDs = await hcpApi.dataSampleApi.giveAccessTo(createdDs!, currentPatient.id!);
 
     final patDs = await patApi.dataSampleApi.getDataSample(sharedDs.id!);
@@ -220,11 +223,17 @@ void main() {
   });
 
   test("Creating a datasample as HCP for a patient", () async {
-    final hcpApi = await TestUtils.medtechApi(credsFilePath: ".hkCredentials", hcpId: "171f186a-7a2a-40f0-b842-b486428c771b");
-    final patApi = await TestUtils.medtechApi(credsFilePath: ".hkPatientCredentials", hcpId: "a37e0a71-07d2-4414-9b2b-2120ae9a16fc");
+    final masterApi = await TestUtils.medtechApi(userName: hcpUsername, userPassword: hcpPassword, userPrivKey: hcpPrivKey);
+    final patApi = (await TestUtils.createAPatientUser("${uuid.v4()}@icure-test.com")).medTechApi;
+    final hcpApi = (await TestUtils.createAHcpUser(masterApi)).medTechApi;
+
+    final currentHcpUser = await hcpApi.userApi.getLoggedUser();
 
     final currentPatUser = await patApi.userApi.getLoggedUser();
-    final hcpPatient = await hcpApi.patientApi.getPatient(currentPatUser!.dataOwnerId()!);
+    final patient = await patApi.patientApi.getPatient(currentPatUser!.dataOwnerId()!);
+    await patApi.patientApi.giveAccessTo(patient!, currentHcpUser!.healthcarePartyId!);
+
+    final hcpPatient = await hcpApi.patientApi.getPatient(currentPatUser.dataOwnerId()!);
 
     // When
     final dataSample = await hcpApi.dataSampleApi.createOrModifyDataSampleFor(hcpPatient!.id!, getWeightDataSample());
