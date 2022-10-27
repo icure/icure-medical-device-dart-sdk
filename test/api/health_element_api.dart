@@ -1,4 +1,6 @@
 @Timeout(Duration(hours: 1))
+import 'dart:io';
+
 import 'package:icure_dart_sdk/api.dart';
 import 'package:icure_medical_device_dart_sdk/api.dart';
 import 'package:icure_medical_device_dart_sdk/mappers/healthcare_element.dart';
@@ -11,9 +13,12 @@ import '../utils/test_utils.dart';
 
 void main() {
   final Uuid uuid = Uuid();
+  final hcpUsername = Platform.environment["HCP_2_USERNAME"]!;
+  final hcpPassword = Platform.environment["HCP_2_PASSWORD"]!;
+  final hcpPrivKey = Platform.environment["HCP_2_PRIV_KEY"]!;
 
   Future<MedTechApi> medtechApi() async {
-    return await TestUtils.medtechApi();
+    return await TestUtils.medtechApi(userName: hcpUsername, userPassword: hcpPassword, userPrivKey: hcpPrivKey);
   }
 
   DecryptedHealthElementDto getHealthElementDto() => DecryptedHealthElementDto(
@@ -97,32 +102,35 @@ void main() {
   });
 
   test("Sharing delegation of DecryptedHealthElementDto patient to HCP", () async {
-    final patApi = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "pat_rikah54178_kino.json");
-    final hcpApi = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "hcp_sobehex999_kino.json");
+    final masterApi = await TestUtils.medtechApi(userName: hcpUsername, userPassword: hcpPassword, userPrivKey: hcpPrivKey);
+    final patApi = (await TestUtils.createAPatientUser("${uuid.v4()}@icure-test.com")).medTechApi;
+    final hcpApi = (await TestUtils.createAHcpUser(masterApi)).medTechApi;
 
     final currentUser = await patApi.userApi.getLoggedUser();
-    final currentHcp = await hcpApi.userApi.getLoggedUser();
+    final currentHcpUser = await hcpApi.userApi.getLoggedUser();
 
     final currentPatient = await patApi.patientApi.getPatient(currentUser!.patientId!);
+    await patApi.patientApi.giveAccessTo(currentPatient!, currentHcpUser!.healthcarePartyId!);
 
     final he = HealthcareElement(note: 'Premature optimization is the root of all evil');
 
     final createdHe = await patApi.healthcareElementApi.createOrModifyHealthcareElement(currentPatient!.id!, he);
-    final sharedHe = await patApi.healthcareElementApi.giveAccessTo(createdHe!, currentHcp!.healthcarePartyId!);
+    final sharedHe = await patApi.healthcareElementApi.giveAccessTo(createdHe!, currentHcpUser!.healthcarePartyId!);
 
     final hcpHe = await hcpApi.healthcareElementApi.getHealthcareElement(sharedHe.id!);
     assert(hcpHe != null);
   });
 
   test("Sharing delegation of DecryptedHealthElementDto patient to HCP", () async {
-    final patApi = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "pat_rikah54178_kino.json");
-    final hcpApi = await TestUtils.getApiFromCredentialsToken(credentialsFilePath: "hcp_sobehex999_kino.json");
+    final masterApi = await TestUtils.medtechApi(userName: hcpUsername, userPassword: hcpPassword, userPrivKey: hcpPrivKey);
+    final patApi = (await TestUtils.createAPatientUser("${uuid.v4()}@icure-test.com")).medTechApi;
+    final hcpApi = (await TestUtils.createAHcpUser(masterApi)).medTechApi;
 
     final currentUser = await patApi.userApi.getLoggedUser();
-    final currentHcp = await hcpApi.userApi.getLoggedUser();
+    final currentHcpUser = await hcpApi.userApi.getLoggedUser();
 
     final currentPatient = await patApi.patientApi.getPatient(currentUser!.patientId!);
-    final delegatedPatient = await patApi.patientApi.giveAccessTo(currentPatient!, currentHcp!.healthcarePartyId!);
+    final delegatedPatient = await patApi.patientApi.giveAccessTo(currentPatient!, currentHcpUser!.healthcarePartyId!);
 
     assert(delegatedPatient != null);
 

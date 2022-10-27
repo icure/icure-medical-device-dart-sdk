@@ -104,7 +104,6 @@ class AuthenticationApiImpl extends AuthenticationApi {
       if (token == null) {
         throw FormatException("Your validation code is expired");
       }
-      print("User Token is : $token");
 
       return Tuple2(api, ApiInitialisationResult(user, token, fromProvider?.let((it) => Tuple2(it.item2, it.item3))));
     } catch (e) {

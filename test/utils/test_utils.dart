@@ -3,20 +3,74 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:icure_medical_device_dart_sdk/api.dart';
+import 'package:tuple/tuple.dart';
+import 'package:uuid/uuid.dart';
+import 'package:uuid/uuid_util.dart';
 
 class TestUtils {
 
-  static Future<MedTechApi> medtechApi({iCureBackendUrl= "https://kraken.icure.dev", credsFilePath = ".credentials", hcpId = "782f1bcd-9f3f-408a-af1b-cd9f3f908a98"}) async {
-    final creds = await TestUtils.credentials(credentialsFilePath: credsFilePath);
-
-    return MedTechApiBuilder.newBuilder()
+  static Future<MedTechApi> medtechApi({iCureBackendUrl= "https://kraken.icure.dev", String? userName, String? userPassword, String? userPrivKey, String? authProcessHcpId}) async {
+    final api = MedTechApiBuilder.newBuilder()
         .withICureBasePath(iCureBackendUrl)
-        .withUserName(creds.username)
-        .withPassword(creds.password)
-        .withAuthServerUrl(Platform.environment["AUTH_SERVER_URL"])
-        .withAuthProcessId(Platform.environment["ICURE_PAT_AUTH_PROCESS_ID"])
-        .addKeyPair(hcpId, await TestUtils.keyFromFile(keyFileName: "${hcpId}-icc-priv.2048.key"))
+        .withUserName(userName ?? Platform.environment["HCP_1_USERNAME"]!)
+        .withPassword(userPassword ?? Platform.environment["HCP_1_PASSWORD"]!)
+        .withAuthServerUrl(Platform.environment["MSG_GTW_URL"])
+        .withAuthProcessId(Platform.environment["PAT_AUTH_PROCESS_ID"])
         .build();
+
+    final currentUser = await api.userApi.getLoggedUser();
+
+    return MedTechApiBuilder.from(api)
+        .addKeyPair(currentUser!.dataOwnerId()!, (userPrivKey ?? Platform.environment["HCP_1_PRIV_KEY"]!).keyFromHexString())
+        .build();
+
+  }
+
+  static AnonymousMedTechApi anonymousMedtechApi({String? iCureUrl}) {
+    return AnonymousMedTechApi(iCureUrl ?? Platform.environment["ICURE_URL"]!, Platform.environment["MSG_GTW_URL"]!, Platform.environment["PAT_AUTH_PROCESS_ID"]!);
+  }
+
+  static Future<AuthenticationResult> createAHcpUser(MedTechApi medTechApi) async {
+    final Uuid uuid = Uuid();
+    final userId = uuid.v4(options: {'rng': UuidUtil.cryptoRNG});
+    final userLogin = userId + '@icure.test';
+    final userPassword = uuid.v4(options: {'rng': UuidUtil.cryptoRNG});
+    final userKeyPair = generateRandomPrivateAndPublicKeyPair();
+
+    final hcp = await medTechApi.healthcareProfessionalApi.createOrModifyHealthcareProfessional(
+        HealthcareProfessional(firstName: 'Rob', lastName: 'Stark', systemMetaData: SystemMetaDataOwner(publicKey:userKeyPair.item2))
+    );
+
+    final user = await medTechApi.userApi.createOrModifyUser(User(login: userLogin, email: userLogin, passwordHash: userPassword, healthcarePartyId: hcp!.id));
+    final newUserApi = MedTechApiBuilder.newBuilder()
+        .withICureBasePath(medTechApi.iCureBasePath)
+        .withUserName(userLogin)
+        .withPassword(userPassword)
+        .addKeyPair(hcp.id!, userKeyPair.item1.keyFromHexString())
+        .build();
+
+    return AuthenticationResult(newUserApi, userKeyPair, userPassword, user!.groupId!, user.id!);
+  }
+
+  static Future<AuthenticationResult> createAPatientUser(String userEmail, {String? iCureUrl}) async {
+    final authProcessHcpId = Platform.environment["AUTH_PROCESS_HCP_ID"]!;
+    final authRecaptcha = Platform.environment["AUTH_RECAPTCHA"] ?? "fake-recaptcha";
+
+    final AnonymousMedTechApi api = anonymousMedtechApi(iCureUrl: iCureUrl);
+    final AuthenticationApi authenticationApi = api.authenticationApi;
+
+    // When
+    final registrationProcess = await authenticationApi.startAuthentication(
+        authProcessHcpId, "justin_th", "", authRecaptcha, false, email: userEmail);
+
+    // Then
+    final validationCode = (await TestUtils.getEmailFromMsgGtw(api.authServerUrl!, userEmail)).subject;
+    final keyPair = generateRandomPrivateAndPublicKeyPair();
+
+    Future<Tuple3<String, String, String>?> Function(String, String) tokenAndKeyPairProvider = (String groupId, String userId) async => null;
+
+    // When
+    return await authenticationApi.completeAuthentication(registrationProcess, validationCode, keyPair, tokenAndKeyPairProvider);
   }
 
   static Future<Uint8List> keyFromFile({String keyFileName = "782f1bcd-9f3f-408a-af1b-cd9f3f908a98-icc-priv.2048.key"}) async {
@@ -134,4 +188,13 @@ class UsernameTokenDataOwnerId {
     }
     return null;
   }
+}
+
+class UserCreds {
+  String hcpId;
+  String login;
+  String password;
+  String privKey;
+
+  UserCreds(this.hcpId, this.login, this.password, this.privKey);
 }

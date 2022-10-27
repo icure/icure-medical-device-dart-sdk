@@ -6,6 +6,8 @@ import "package:test/test.dart";
 import 'package:uuid/uuid.dart';
 import 'package:uuid/uuid_util.dart';
 
+import '../utils/test_utils.dart';
+
 final Uuid uuid = Uuid();
 
 void main() {
@@ -27,16 +29,11 @@ void main() {
 
 
   setUpAll(() async {
-
-    api = await MedTechApiBuilder.newBuilder()
-        .withICureBasePath(Platform.environment["ICURE_DART_TEST_URL"]!)
-        .withUserName(Platform.environment["ICURE_TS_TEST_HCP_USER"]!)
-        .withPassword(Platform.environment["ICURE_TS_TEST_HCP_PWD"]!)
-        .addKeyPair(
-          Platform.environment["ICURE_TS_TEST_HCP_ID"]!,
-          Platform.environment["ICURE_TS_TEST_HCP_PRIV_KEY"]!.keyFromHexString()
-        )
-        .build();
+    api = await TestUtils.medtechApi(
+        userName: Platform.environment["HCP_1_USERNAME"]!,
+        userPassword: Platform.environment["HCP_1_PASSWORD"]!,
+        userPrivKey: Platform.environment["HCP_1_PRIV_KEY"]!
+    );
 
     print("Successfully set up test backend!");
   });
