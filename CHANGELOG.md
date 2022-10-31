@@ -1,3 +1,8 @@
+# 1.5.1
+- [MDT-175](https://icure.atlassian.net/browse/MDT-175) BUG : Resolve 400 Invalid Patient bug during patient authentication
+- BUG : Resolve 500 Base64 error due to defected cache when completing patient authentication
+- BUG : Resolve race condition when calling updateUser service
+
 # 1.5.0
 - Add Check to bypass token in case a user need to use authentication instead (Google Store submission)
 - Enable authentication by SMS
