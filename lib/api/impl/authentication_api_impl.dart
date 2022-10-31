@@ -150,5 +150,6 @@ class AuthenticationApiImpl extends AuthenticationApi {
     if (initialisedDataOwner == null) {
       throw FormatException("An error occurred while initializing your user");
     }
+    apiWithNewKeyPair.crypto.clearCachesFor(initialisedDataOwner.id);
   }
 }
