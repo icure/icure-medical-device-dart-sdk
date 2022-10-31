@@ -19,14 +19,14 @@ class UserApiImpl extends UserApi {
 
   @override
   Future<User?> createOrModifyUser(User user) async {
-    return (await (user.rev?.let((it) async {
-              final modifiedUser = user.toUserDto();
-              final userToUpdate = await _constraintsUserModificationsBasedOnCurrentUserPermission(modifiedUser);
+    if (user.rev != null) {
+      final modifiedUser = user.toUserDto();
+      final userToUpdate = await _constraintsUserModificationsBasedOnCurrentUserPermission(modifiedUser);
 
-              api.baseUserApi.modifyUser(userToUpdate);
-            }) ??
-            api.baseUserApi.createUser(user.toUserDto())))
-        ?.toUser();
+      return (await api.baseUserApi.modifyUser(userToUpdate))?.toUser();
+    } else {
+      return (await api.baseUserApi.createUser(user.toUserDto()))?.toUser();
+    }
   }
 
   Future<UserDto> _constraintsUserModificationsBasedOnCurrentUserPermission(UserDto modifiedUser) async {
@@ -69,9 +69,9 @@ class UserApiImpl extends UserApi {
 
   @override
   Future<String?> createToken(
-    String userId, {
-    Duration validity = const Duration(days: 30),
-  }) =>
+      String userId, {
+        Duration validity = const Duration(days: 30),
+      }) =>
       api.baseUserApi.getToken(userId, uuid.v4(options: {'rng': UuidUtil.cryptoRNG}), tokenValidity: validity.inSeconds);
 
   @override
@@ -79,12 +79,12 @@ class UserApiImpl extends UserApi {
 
   @override
   Future<PaginatedListUser?> filterUsers(
-    Filter<User> filter, {
-    String? nextUserId,
-    int? limit,
-  }) async {
+      Filter<User> filter, {
+        String? nextUserId,
+        int? limit,
+      }) async {
     return (await api.baseUserApi
-            .filterUsersBy(base_api.FilterChain<base_api.UserDto>(filter.toAbstractFilterDto()), startDocumentId: nextUserId, limit: limit))
+        .filterUsersBy(base_api.FilterChain<base_api.UserDto>(filter.toAbstractFilterDto()), startDocumentId: nextUserId, limit: limit))
         ?.toPaginatedListUser();
   }
 
