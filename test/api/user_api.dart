@@ -27,7 +27,16 @@ void main() {
       final updatedUser = await api.userApi.createOrModifyUser(currentUser);
 
       // Then
-      expect(updatedUser!.properties.firstWhere((prop) => userNewProperty == prop.typedValue?.stringValue), isTrue);
+      try {
+        final foundProperty = updatedUser!.properties.firstWhere((prop) => userNewProperty == prop.typedValue?.stringValue);
+        expect(foundProperty.id, "my-user-prop");
+        expect(foundProperty.type?.type, PropertyTypeTypeEnum.STRING);
+        expect(foundProperty.typedValue?.type, TypedValueObjectTypeEnum.STRING);
+        expect(foundProperty.typedValue?.stringValue, userNewProperty);
+
+      } catch (exception) {
+        expect(exception == null, true);
+      }
     });
 
     test("Mapping user", () async {
@@ -39,27 +48,6 @@ void main() {
 
       // Then
       expect(currentUser == mappedUser, isTrue);
-    });
-
-    test("Connecting patient account", () async {
-      final patApi = (await TestUtils.createAPatientUser("${uuid.v4()}@icure-test.com")).medTechApi;
-
-      final currentUser = await patApi.userApi.getLoggedUser();
-      final currentPatient = await patApi.patientApi.getPatient(currentUser!.patientId!);
-
-      // Then
-      assert(currentUser != null);
-      assert(currentPatient != null);
-    });
-
-    test("Connecting HCP account", () async {
-      final api = await TestUtils.medtechApi(userName: hcpUsername, userPassword: hcpPassword, userPrivKey: hcpPrivKey);
-
-      final currentUser = await api.userApi.getLoggedUser();
-
-      // Then
-      assert(currentUser != null);
-      assert(currentUser?.healthcarePartyId != null);
     });
   });
 }
