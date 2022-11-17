@@ -14,7 +14,8 @@ class MedicalDeviceApiImpl extends MedicalDeviceApi {
 
   @override
   Future<MedicalDevice?> createOrModifyMedicalDevice(MedicalDevice medicalDevice) async {
-    return (await createOrModifyMedicalDevices([medicalDevice].toList()))?.single;
+    return (await createOrModifyMedicalDevices([medicalDevice].toList()))?.single
+     ?? (throw new StateError("Could not create medical device"));
   }
 
   @override
@@ -23,7 +24,7 @@ class MedicalDeviceApiImpl extends MedicalDeviceApi {
     final medicalDevicesToUpdate = medicalDevice.toSet().difference(medicalDevicesToCreate);
 
     if (medicalDevicesToUpdate.any((element) => element.id == null || !Uuid.isValidUUID(fromString: element.id!))) {
-      throw FormatException("Update id should be provided as an UUID");
+      throw FormatException("he id of the device to update should be a valid UUID");
     }
 
     final deviceToCreate = medicalDevicesToCreate.map((e) => MedicalDeviceMapper(e).toDeviceDto()).toList();
@@ -38,7 +39,7 @@ class MedicalDeviceApiImpl extends MedicalDeviceApi {
 
   @override
   Future<String?> deleteMedicalDevice(String medicalDeviceId) async {
-    return (await api.baseDeviceApi.deleteDevice(medicalDeviceId))?.rev ?? (throw StateError("Invalid medical device id"));
+    return (await api.baseDeviceApi.deleteDevice(medicalDeviceId))?.rev ?? (throw StateError("Could not delete medical device with id ${medicalDeviceId}"));
   }
 
   @override
@@ -54,7 +55,9 @@ class MedicalDeviceApiImpl extends MedicalDeviceApi {
 
   @override
   Future<MedicalDevice?> getMedicalDevice(String medicalDeviceId) async {
-    return DeviceDtoMapper(await api.baseDeviceApi.getDevice(medicalDeviceId) ?? (throw ArgumentError("MedicalDevice not found"))).toMedicalDevice();
+    return DeviceDtoMapper(await api.baseDeviceApi.getDevice(medicalDeviceId)
+        ?? (throw ArgumentError("MedicalDevice with id $medicalDeviceId not found"))
+    ).toMedicalDevice();
   }
 
   @override
