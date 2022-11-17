@@ -61,7 +61,7 @@ class PatientApiImpl extends PatientApi {
         patientId,
         patientCryptoConfig(_api.crypto)))
       ?.toPatient()
-    ?? (throw StateError("Could not find patient ${patientId} with current user ${currentUser.id}));
+    ?? (throw StateError("Could not find patient ${patientId} with current user"));
 
   @override
   Future<List<String>?> matchPatients(Filter filter) {
