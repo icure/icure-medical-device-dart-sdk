@@ -15,13 +15,10 @@ class HealthcareElementApiImpl extends HealthcareElementApi {
   @override
   Future<HealthcareElement?> createOrModifyHealthcareElement(String patientId, HealthcareElement healthcareElement) async {
     final localCrypto = api.crypto;
-    final currentUser = await api.baseUserApi.getCurrentUser();
+    final currentUser = (await api.baseUserApi.getCurrentUser())
+        ?? (throw StateError("There is no user currently logged in. You must call this method from an authenticated MedTechApi"));
     final ccHealthElement = healthElementCryptoConfig(localCrypto);
     final ccPatient = patientCryptoConfig(localCrypto);
-
-    if (currentUser == null) {
-      throw StateError("There is no user currently logged in. You must call this method from an authenticated MedTechApi");
-    }
 
     if (healthcareElement.rev != null) {
       if (healthcareElement.id == null || !Uuid.isValidUUID(fromString: healthcareElement.id!)) {
@@ -46,7 +43,8 @@ class HealthcareElementApiImpl extends HealthcareElementApi {
   @override
   Future<List<HealthcareElement>?> createOrModifyHealthcareElements(String patientId, List<HealthcareElement> healthcareElements) async {
     final localCrypto = api.crypto;
-    final currentUser = await api.baseUserApi.getCurrentUser();
+    final currentUser = (await api.baseUserApi.getCurrentUser())
+        ?? (throw StateError("There is no user currently logged in. You must call this method from an authenticated MedTechApi"));
     final ccHealthElement = healthElementCryptoConfig(localCrypto);
     final ccPatient = patientCryptoConfig(localCrypto);
 
@@ -83,21 +81,23 @@ class HealthcareElementApiImpl extends HealthcareElementApi {
     int? limit,
   }) async {
     final localCrypto = api.crypto;
-    final currentUser = await api.baseUserApi.getCurrentUser();
+    final currentUser = (await api.baseUserApi.getCurrentUser())
+        ?? (throw StateError("There is no user currently logged in. You must call this method from an authenticated MedTechApi"));
     final ccHealthElement = healthElementCryptoConfig(localCrypto);
 
     return (await api.baseHealthElementApi.filterHealthElements(
-            currentUser!, base_api.FilterChain<base_api.HealthElementDto>(filter.toAbstractFilterDto()), ccHealthElement, nextHealthElementId, limit))
+            currentUser, base_api.FilterChain<base_api.HealthElementDto>(filter.toAbstractFilterDto()), ccHealthElement, nextHealthElementId, limit))
         .toPaginatedListHealthcareElement();
   }
 
   @override
   Future<HealthcareElement?> getHealthcareElement(String id) async {
     final localCrypto = api.crypto;
-    final currentUser = await api.baseUserApi.getCurrentUser();
+    final currentUser = (await api.baseUserApi.getCurrentUser())
+        ?? (throw StateError("There is no user currently logged in. You must call this method from an authenticated MedTechApi"));
     final ccHealthElement = healthElementCryptoConfig(localCrypto);
 
-    return (await api.baseHealthElementApi.getHeathElement(currentUser!, id, ccHealthElement))?.toHealthcareElement();
+    return (await api.baseHealthElementApi.getHeathElement(currentUser, id, ccHealthElement))?.toHealthcareElement();
   }
 
   @override
@@ -108,11 +108,12 @@ class HealthcareElementApiImpl extends HealthcareElementApi {
   @override
   Future<HealthcareElement> giveAccessTo(HealthcareElement healthcareElement, String delegatedTo) async {
     final localCrypto = api.crypto;
-    final currentUser = await api.baseUserApi.getCurrentUser();
+    final currentUser = (await api.baseUserApi.getCurrentUser())
+        ?? (throw StateError("There is no user currently logged in. You must call this method from an authenticated MedTechApi"));
 
     // Check if delegatedBy has access
-    if (!healthcareElement.systemMetaData!.delegations.entries.any((element) => element.key == currentUser!.dataOwnerId())) {
-      throw StateError("User ${currentUser?.id} may not access healthcare element. Check that the healthcare element is owned by/shared to the actual user.");
+    if (!healthcareElement.systemMetaData!.delegations.entries.any((element) => element.key == currentUser.dataOwnerId())) {
+      throw StateError("User ${currentUser.id} may not access healthcare element. Check that the healthcare element is owned by/shared to the actual user.");
     }
 
     // Check if delegatedTo already has access
@@ -123,7 +124,7 @@ class HealthcareElementApiImpl extends HealthcareElementApi {
     final healthcareElementDto = healthcareElement.toHealthElementDto();
 
     final patientId =
-        (await localCrypto.decryptEncryptionKeys(currentUser!.dataOwnerId()!, healthcareElementDto.cryptedForeignKeys)).firstOrNull;
+        (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, healthcareElementDto.cryptedForeignKeys)).firstOrNull;
     final sfk = (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, healthcareElementDto.delegations)).firstOrNull;
     final ek = (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, healthcareElementDto.encryptionKeys)).firstOrNull;
 

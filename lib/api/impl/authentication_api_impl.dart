@@ -21,8 +21,13 @@ class AuthenticationApiImpl extends AuthenticationApi {
 
   @override
   Future<AuthenticationProcess> startAuthentication(
-      String healthcareProfessionalId, String firstName, String lastName, String recaptcha, bool bypassTokenCheck,
-      {String? email, String? mobilePhone}) async {
+    String healthcareProfessionalId,
+    String firstName,
+    String lastName,
+    String recaptcha,
+    bool bypassTokenCheck,
+    {String? email, String? mobilePhone}
+  ) async {
 
     if (email == null && mobilePhone == null) {
       throw FormatException("In order to start authentication of a user, you should at least provide its email OR its mobilePhone");
@@ -53,8 +58,12 @@ class AuthenticationApiImpl extends AuthenticationApi {
   }
 
   @override
-  Future<AuthenticationResult> completeAuthentication(AuthenticationProcess process, String validationCode, Tuple2<String, String> userKeyPair,
-      Future<Tuple3<String, String, String>?> Function(String, String) tokenAndKeyPairProvider) async {
+  Future<AuthenticationResult> completeAuthentication(
+    AuthenticationProcess process,
+    String validationCode,
+    Tuple2<String, String> userKeyPair,
+    Future<Tuple3<String, String, String>?> Function(String, String) tokenAndKeyPairProvider
+  ) async {
     final Response res = await _validateAuthenticationProcess(process.requestId, validationCode, process.bypassTokenCheck);
 
     if (res.statusCode < 400) {
@@ -83,8 +92,11 @@ class AuthenticationApiImpl extends AuthenticationApi {
   }
 
 
-  Future<Tuple2<MedTechApi, ApiInitialisationResult>> _initApiAndUserAuthenticationToken(AuthenticationProcess process, String validationCode,
-      Future<Tuple3<String, String, String>?> Function(String, String) tokenAndKeyPairProvider) async {
+  Future<Tuple2<MedTechApi, ApiInitialisationResult>> _initApiAndUserAuthenticationToken(
+    AuthenticationProcess process,
+    String validationCode,
+    Future<Tuple3<String, String, String>?> Function(String, String) tokenAndKeyPairProvider
+  ) async {
     final api = MedTechApiBuilder.newBuilder()
         .withICureBasePath(this.iCureBasePath)
         .withUserName(process.login)
@@ -93,6 +105,7 @@ class AuthenticationApiImpl extends AuthenticationApi {
         .withAuthProcessId(this.authProcessId)
         .build();
     final user = await api.baseUserApi.getCurrentUser();
+
     if (user == null) {
       throw FormatException("There is no user currently logged in. You must call this method from an authenticated MedTechApi");
     }
@@ -119,7 +132,7 @@ class AuthenticationApiImpl extends AuthenticationApi {
 
     final dataOwner = await dataOwnerApi.getDataOwner(user.dataOwnerId()!);
     if (dataOwner == null) {
-      throw FormatException("Impossible to find the patient ${user.patientId} apparently linked to the user ${user.id}. Are you sure this patientId is correct ?");
+      throw FormatException("Impossible to find the patient ${user.patientId} apparently linked to the user ${user.id}. Are you sure this patientId is correct?");
     }
 
     if (dataOwner.publicKey == null) {

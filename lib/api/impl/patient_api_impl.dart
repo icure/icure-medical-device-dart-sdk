@@ -15,12 +15,9 @@ class PatientApiImpl extends PatientApi {
   @override
   Future<Patient?> createOrModifyPatient(Patient patient) async {
     final localCrypto = _api.crypto;
-    final currentUser = await _api.baseUserApi.getCurrentUser();
+    final currentUser = (await _api.baseUserApi.getCurrentUser())
+        ?? (throw StateError("There is no user currently logged in. You must call this method from an authenticated MedTechApi"));
     final ccPatient = patientCryptoConfig(localCrypto);
-
-    if (currentUser == null) {
-      throw StateError("There is no user currently logged in. You must call this method from an authenticated MedTechApi");
-    }
 
     if (patient.rev != null) {
       if (patient.id == null || !Uuid.isValidUUID(fromString: patient.id!)) {
@@ -47,7 +44,8 @@ class PatientApiImpl extends PatientApi {
   @override
   Future<PaginatedListPatient?> filterPatients(Filter<Patient> filter, {String? nextPatientId, int? limit, String? startKey}) async {
     final localCrypto = _api.crypto;
-    final currentUser = await _api.baseUserApi.getCurrentUser();
+    final currentUser = (await _api.baseUserApi.getCurrentUser())
+        ?? (throw StateError("There is no user currently logged in. You must call this method from an authenticated MedTechApi"));
     final ccPatient = patientCryptoConfig(localCrypto);
 
     return (await base_api.PatientApiCrypto(_api.basePatientApi).filterPatientsBy(
@@ -71,11 +69,8 @@ class PatientApiImpl extends PatientApi {
   @override
   Future<Patient> giveAccessTo(Patient patient, String delegatedTo) async {
     final localCrypto = _api.crypto;
-    final currentUser = await _api.baseUserApi.getCurrentUser();
-
-    if (currentUser == null) {
-      throw StateError("There is no user currently logged in. You must call this method from an authenticated MedTechApi");
-    }
+    final currentUser = (await _api.baseUserApi.getCurrentUser())
+        ?? (throw StateError("There is no user currently logged in. You must call this method from an authenticated MedTechApi"));
 
     if (currentUser.dataOwnerId() == null) {
       throw StateError("The current user is not a data owner. You must been either a patient, a device or a healthcare professional to call this method");
@@ -93,7 +88,7 @@ class PatientApiImpl extends PatientApi {
 
     final patientDto = patient.toPatientDto();
 
-    final keyAndOwner = await localCrypto.encryptAESKeyForHcp(currentUser!.dataOwnerId()!, delegatedTo, patientDto.id,
+    final keyAndOwner = await localCrypto.encryptAESKeyForHcp(currentUser.dataOwnerId()!, delegatedTo, patientDto.id,
         (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, patientDto.delegations)).firstOrNull!.formatAsKey());
     final delegation = Delegation(owner: currentUser.dataOwnerId(), delegatedTo: delegatedTo, key: keyAndOwner.item1);
 

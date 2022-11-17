@@ -21,10 +21,12 @@ class DataSampleApiImpl extends DataSampleApi {
     if (processedDataSample == null) {
       throw StateError("Could not create / modify data sample ${dataSample.id} for patient ${patientId}");
     }
+    return processedDataSample;
   }
 
   @override
   Future<List<DataSample>?> createOrModifyDataSamplesFor(String patientId, List<DataSample> dataSample) async {
+
     if (dataSample.distinctBy((e) => e.batchId).length > 1) {
       throw FormatException("Only data samples of a same batch (with the same batchId) can be processed together");
     }
@@ -35,9 +37,10 @@ class DataSampleApiImpl extends DataSampleApi {
     }
 
     final localCrypto = api.crypto;
-    final currentUser = await api.baseUserApi.getCurrentUser();
+    final currentUser = (await api.baseUserApi.getCurrentUser())
+      ?? (throw StateError("There is no user currently logged in. You must call this method from an authenticated MedTechApi"));
 
-    final contactTuple = await _getContactOfDataSample(localCrypto, currentUser!, dataSample.first);
+    final contactTuple = await _getContactOfDataSample(localCrypto, currentUser, dataSample.first);
     final contactCached = contactTuple.item1;
     final existingContact = contactTuple.item2;
 
@@ -77,10 +80,11 @@ class DataSampleApiImpl extends DataSampleApi {
   @override
   Future<String?> deleteAttachment(String dataSampleId, String documentId) async {
     final localCrypto = api.crypto;
-    final currentUser = await api.baseUserApi.getCurrentUser();
+    final currentUser = (await api.baseUserApi.getCurrentUser())
+      ?? (throw StateError("There is no user currently logged in. You must call this method from an authenticated MedTechApi"));
 
     final base_api.DecryptedContactDto existingContact =
-        (await _findContactsForDataSampleIds(currentUser!, localCrypto, [dataSampleId])).firstOrNull ??
+        (await _findContactsForDataSampleIds(currentUser, localCrypto, [dataSampleId])).firstOrNull ??
             (throw StateError("Could not find batch information of the data sample $dataSampleId"));
 
     final base_api.DecryptedServiceDto existingService =
@@ -106,10 +110,11 @@ class DataSampleApiImpl extends DataSampleApi {
   @override
   Future<List<String>?> deleteDataSamples(List<String> requestBody) async {
     final localCrypto = api.crypto;
-    final currentUser = await api.baseUserApi.getCurrentUser();
+    final currentUser = (await api.baseUserApi.getCurrentUser())
+        ?? (throw StateError("There is no user currently logged in. You must call this method from an authenticated MedTechApi"));
 
     final base_api.DecryptedContactDto existingContact =
-        (await _findContactsForDataSampleIds(currentUser!, localCrypto, requestBody)).firstOrNull ??
+        (await _findContactsForDataSampleIds(currentUser, localCrypto, requestBody)).firstOrNull ??
         (throw StateError("Could not find batch information of the data sample $requestBody"));
 
     final existingServiceIds = existingContact.services.map((e) => e.id);
@@ -135,10 +140,11 @@ class DataSampleApiImpl extends DataSampleApi {
   @override
   Future<PaginatedListDataSample?> filterDataSample(Filter<DataSample> filter, {String? nextDataSampleId, int? limit}) async {
     final localCrypto = api.crypto;
-    final currentUser = await api.baseUserApi.getCurrentUser();
+    final currentUser = (await api.baseUserApi.getCurrentUser())
+        ?? (throw StateError("There is no user currently logged in. You must call this method from an authenticated MedTechApi"));
 
     return PaginatedListServiceDtoMapper((await api.baseContactApi
-            .filterServicesBy(currentUser!, base_api.FilterChain(filter.toAbstractFilterDto()), null, nextDataSampleId, limit, localCrypto))!)
+            .filterServicesBy(currentUser, base_api.FilterChain(filter.toAbstractFilterDto()), null, nextDataSampleId, limit, localCrypto))!)
         .toPaginatedListDataSample();
   }
 
@@ -151,9 +157,10 @@ class DataSampleApiImpl extends DataSampleApi {
   @override
   Future<MultipartFile?> getDataSampleAttachmentContent(String dataSampleId, String documentId, String attachmentId) async {
     final localCrypto = api.crypto;
-    final currentUser = await api.baseUserApi.getCurrentUser();
+    final currentUser = (await api.baseUserApi.getCurrentUser())
+        ?? (throw StateError("There is no user currently logged in. You must call this method from an authenticated MedTechApi"));
 
-    final documentOfAttachment = await _getDataSampleAttachmentDocumentFromICure(localCrypto, currentUser!, dataSampleId, documentId);
+    final documentOfAttachment = await _getDataSampleAttachmentDocumentFromICure(localCrypto, currentUser, dataSampleId, documentId);
     return api.baseDocumentApi.rawGetDocumentAttachment(documentId, attachmentId,
         enckeys: (await _getDocumentEncryptionKeys(localCrypto, currentUser, documentOfAttachment)).join(","), fileName: null);
   }
@@ -161,9 +168,10 @@ class DataSampleApiImpl extends DataSampleApi {
   @override
   Future<Document?> getDataSampleAttachmentDocument(String dataSampleId, String documentId) async {
     final localCrypto = api.crypto;
-    final currentUser = await api.baseUserApi.getCurrentUser();
+    final currentUser = (await api.baseUserApi.getCurrentUser())
+        ?? (throw StateError("There is no user currently logged in. You must call this method from an authenticated MedTechApi"));
 
-    return DocumentDtoMapper((await _getDataSampleAttachmentDocumentFromICure(localCrypto, currentUser!, dataSampleId, documentId))).toDocument();
+    return DocumentDtoMapper((await _getDataSampleAttachmentDocumentFromICure(localCrypto, currentUser, dataSampleId, documentId))).toDocument();
   }
 
   @override
@@ -172,14 +180,19 @@ class DataSampleApiImpl extends DataSampleApi {
   }
 
   @override
-  Future<Document?> setDataSampleAttachment(String dataSampleId, ByteStream body,
-      {String? documentName, String? documentVersion, String? documentExternalUuid, String? documentLanguage}) async {
+  Future<Document?> setDataSampleAttachment(
+    String dataSampleId,
+    ByteStream body,
+    {String? documentName, String? documentVersion, String? documentExternalUuid, String? documentLanguage}
+  ) async {
 
     final localCrypto = api.crypto;
-    final currentUser = await api.baseUserApi.getCurrentUser();
+    final currentUser = (await api.baseUserApi.getCurrentUser())
+        ?? (throw StateError("There is no user currently logged in. You must call this method from an authenticated MedTechApi"));
 
     final existingDataSample = await getDataSample(dataSampleId);
-    final contactDataSample = (await _getContactOfDataSample(localCrypto, currentUser!, existingDataSample!)).item2
+
+    final contactDataSample = (await _getContactOfDataSample(localCrypto, currentUser, existingDataSample!)).item2
         ?? throwFormatException("Could not find batch information of the data sample $dataSampleId");
 
     final patientIdOfContact = (await _getPatientIdOfContact(localCrypto, currentUser, contactDataSample!))
@@ -307,16 +320,20 @@ class DataSampleApiImpl extends DataSampleApi {
   }
 
   Future<base_api.DecryptedPatientDto?> _getPatientOfContact(
-      Crypto localCrypto, base_api.UserDto currentUser, base_api.DecryptedContactDto contactDto) async {
-    return (await _getPatientIdOfContact(localCrypto, currentUser, contactDto))
-        ?.let((that) => api.basePatientApi.getPatient(currentUser, that, patientCryptoConfig(localCrypto)));
+      Crypto localCrypto,
+      base_api.UserDto currentUser,
+      base_api.DecryptedContactDto contactDto
+    ) async {
+      return (await _getPatientIdOfContact(localCrypto, currentUser, contactDto))
+          ?.let((that) => api.basePatientApi.getPatient(currentUser, that, patientCryptoConfig(localCrypto)));
   }
 
   Future<base_api.DecryptedServiceDto?> _getServiceFromICure(String dataSampleId) async {
     final localCrypto = api.crypto;
-    final currentUser = await api.baseUserApi.getCurrentUser();
+    final currentUser = (await api.baseUserApi.getCurrentUser())
+        ?? (throw StateError("There is no user currently logged in. You must call this method from an authenticated MedTechApi"));
 
-    return (await api.baseContactApi.listServices(currentUser!, base_api.ListOfIdsDto(ids: [dataSampleId]), localCrypto)).firstOrNull;
+    return (await api.baseContactApi.listServices(currentUser, base_api.ListOfIdsDto(ids: [dataSampleId]), localCrypto)).firstOrNull;
   }
 
   Future<base_api.DecryptedDocumentDto> _getDataSampleAttachmentDocumentFromICure(
@@ -336,10 +353,11 @@ class DataSampleApiImpl extends DataSampleApi {
   @override
   Future<DataSample> giveAccessTo(DataSample dataSample, String delegatedTo) async {
     final localCrypto = api.crypto;
-    final currentUser = await api.baseUserApi.getCurrentUser();
+    final currentUser = (await api.baseUserApi.getCurrentUser())
+        ?? (throw StateError("There is no user currently logged in. You must call this method from an authenticated MedTechApi"));
 
     // Check if delegatedBy has access
-    final contact = (await _getContactOfDataSample(localCrypto, currentUser!, dataSample, bypassCache: true)).item2;
+    final contact = (await _getContactOfDataSample(localCrypto, currentUser, dataSample, bypassCache: true)).item2;
 
     // Check if delegatedTo already has access
     if (contact!.delegations.entries.any((element) => element.key == delegatedTo)) {

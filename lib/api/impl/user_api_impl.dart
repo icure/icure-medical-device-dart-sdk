@@ -32,9 +32,10 @@ class UserApiImpl extends UserApi {
   }
 
   Future<UserDto> _constraintsUserModificationsBasedOnCurrentUserPermission(UserDto modifiedUser) async {
-    final currentUser = await api.baseUserApi.getCurrentUser();
+    final currentUser = (await api.baseUserApi.getCurrentUser())
+        ?? (throw StateError("There is no user currently logged in. You must call this method from an authenticated MedTechApi"));
 
-    if (currentUser!.permissions.any((permission) => permission.grants.any((grant) => grant.type == PermissionItemDtoTypeEnum.ADMIN))) {
+    if (currentUser.permissions.any((permission) => permission.grants.any((grant) => grant.type == PermissionItemDtoTypeEnum.ADMIN))) {
       return modifiedUser;
     } else if (currentUser.healthcarePartyId != null) {
       final userToUpdate = await api.baseUserApi.getUser(modifiedUser.id);
