@@ -49,7 +49,7 @@ class AuthenticationApiImpl extends AuthenticationApi {
       return AuthenticationProcess(requestId, (email ?? mobilePhone)!, bypassTokenCheck);
     }
 
-    throw Exception("Could not start authentication process");
+    throw Exception("iCure could not start the authentication process $authProcessId for user ${email ?? mobilePhone}. Try again later");
   }
 
   @override
@@ -68,7 +68,7 @@ class AuthenticationApiImpl extends AuthenticationApi {
           authenticatedApi, initInfo.item2.keyPair ?? userKeyPair, initInfo.item2.token, initInfo.item2.user.groupId!, initInfo.item2.user.id);
     }
 
-    throw FormatException("Invalid validation code");
+    throw FormatException("iCure could not complete authentication process with requestId ${process.requestId}. Try again later.");
   }
 
   Future<Response> _validateAuthenticationProcess(String processRequestId, String validationCode, bool bypassTokenCheck) async {
@@ -92,23 +92,19 @@ class AuthenticationApiImpl extends AuthenticationApi {
         .withAuthServerUrl(this.authServerUrl)
         .withAuthProcessId(this.authProcessId)
         .build();
-    try {
-      final user = await api.baseUserApi.getCurrentUser();
-      if (user == null) {
-        throw FormatException("Your validation code is expired");
-      }
-
-      final Tuple3<String, String, String>? fromProvider = await tokenAndKeyPairProvider(user.groupId!, user.id);
-
-      final token = fromProvider != null ? fromProvider.item1 : await api.userApi.createToken(user.id, validity: Duration(days: 3653));
-      if (token == null) {
-        throw FormatException("Your validation code is expired");
-      }
-
-      return Tuple2(api, ApiInitialisationResult(user, token, fromProvider?.let((it) => Tuple2(it.item2, it.item3))));
-    } catch (e) {
-      throw FormatException("Your validation code is expired");
+    final user = await api.baseUserApi.getCurrentUser();
+    if (user == null) {
+      throw FormatException("There is no user currently logged in. You must call this method from an authenticated MedTechApi");
     }
+
+    final Tuple3<String, String, String>? fromProvider = await tokenAndKeyPairProvider(user.groupId!, user.id);
+
+    final token = fromProvider != null ? fromProvider.item1 : await api.userApi.createToken(user.id, validity: Duration(days: 3653));
+    if (token == null) {
+      throw FormatException("Your validation code ${validationCode} expired. Start a new authentication process for your user");
+    }
+
+    return Tuple2(api, ApiInitialisationResult(user, token, fromProvider?.let((it) => Tuple2(it.item2, it.item3))));
   }
 
   Future<MedTechApi> _initUserCrypto(MedTechApi api, String token, UserDto user, Tuple2<String, String> userKeyPair) async {
@@ -123,7 +119,7 @@ class AuthenticationApiImpl extends AuthenticationApi {
 
     final dataOwner = await dataOwnerApi.getDataOwner(user.dataOwnerId()!);
     if (dataOwner == null) {
-      throw FormatException("Your user is not a patient");
+      throw FormatException("Impossible to find the patient ${user.patientId} apparently linked to the user ${user.id}. Are you sure this patientId is correct ?");
     }
 
     if (dataOwner.publicKey == null) {
@@ -148,7 +144,7 @@ class AuthenticationApiImpl extends AuthenticationApi {
 
     final initialisedDataOwner = await apiWithNewKeyPair.basePatientApi.modifyPatient(user, dataOwnerWithDelegations, ccPatient);
     if (initialisedDataOwner == null) {
-      throw FormatException("An error occurred while initializing your user");
+      throw FormatException("An error occurred while initializing the delegation for the user ${user.id}");
     }
     apiWithNewKeyPair.crypto.clearCachesFor(initialisedDataOwner.id);
   }
