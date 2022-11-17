@@ -17,18 +17,21 @@ class DataSampleApiImpl extends DataSampleApi {
 
   @override
   Future<DataSample?> createOrModifyDataSampleFor(String patientId, DataSample dataSample) async {
-    return (await createOrModifyDataSamplesFor(patientId, [dataSample]))?.single;
+    final processedDataSample = (await createOrModifyDataSamplesFor(patientId, [dataSample]))?.single;
+    if (processedDataSample == null) {
+      throw StateError("Could not create / modify data sample ${dataSample.id} for patient ${patientId}");
+    }
   }
 
   @override
   Future<List<DataSample>?> createOrModifyDataSamplesFor(String patientId, List<DataSample> dataSample) async {
     if (dataSample.distinctBy((e) => e.batchId).length > 1) {
-      throw FormatException("Only data samples of a same batch can be processed together");
+      throw FormatException("Only data samples of a same batch (with the same batchId) can be processed together");
     }
 
     // Arbitrary : 1 service = 1K
     if (_countHierarchyOfDataSamples(0, 0, dataSample) > 1000) {
-      throw FormatException("Can't process more than 1000 data samples in the same batch");
+      throw FormatException("Too many data samples to process. Can't process more than 1000 data samples in the same batch");
     }
 
     final localCrypto = api.crypto;
@@ -118,9 +121,11 @@ class DataSampleApiImpl extends DataSampleApi {
         (throw StateError("Couldn't find patient related to batch of data samples ${existingContact.id}"));
     final servicesToDelete = existingContact.services.where((element) => requestBody.contains(element.id));
 
-    return (await api.baseContactApi
-            .deleteServices(currentUser, contactPatient, servicesToDelete.toList(), contactCryptoConfig(currentUser, localCrypto)))
-        ?.services
+    final deletedServices = (await api.baseContactApi
+        .deleteServices(currentUser, contactPatient, servicesToDelete.toList(), contactCryptoConfig(currentUser, localCrypto)))
+        ?.services ?? (throw StateError("Could not delete data samples ${requestBody}"));
+
+    return deletedServices
         .where((element) => requestBody.contains(element.id))
         .where((element) => element.endOfLife != null)
         .map((e) => e.id)
@@ -341,20 +346,24 @@ class DataSampleApiImpl extends DataSampleApi {
       return dataSample;
     }
 
-    final patientId = (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, contact.cryptedForeignKeys)).firstOrNull!.formatAsKey();
-    final sfk = (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, contact.delegations)).firstOrNull!.formatAsKey();
-    final ek = (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, contact.encryptionKeys)).firstOrNull!.formatAsKey();
+    final patientId = (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, contact.cryptedForeignKeys)).firstOrNull;
+    final sfk = (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, contact.delegations)).firstOrNull;
+    final ek = (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, contact.encryptionKeys)).firstOrNull;
+
+    if (patientId == null || sfk == null || ek == null) {
+      throw StateError("User ${currentUser.id} could not decrypt data sample ${dataSample.id}");
+    }
 
     final ccContact = contactCryptoConfig(currentUser, localCrypto);
 
-    contact.delegations = await addDelegationBasedOn(contact.delegations, localCrypto, currentUser.dataOwnerId()!, delegatedTo, contact.id, sfk);
-    contact.encryptionKeys = await addDelegationBasedOn(contact.encryptionKeys, localCrypto, currentUser.dataOwnerId()!, delegatedTo, contact.id, ek);
+    contact.delegations = await addDelegationBasedOn(contact.delegations, localCrypto, currentUser.dataOwnerId()!, delegatedTo, contact.id, sfk.formatAsKey());
+    contact.encryptionKeys = await addDelegationBasedOn(contact.encryptionKeys, localCrypto, currentUser.dataOwnerId()!, delegatedTo, contact.id, ek.formatAsKey());
     contact.cryptedForeignKeys =
-        await addDelegationBasedOn(contact.cryptedForeignKeys, localCrypto, currentUser.dataOwnerId()!, delegatedTo, contact.id, patientId);
+        await addDelegationBasedOn(contact.cryptedForeignKeys, localCrypto, currentUser.dataOwnerId()!, delegatedTo, contact.id, patientId.formatAsKey());
 
     final updatedContact = await api.baseContactApi.modifyContact(currentUser, contact, ccContact);
 
-    return updatedContact?.services.firstOrNull?.toDataSample(updatedContact.id) ?? (throw StateError("Couldn't give access to dataSample"));
+    return updatedContact?.services.firstOrNull?.toDataSample(updatedContact.id) ?? (throw StateError("Impossible to give access to ${delegatedTo} to data sample ${dataSample.id} information"));
   }
 
   Future<Map<String, Set<DelegationDto>>> addDelegationBasedOn(Map<String, Set<DelegationDto>> delegations, Crypto localCrypto, String dataOwnerId,
