@@ -24,7 +24,7 @@ class MedicalDeviceApiImpl extends MedicalDeviceApi {
     final medicalDevicesToUpdate = medicalDevice.toSet().difference(medicalDevicesToCreate);
 
     if (medicalDevicesToUpdate.any((element) => element.id == null || !Uuid.isValidUUID(fromString: element.id!))) {
-      throw FormatException("he id of the device to update should be a valid UUID");
+      throw FormatException("The id of the device to update should be a valid UUID");
     }
 
     final deviceToCreate = medicalDevicesToCreate.map((e) => MedicalDeviceMapper(e).toDeviceDto()).toList();

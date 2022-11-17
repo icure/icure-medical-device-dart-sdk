@@ -19,20 +19,24 @@ class PatientApiImpl extends PatientApi {
     final ccPatient = patientCryptoConfig(localCrypto);
 
     if (currentUser == null) {
-      throw StateError("Couldn't get current user");
+      throw StateError("There is no user currently logged in. You must call this method from an authenticated MedTechApi");
     }
 
     if (patient.rev != null) {
       if (patient.id == null || !Uuid.isValidUUID(fromString: patient.id!)) {
-        throw ArgumentError("Update id should be provided as an UUID");
+        throw ArgumentError("The id of the Patient to modify should be a valid UUID");
       }
       final modifiedPatientDto =
           await base_api.PatientApiCrypto(_api.basePatientApi).modifyPatient(currentUser, PatientMapper(patient).toPatientDto(), ccPatient);
-      return modifiedPatientDto != null ? PatientDtoMapper(modifiedPatientDto).toPatient() : null;
+      return modifiedPatientDto != null
+          ? PatientDtoMapper(modifiedPatientDto).toPatient()
+          : throw StateError("Could not modify patient ${patient.id} with user ${currentUser.id}");
     }
     final createdPatientDto =
         await base_api.PatientApiCrypto(_api.basePatientApi).createPatient(currentUser, PatientMapper(patient).toPatientDto(), ccPatient);
-    return createdPatientDto != null ? PatientDtoMapper(createdPatientDto).toPatient() : null;
+    return createdPatientDto != null
+        ? PatientDtoMapper(createdPatientDto).toPatient()
+        : throw StateError("Could not modify patient ${patient.id} with user ${currentUser.id}");
   }
 
   @override
@@ -53,8 +57,11 @@ class PatientApiImpl extends PatientApi {
 
   @override
   Future<Patient?> getPatient(String patientId) async => await PatientDtoMapper(await _api.basePatientApi.getPatient(
-          (await _api.baseUserApi.getCurrentUser() ?? (throw StateError("Couldn't get current user"))), patientId, patientCryptoConfig(_api.crypto)))
-      ?.toPatient();
+        (await _api.baseUserApi.getCurrentUser() ?? (throw StateError("There is no user currently logged in. You must call this method from an authenticated MedTechApi"))),
+        patientId,
+        patientCryptoConfig(_api.crypto)))
+      ?.toPatient()
+    ?? (throw StateError("Could not find patient ${patientId} with current user ${currentUser.id}));
 
   @override
   Future<List<String>?> matchPatients(Filter filter) {
@@ -66,9 +73,17 @@ class PatientApiImpl extends PatientApi {
     final localCrypto = _api.crypto;
     final currentUser = await _api.baseUserApi.getCurrentUser();
 
-    // Check if delegatedBy has access
-    if (!patient.systemMetaData!.delegations.entries.any((element) => element.key == currentUser!.dataOwnerId())) {
-      throw StateError("DataOwner ${currentUser!.dataOwnerId()} does not have the right to access patient ${patient.id}");
+    if (currentUser == null) {
+      throw StateError("There is no user currently logged in. You must call this method from an authenticated MedTechApi");
+    }
+
+    if (currentUser.dataOwnerId() == null) {
+      throw StateError("The current user is not a data owner. You must been either a patient, a device or a healthcare professional to call this method");
+    }
+
+  // Check if delegatedBy has access
+    if (!patient.systemMetaData!.delegations.entries.any((element) => element.key == currentUser.dataOwnerId())) {
+      throw StateError("DataOwner ${currentUser.dataOwnerId()} does not have the right to access patient ${patient.id}");
     }
 
     // Check if delegatedTo already has access
