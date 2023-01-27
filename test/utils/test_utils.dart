@@ -9,9 +9,9 @@ import 'package:uuid/uuid_util.dart';
 
 class TestUtils {
 
-  static Future<MedTechApi> medtechApi({iCureBackendUrl= "https://kraken.icure.dev", String? userName, String? userPassword, String? userPrivKey, String? authProcessHcpId}) async {
+  static Future<MedTechApi> medtechApi({String? iCureBackendUrl, String? userName, String? userPassword, String? userPrivKey, String? authProcessHcpId}) async {
     final api = MedTechApiBuilder.newBuilder()
-        .withICureBasePath(iCureBackendUrl)
+        .withICureBasePath(iCureBackendUrl ?? Platform.environment["ICURE_URL"] ?? "https://kraken.icure.dev")
         .withUserName(userName ?? Platform.environment["HCP_1_USERNAME"]!)
         .withPassword(userPassword ?? Platform.environment["HCP_1_PASSWORD"]!)
         .withAuthServerUrl(Platform.environment["MSG_GTW_URL"])

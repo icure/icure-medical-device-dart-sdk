@@ -10,7 +10,7 @@
 
 part of icure_medical_device_dart_sdk.api;
 
-class Patient {
+class Patient implements PotentiallyEncryptedPatient {
 
   /// Returns a new [Patient] instance.
   Patient({
@@ -66,593 +66,6 @@ class Patient {
     this.systemMetaData,
   });
 
-  /// the Id of the patient. We encourage using either a v4 UUID or a HL7 Id.
-  ///
-  /// Please note: This property should have been non-nullable! Since the specification file
-  /// does not include a default value (using the "default:" property), however, the generated
-  /// source code must fall back to having a nullable type.
-  /// Consider adding a "default:" property in the specification file to hide this note.
-  ///
-  String? id;
-
-  /// the revision of the patient in the database, used for conflict management / optimistic locking.
-  ///
-  /// Please note: This property should have been non-nullable! Since the specification file
-  /// does not include a default value (using the "default:" property), however, the generated
-  /// source code must fall back to having a nullable type.
-  /// Consider adding a "default:" property in the specification file to hide this note.
-  ///
-  String? rev;
-
-  /// Typically used for business / client identifiers. An identifier should identify a patient uniquely and unambiguously. However, iCure can't guarantee the uniqueness of those identifiers : This is something you need to take care of.
-  List<Identifier> identifiers;
-
-  /// the creation date of the patient (encoded as epoch).
-  ///
-  /// Please note: This property should have been non-nullable! Since the specification file
-  /// does not include a default value (using the "default:" property), however, the generated
-  /// source code must fall back to having a nullable type.
-  /// Consider adding a "default:" property in the specification file to hide this note.
-  ///
-  int? created;
-
-  /// the last modification date of the patient (encoded as epoch).
-  ///
-  /// Please note: This property should have been non-nullable! Since the specification file
-  /// does not include a default value (using the "default:" property), however, the generated
-  /// source code must fall back to having a nullable type.
-  /// Consider adding a "default:" property in the specification file to hide this note.
-  ///
-  int? modified;
-
-  /// The id of the [User] that created this patient. When creating the patient, this field will be filled automatically by the current user id if not provided.
-  ///
-  /// Please note: This property should have been non-nullable! Since the specification file
-  /// does not include a default value (using the "default:" property), however, the generated
-  /// source code must fall back to having a nullable type.
-  /// Consider adding a "default:" property in the specification file to hide this note.
-  ///
-  String? author;
-
-  /// The id of the data owner that is responsible of this patient. When creating the patient, will be filled automatically by the current user data owner id ([HealthcareProfessional], [Patient] or [MedicalDevice]) if missing
-  ///
-  /// Please note: This property should have been non-nullable! Since the specification file
-  /// does not include a default value (using the "default:" property), however, the generated
-  /// source code must fall back to having a nullable type.
-  /// Consider adding a "default:" property in the specification file to hide this note.
-  ///
-  String? responsible;
-
-  /// A label is an item from a codification system that qualifies a patient as being member of a certain class, whatever the value it might have taken. If the label qualifies the content of a field, it means that whatever the content of the field, the label will always apply. LOINC is a codification system typically used for labels.
-  Set<CodingReference> labels;
-
-  /// A code is an item from a codification system that qualifies the content of this patient.
-  Set<CodingReference> codes;
-
-  /// Soft delete (unix epoch in ms) timestamp of the patient
-  ///
-  /// Please note: This property should have been non-nullable! Since the specification file
-  /// does not include a default value (using the "default:" property), however, the generated
-  /// source code must fall back to having a nullable type.
-  /// Consider adding a "default:" property in the specification file to hide this note.
-  ///
-  int? endOfLife;
-
-  /// the soft delete timestamp. When a patient is ”deleted“, this is set to a non null value: the moment of the deletion
-  ///
-  /// Please note: This property should have been non-nullable! Since the specification file
-  /// does not include a default value (using the "default:" property), however, the generated
-  /// source code must fall back to having a nullable type.
-  /// Consider adding a "default:" property in the specification file to hide this note.
-  ///
-  int? deletionDate;
-
-  /// the firstname (name) of the patient.
-  ///
-  /// Please note: This property should have been non-nullable! Since the specification file
-  /// does not include a default value (using the "default:" property), however, the generated
-  /// source code must fall back to having a nullable type.
-  /// Consider adding a "default:" property in the specification file to hide this note.
-  ///
-  String? firstName;
-
-  /// the lastname (surname) of the patient. This is the official lastname that should be used for official administrative purposes.
-  ///
-  /// Please note: This property should have been non-nullable! Since the specification file
-  /// does not include a default value (using the "default:" property), however, the generated
-  /// source code must fall back to having a nullable type.
-  /// Consider adding a "default:" property in the specification file to hide this note.
-  ///
-  String? lastName;
-
-  /// the list of all names of the patient, also containing the official full name information. Ordered by preference of use. First element is therefore the official name used for the patient in the application
-  List<PersonName> names;
-
-  /// the name of the company this patient is member of.
-  ///
-  /// Please note: This property should have been non-nullable! Since the specification file
-  /// does not include a default value (using the "default:" property), however, the generated
-  /// source code must fall back to having a nullable type.
-  /// Consider adding a "default:" property in the specification file to hide this note.
-  ///
-  String? companyName;
-
-  /// the list of languages spoken by the patient ordered by fluency (alpha-2 code http://www.loc.gov/standards/iso639-2/ascii_8bits.html).
-  List<String> languages;
-
-  /// the list of addresses (with address type).
-  List<Address> addresses;
-
-  /// Mr., Ms., Pr., Dr. ...
-  ///
-  /// Please note: This property should have been non-nullable! Since the specification file
-  /// does not include a default value (using the "default:" property), however, the generated
-  /// source code must fall back to having a nullable type.
-  /// Consider adding a "default:" property in the specification file to hide this note.
-  ///
-  String? civility;
-
-  /// the gender of the patient: male, female, indeterminate, changed, changedToMale, changedToFemale, unknown
-  PatientGenderEnum? gender;
-
-  /// the birth sex of the patient: male, female, indeterminate, unknown
-  PatientBirthSexEnum? birthSex;
-
-  /// The id of the patient this patient has been merged with.
-  ///
-  /// Please note: This property should have been non-nullable! Since the specification file
-  /// does not include a default value (using the "default:" property), however, the generated
-  /// source code must fall back to having a nullable type.
-  /// Consider adding a "default:" property in the specification file to hide this note.
-  ///
-  String? mergeToPatientId;
-
-  /// The ids of the patients that have been merged inside this patient.
-  Set<String> mergedIds;
-
-  /// An alias of the person, nickname, ...
-  ///
-  /// Please note: This property should have been non-nullable! Since the specification file
-  /// does not include a default value (using the "default:" property), however, the generated
-  /// source code must fall back to having a nullable type.
-  /// Consider adding a "default:" property in the specification file to hide this note.
-  ///
-  String? alias;
-
-  /// Is the patient active (boolean).
-  bool active;
-
-  /// When not active, the reason for deactivation.
-  PatientDeactivationReasonEnum deactivationReason;
-
-  /// Social security inscription number.
-  ///
-  /// Please note: This property should have been non-nullable! Since the specification file
-  /// does not include a default value (using the "default:" property), however, the generated
-  /// source code must fall back to having a nullable type.
-  /// Consider adding a "default:" property in the specification file to hide this note.
-  ///
-  String? ssin;
-
-  /// Lastname at birth (can be different of the current name), depending on the country, must be used to design the patient .
-  ///
-  /// Please note: This property should have been non-nullable! Since the specification file
-  /// does not include a default value (using the "default:" property), however, the generated
-  /// source code must fall back to having a nullable type.
-  /// Consider adding a "default:" property in the specification file to hide this note.
-  ///
-  String? maidenName;
-
-  /// Lastname of the spouse for a married woman, depending on the country, can be used to design the patient.
-  ///
-  /// Please note: This property should have been non-nullable! Since the specification file
-  /// does not include a default value (using the "default:" property), however, the generated
-  /// source code must fall back to having a nullable type.
-  /// Consider adding a "default:" property in the specification file to hide this note.
-  ///
-  String? spouseName;
-
-  /// Lastname of the partner, should not be used to design the patient.
-  ///
-  /// Please note: This property should have been non-nullable! Since the specification file
-  /// does not include a default value (using the "default:" property), however, the generated
-  /// source code must fall back to having a nullable type.
-  /// Consider adding a "default:" property in the specification file to hide this note.
-  ///
-  String? partnerName;
-
-  /// any of `single`, `in_couple`, `married`, `separated`, `divorced`, `divorcing`, `widowed`, `widower`, `complicated`, `unknown`, `contract`, `other`.
-  PatientPersonalStatusEnum? personalStatus;
-
-  /// The birthdate encoded as a fuzzy date on 8 positions (YYYYMMDD) MM and/or DD can be set to 00 if unknown (19740000 is a valid date).
-  ///
-  /// Please note: This property should have been non-nullable! Since the specification file
-  /// does not include a default value (using the "default:" property), however, the generated
-  /// source code must fall back to having a nullable type.
-  /// Consider adding a "default:" property in the specification file to hide this note.
-  ///
-  int? dateOfBirth;
-
-  /// The date of death encoded as a fuzzy date on 8 positions (YYYYMMDD) MM and/or DD can be set to 00 if unknown (19740000 is a valid date).
-  ///
-  /// Please note: This property should have been non-nullable! Since the specification file
-  /// does not include a default value (using the "default:" property), however, the generated
-  /// source code must fall back to having a nullable type.
-  /// Consider adding a "default:" property in the specification file to hide this note.
-  ///
-  int? dateOfDeath;
-
-  /// The place of birth.
-  ///
-  /// Please note: This property should have been non-nullable! Since the specification file
-  /// does not include a default value (using the "default:" property), however, the generated
-  /// source code must fall back to having a nullable type.
-  /// Consider adding a "default:" property in the specification file to hide this note.
-  ///
-  String? placeOfBirth;
-
-  /// The place of death.
-  ///
-  /// Please note: This property should have been non-nullable! Since the specification file
-  /// does not include a default value (using the "default:" property), however, the generated
-  /// source code must fall back to having a nullable type.
-  /// Consider adding a "default:" property in the specification file to hide this note.
-  ///
-  String? placeOfDeath;
-
-  /// Is the patient deceased.
-  ///
-  /// Please note: This property should have been non-nullable! Since the specification file
-  /// does not include a default value (using the "default:" property), however, the generated
-  /// source code must fall back to having a nullable type.
-  /// Consider adding a "default:" property in the specification file to hide this note.
-  ///
-  bool? deceased;
-
-  /// The level of education (college degree, undergraduate, phd).
-  ///
-  /// Please note: This property should have been non-nullable! Since the specification file
-  /// does not include a default value (using the "default:" property), however, the generated
-  /// source code must fall back to having a nullable type.
-  /// Consider adding a "default:" property in the specification file to hide this note.
-  ///
-  String? education;
-
-  /// The current professional activity.
-  ///
-  /// Please note: This property should have been non-nullable! Since the specification file
-  /// does not include a default value (using the "default:" property), however, the generated
-  /// source code must fall back to having a nullable type.
-  /// Consider adding a "default:" property in the specification file to hide this note.
-  ///
-  String? profession;
-
-  /// A text note (can be confidential, encrypted by default).
-  ///
-  /// Please note: This property should have been non-nullable! Since the specification file
-  /// does not include a default value (using the "default:" property), however, the generated
-  /// source code must fall back to having a nullable type.
-  /// Consider adding a "default:" property in the specification file to hide this note.
-  ///
-  String? note;
-
-  /// An administrative note, not confidential.
-  ///
-  /// Please note: This property should have been non-nullable! Since the specification file
-  /// does not include a default value (using the "default:" property), however, the generated
-  /// source code must fall back to having a nullable type.
-  /// Consider adding a "default:" property in the specification file to hide this note.
-  ///
-  String? administrativeNote;
-
-  /// The nationality of the patient.
-  ///
-  /// Please note: This property should have been non-nullable! Since the specification file
-  /// does not include a default value (using the "default:" property), however, the generated
-  /// source code must fall back to having a nullable type.
-  /// Consider adding a "default:" property in the specification file to hide this note.
-  ///
-  String? nationality;
-
-  /// The race of the patient.
-  ///
-  /// Please note: This property should have been non-nullable! Since the specification file
-  /// does not include a default value (using the "default:" property), however, the generated
-  /// source code must fall back to having a nullable type.
-  /// Consider adding a "default:" property in the specification file to hide this note.
-  ///
-  String? race;
-
-  /// The ethnicity of the patient.
-  ///
-  /// Please note: This property should have been non-nullable! Since the specification file
-  /// does not include a default value (using the "default:" property), however, the generated
-  /// source code must fall back to having a nullable type.
-  /// Consider adding a "default:" property in the specification file to hide this note.
-  ///
-  String? ethnicity;
-
-  /// A picture usually saved in JPEG format.
-  ///
-  /// Please note: This property should have been non-nullable! Since the specification file
-  /// does not include a default value (using the "default:" property), however, the generated
-  /// source code must fall back to having a nullable type.
-  /// Consider adding a "default:" property in the specification file to hide this note.
-  ///
-  String? picture;
-
-  /// An external (from another source) id with no guarantee or requirement for unicity .
-  ///
-  /// Please note: This property should have been non-nullable! Since the specification file
-  /// does not include a default value (using the "default:" property), however, the generated
-  /// source code must fall back to having a nullable type.
-  /// Consider adding a "default:" property in the specification file to hide this note.
-  ///
-  String? externalId;
-
-  /// List of partners, or persons of contact (of class Partnership, see below).
-  List<Partnership> partnerships;
-
-  /// Links (usually for therapeutic reasons) between this patient and healthcare parties (of class PatientHealthcareParty).
-  List<PatientHealthCareParty> patientHealthCareParties;
-
-  /// Codified list of professions exercised by this patient.
-  List<CodingReference> patientProfessions;
-
-  /// Extra parameters
-  Map<String, List<String>> parameters;
-
-  /// Extra properties
-  Set<Property> properties;
-
-  ///
-  /// Please note: This property should have been non-nullable! Since the specification file
-  /// does not include a default value (using the "default:" property), however, the generated
-  /// source code must fall back to having a nullable type.
-  /// Consider adding a "default:" property in the specification file to hide this note.
-  ///
-  SystemMetaDataOwnerEncrypted? systemMetaData;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is Patient &&
-          other.id == id &&
-          other.rev == rev &&
-          ListEquality().equals(other.identifiers, identifiers) &&
-          other.created == created &&
-          other.modified == modified &&
-          other.author == author &&
-          other.responsible == responsible &&
-          SetEquality().equals(other.labels, labels) &&
-          SetEquality().equals(other.codes, codes) &&
-          other.endOfLife == endOfLife &&
-          other.deletionDate == deletionDate &&
-          other.firstName == firstName &&
-          other.lastName == lastName &&
-          ListEquality().equals(other.names, names) &&
-          other.companyName == companyName &&
-          ListEquality().equals(other.languages, languages) &&
-          ListEquality().equals(other.addresses, addresses) &&
-          other.civility == civility &&
-          other.gender == gender &&
-          other.birthSex == birthSex &&
-          other.mergeToPatientId == mergeToPatientId &&
-          SetEquality().equals(other.mergedIds, mergedIds) &&
-          other.alias == alias &&
-          other.active == active &&
-          other.deactivationReason == deactivationReason &&
-          other.ssin == ssin &&
-          other.maidenName == maidenName &&
-          other.spouseName == spouseName &&
-          other.partnerName == partnerName &&
-          other.personalStatus == personalStatus &&
-          other.dateOfBirth == dateOfBirth &&
-          other.dateOfDeath == dateOfDeath &&
-          other.placeOfBirth == placeOfBirth &&
-          other.placeOfDeath == placeOfDeath &&
-          other.deceased == deceased &&
-          other.education == education &&
-          other.profession == profession &&
-          other.note == note &&
-          other.administrativeNote == administrativeNote &&
-          other.nationality == nationality &&
-          other.race == race &&
-          other.ethnicity == ethnicity &&
-          other.picture == picture &&
-          other.externalId == externalId &&
-          ListEquality().equals(other.partnerships, partnerships) &&
-          ListEquality().equals(other.patientHealthCareParties, patientHealthCareParties) &&
-          ListEquality().equals(other.patientProfessions, patientProfessions) &&
-          MapEquality(values: ListEquality()).equals(other.parameters, parameters) &&
-          SetEquality().equals(other.properties, properties) &&
-          other.systemMetaData == systemMetaData;
-
-  @override
-  int get hashCode =>
-      // ignore: unnecessary_parenthesis
-      (id == null ? 0 : id!.hashCode) +
-      (rev == null ? 0 : rev!.hashCode) +
-      (identifiers.hashCode) +
-      (created == null ? 0 : created!.hashCode) +
-      (modified == null ? 0 : modified!.hashCode) +
-      (author == null ? 0 : author!.hashCode) +
-      (responsible == null ? 0 : responsible!.hashCode) +
-      (labels.hashCode) +
-      (codes.hashCode) +
-      (endOfLife == null ? 0 : endOfLife!.hashCode) +
-      (deletionDate == null ? 0 : deletionDate!.hashCode) +
-      (firstName == null ? 0 : firstName!.hashCode) +
-      (lastName == null ? 0 : lastName!.hashCode) +
-      (names.hashCode) +
-      (companyName == null ? 0 : companyName!.hashCode) +
-      (languages.hashCode) +
-      (addresses.hashCode) +
-      (civility == null ? 0 : civility!.hashCode) +
-      (gender == null ? 0 : gender!.hashCode) +
-      (birthSex == null ? 0 : birthSex!.hashCode) +
-      (mergeToPatientId == null ? 0 : mergeToPatientId!.hashCode) +
-      (mergedIds.hashCode) +
-      (alias == null ? 0 : alias!.hashCode) +
-      (active.hashCode) +
-      (deactivationReason.hashCode) +
-      (ssin == null ? 0 : ssin!.hashCode) +
-      (maidenName == null ? 0 : maidenName!.hashCode) +
-      (spouseName == null ? 0 : spouseName!.hashCode) +
-      (partnerName == null ? 0 : partnerName!.hashCode) +
-      (personalStatus == null ? 0 : personalStatus!.hashCode) +
-      (dateOfBirth == null ? 0 : dateOfBirth!.hashCode) +
-      (dateOfDeath == null ? 0 : dateOfDeath!.hashCode) +
-      (placeOfBirth == null ? 0 : placeOfBirth!.hashCode) +
-      (placeOfDeath == null ? 0 : placeOfDeath!.hashCode) +
-      (deceased == null ? 0 : deceased!.hashCode) +
-      (education == null ? 0 : education!.hashCode) +
-      (profession == null ? 0 : profession!.hashCode) +
-      (note == null ? 0 : note!.hashCode) +
-      (administrativeNote == null ? 0 : administrativeNote!.hashCode) +
-      (nationality == null ? 0 : nationality!.hashCode) +
-      (race == null ? 0 : race!.hashCode) +
-      (ethnicity == null ? 0 : ethnicity!.hashCode) +
-      (picture == null ? 0 : picture!.hashCode) +
-      (externalId == null ? 0 : externalId!.hashCode) +
-      (partnerships.hashCode) +
-      (patientHealthCareParties.hashCode) +
-      (patientProfessions.hashCode) +
-      (parameters.hashCode) +
-      (properties.hashCode) +
-      (systemMetaData == null ? 0 : systemMetaData!.hashCode);
-
-  @override
-  String toString() =>
-      'Patient[id=$id, rev=$rev, identifiers=$identifiers, created=$created, modified=$modified, author=$author, responsible=$responsible, labels=$labels, codes=$codes, endOfLife=$endOfLife, deletionDate=$deletionDate, firstName=$firstName, lastName=$lastName, names=$names, companyName=$companyName, languages=$languages, addresses=$addresses, civility=$civility, gender=$gender, birthSex=$birthSex, mergeToPatientId=$mergeToPatientId, mergedIds=$mergedIds, alias=$alias, active=$active, deactivationReason=$deactivationReason, ssin=$ssin, maidenName=$maidenName, spouseName=$spouseName, partnerName=$partnerName, personalStatus=$personalStatus, dateOfBirth=$dateOfBirth, dateOfDeath=$dateOfDeath, placeOfBirth=$placeOfBirth, placeOfDeath=$placeOfDeath, deceased=$deceased, education=$education, profession=$profession, note=$note, administrativeNote=$administrativeNote, nationality=$nationality, race=$race, ethnicity=$ethnicity, picture=$picture, externalId=$externalId, partnerships=$partnerships, patientHealthCareParties=$patientHealthCareParties, patientProfessions=$patientProfessions, parameters=$parameters, properties=$properties, systemMetaData=$systemMetaData]';
-
-  Map<String, dynamic> toJson() {
-    final json = <String, dynamic>{};
-    if (id != null) {
-      json[r'id'] = id;
-    }
-    if (rev != null) {
-      json[r'rev'] = rev;
-    }
-    json[r'identifiers'] = identifiers;
-    if (created != null) {
-      json[r'created'] = created;
-    }
-    if (modified != null) {
-      json[r'modified'] = modified;
-    }
-    if (author != null) {
-      json[r'author'] = author;
-    }
-    if (responsible != null) {
-      json[r'responsible'] = responsible;
-    }
-    json[r'labels'] = labels.toList();
-    json[r'codes'] = codes.toList();
-    if (endOfLife != null) {
-      json[r'endOfLife'] = endOfLife;
-    }
-    if (deletionDate != null) {
-      json[r'deletionDate'] = deletionDate;
-    }
-    if (firstName != null) {
-      json[r'firstName'] = firstName;
-    }
-    if (lastName != null) {
-      json[r'lastName'] = lastName;
-    }
-    json[r'names'] = names;
-    if (companyName != null) {
-      json[r'companyName'] = companyName;
-    }
-    json[r'languages'] = languages;
-    json[r'addresses'] = addresses;
-    if (civility != null) {
-      json[r'civility'] = civility;
-    }
-    if (gender != null) {
-      json[r'gender'] = gender;
-    }
-    if (birthSex != null) {
-      json[r'birthSex'] = birthSex;
-    }
-    if (mergeToPatientId != null) {
-      json[r'mergeToPatientId'] = mergeToPatientId;
-    }
-    json[r'mergedIds'] = mergedIds.toList();
-    if (alias != null) {
-      json[r'alias'] = alias;
-    }
-    json[r'active'] = active;
-    json[r'deactivationReason'] = deactivationReason;
-    if (ssin != null) {
-      json[r'ssin'] = ssin;
-    }
-    if (maidenName != null) {
-      json[r'maidenName'] = maidenName;
-    }
-    if (spouseName != null) {
-      json[r'spouseName'] = spouseName;
-    }
-    if (partnerName != null) {
-      json[r'partnerName'] = partnerName;
-    }
-    if (personalStatus != null) {
-      json[r'personalStatus'] = personalStatus;
-    }
-    if (dateOfBirth != null) {
-      json[r'dateOfBirth'] = dateOfBirth;
-    }
-    if (dateOfDeath != null) {
-      json[r'dateOfDeath'] = dateOfDeath;
-    }
-    if (placeOfBirth != null) {
-      json[r'placeOfBirth'] = placeOfBirth;
-    }
-    if (placeOfDeath != null) {
-      json[r'placeOfDeath'] = placeOfDeath;
-    }
-    if (deceased != null) {
-      json[r'deceased'] = deceased;
-    }
-    if (education != null) {
-      json[r'education'] = education;
-    }
-    if (profession != null) {
-      json[r'profession'] = profession;
-    }
-    if (note != null) {
-      json[r'note'] = note;
-    }
-    if (administrativeNote != null) {
-      json[r'administrativeNote'] = administrativeNote;
-    }
-    if (nationality != null) {
-      json[r'nationality'] = nationality;
-    }
-    if (race != null) {
-      json[r'race'] = race;
-    }
-    if (ethnicity != null) {
-      json[r'ethnicity'] = ethnicity;
-    }
-    if (picture != null) {
-      json[r'picture'] = picture;
-    }
-    if (externalId != null) {
-      json[r'externalId'] = externalId;
-    }
-    json[r'partnerships'] = partnerships;
-    json[r'patientHealthCareParties'] = patientHealthCareParties;
-    json[r'patientProfessions'] = patientProfessions;
-    json[r'parameters'] = parameters;
-    json[r'properties'] = properties.toList();
-    if (systemMetaData != null) {
-      json[r'systemMetaData'] = systemMetaData;
-    }
-    return json;
-  }
-
   /// Returns a new [Patient] instance and imports its values from
   /// [value] if it's a [Map], null otherwise.
   // ignore: prefer_constructors_over_static_methods
@@ -696,8 +109,8 @@ class Patient {
         mergedIds: json[r'mergedIds'] is Set
             ? (json[r'mergedIds'] as Set).cast<String>()
             : json[r'mergedIds'] is List
-                ? ((json[r'mergedIds'] as List).toSet()).cast<String>()
-                : const {},
+            ? ((json[r'mergedIds'] as List).toSet()).cast<String>()
+            : const {},
         alias: mapValueOfType<String>(json, r'alias'),
         active: mapValueOfType<bool>(json, r'active')!,
         deactivationReason: PatientDeactivationReasonEnum.fromJson(json[r'deactivationReason'])!,
@@ -732,9 +145,9 @@ class Patient {
   }
 
   static List<Patient>? listFromJson(
-    dynamic json, {
-    bool growable = false,
-  }) {
+      dynamic json, {
+        bool growable = false,
+      }) {
     final result = <Patient>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
@@ -763,9 +176,9 @@ class Patient {
 
   // maps a json object with a list of Patient-objects as value to a dart map
   static Map<String, List<Patient>> mapListFromJson(
-    dynamic json, {
-    bool growable = false,
-  }) {
+      dynamic json, {
+        bool growable = false,
+      }) {
     final map = <String, List<Patient>>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
@@ -799,7 +212,973 @@ class Patient {
     'parameters',
     'properties',
   };
+
+  @override
+  SystemMetaDataOwnerEncrypted? systemMetaData;
+
+  @override
+  bool active;
+
+  @override
+  List<Address> addresses;
+
+  @override
+  String? administrativeNote;
+
+  @override
+  String? alias;
+
+  @override
+  String? author;
+
+  @override
+  PatientBirthSexEnum? birthSex;
+
+  @override
+  String? civility;
+
+  @override
+  Set<CodingReference> codes;
+
+  @override
+  String? companyName;
+
+  @override
+  int? created;
+
+  @override
+  int? dateOfBirth;
+
+  @override
+  int? dateOfDeath;
+
+  @override
+  PatientDeactivationReasonEnum deactivationReason;
+
+  @override
+  bool? deceased;
+
+  @override
+  int? deletionDate;
+
+  @override
+  String? education;
+
+  @override
+  int? endOfLife;
+
+  @override
+  String? ethnicity;
+
+  @override
+  String? externalId;
+
+  @override
+  String? firstName;
+
+  @override
+  PatientGenderEnum? gender;
+
+  @override
+  String? id;
+
+  @override
+  List<Identifier> identifiers;
+
+  @override
+  Set<CodingReference> labels;
+
+  @override
+  List<String> languages;
+
+  @override
+  String? lastName;
+
+  @override
+  String? maidenName;
+
+  @override
+  String? mergeToPatientId;
+
+  @override
+  Set<String> mergedIds;
+
+  @override
+  int? modified;
+
+  @override
+  List<PersonName> names;
+
+  @override
+  String? nationality;
+
+  @override
+  String? note;
+
+  @override
+  Map<String, List<String>> parameters;
+
+  @override
+  String? partnerName;
+
+  @override
+  List<Partnership> partnerships;
+
+  @override
+  List<PatientHealthCareParty> patientHealthCareParties;
+
+  @override
+  List<CodingReference> patientProfessions;
+
+  @override
+  PatientPersonalStatusEnum? personalStatus;
+
+  @override
+  String? picture;
+
+  @override
+  String? placeOfBirth;
+
+  @override
+  String? placeOfDeath;
+
+  @override
+  String? profession;
+
+  @override
+  Set<Property> properties;
+
+  @override
+  String? race;
+
+  @override
+  String? responsible;
+
+  @override
+  String? rev;
+
+  @override
+  String? spouseName;
+
+  @override
+  String? ssin;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) || (other is Patient && __potentiallyEncryptedPatientEquality(this, other));
+
+  @override
+  int get hashCode => __potentiallyEncryptedPatientHashCode(this);
+
+  @override
+  String toString() => 'Patient[${__potentiallyEncryptedPatientFieldsString(this)}]';
+
+  Map<String, dynamic> toJson() => __potentiallyEncryptedPatientToJson(this);
 }
+
+class EncryptedPatient implements PotentiallyEncryptedPatient {
+
+  /// Returns a new [EncryptedPatient] instance.
+  EncryptedPatient({
+    this.id,
+    this.rev,
+    this.identifiers = const [],
+    this.created,
+    this.modified,
+    this.author,
+    this.responsible,
+    this.labels = const {},
+    this.codes = const {},
+    this.endOfLife,
+    this.deletionDate,
+    this.firstName,
+    this.lastName,
+    this.names = const [],
+    this.companyName,
+    this.languages = const [],
+    this.addresses = const [],
+    this.civility,
+    this.gender,
+    this.birthSex,
+    this.mergeToPatientId,
+    this.mergedIds = const {},
+    this.alias,
+    this.active = true,
+    this.deactivationReason = const PatientDeactivationReasonEnum._('DeactivationReason.none'),
+    this.ssin,
+    this.maidenName,
+    this.spouseName,
+    this.partnerName,
+    this.personalStatus,
+    this.dateOfBirth,
+    this.dateOfDeath,
+    this.placeOfBirth,
+    this.placeOfDeath,
+    this.deceased,
+    this.education,
+    this.profession,
+    this.note,
+    this.administrativeNote,
+    this.nationality,
+    this.race,
+    this.ethnicity,
+    this.picture,
+    this.externalId,
+    this.partnerships = const [],
+    this.patientHealthCareParties = const [],
+    this.patientProfessions = const [],
+    this.parameters = const {},
+    this.properties = const {},
+    this.systemMetaData,
+  });
+
+  @override
+  SystemMetaDataOwnerEncrypted? systemMetaData;
+
+  @override
+  bool active;
+
+  @override
+  List<Address> addresses;
+
+  @override
+  String? administrativeNote;
+
+  @override
+  String? alias;
+
+  @override
+  String? author;
+
+  @override
+  PatientBirthSexEnum? birthSex;
+
+  @override
+  String? civility;
+
+  @override
+  Set<CodingReference> codes;
+
+  @override
+  String? companyName;
+
+  @override
+  int? created;
+
+  @override
+  int? dateOfBirth;
+
+  @override
+  int? dateOfDeath;
+
+  @override
+  PatientDeactivationReasonEnum deactivationReason;
+
+  @override
+  bool? deceased;
+
+  @override
+  int? deletionDate;
+
+  @override
+  String? education;
+
+  @override
+  int? endOfLife;
+
+  @override
+  String? ethnicity;
+
+  @override
+  String? externalId;
+
+  @override
+  String? firstName;
+
+  @override
+  PatientGenderEnum? gender;
+
+  @override
+  String? id;
+
+  @override
+  List<Identifier> identifiers;
+
+  @override
+  Set<CodingReference> labels;
+
+  @override
+  List<String> languages;
+
+  @override
+  String? lastName;
+
+  @override
+  String? maidenName;
+
+  @override
+  String? mergeToPatientId;
+
+  @override
+  Set<String> mergedIds;
+
+  @override
+  int? modified;
+
+  @override
+  List<PersonName> names;
+
+  @override
+  String? nationality;
+
+  @override
+  String? note;
+
+  @override
+  Map<String, List<String>> parameters;
+
+  @override
+  String? partnerName;
+
+  @override
+  List<Partnership> partnerships;
+
+  @override
+  List<PatientHealthCareParty> patientHealthCareParties;
+
+  @override
+  List<CodingReference> patientProfessions;
+
+  @override
+  PatientPersonalStatusEnum? personalStatus;
+
+  @override
+  String? picture;
+
+  @override
+  String? placeOfBirth;
+
+  @override
+  String? placeOfDeath;
+
+  @override
+  String? profession;
+
+  @override
+  Set<Property> properties;
+
+  @override
+  String? race;
+
+  @override
+  String? responsible;
+
+  @override
+  String? rev;
+
+  @override
+  String? spouseName;
+
+  @override
+  String? ssin;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) || (other is EncryptedPatient && __potentiallyEncryptedPatientEquality(this, other));
+
+  @override
+  int get hashCode => __potentiallyEncryptedPatientHashCode(this);
+
+  @override
+  String toString() => 'EncryptedPatient[${__potentiallyEncryptedPatientFieldsString(this)}]';
+
+  Map<String, dynamic> toJson() => __potentiallyEncryptedPatientToJson(this);
+}
+
+abstract class PotentiallyEncryptedPatient {
+  /// the Id of the patient. We encourage using either a v4 UUID or a HL7 Id.
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  String? get id;
+
+  /// the revision of the patient in the database, used for conflict management / optimistic locking.
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  String? get rev;
+
+  /// Typically used for business / client identifiers. An identifier should identify a patient uniquely and unambiguously. However, iCure can't guarantee the uniqueness of those identifiers : This is something you need to take care of.
+  List<Identifier> get identifiers;
+
+  /// the creation date of the patient (encoded as epoch).
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  int? get created;
+
+  /// the last modification date of the patient (encoded as epoch).
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  int? get modified;
+
+  /// The id of the [User] that created this patient. When creating the patient, this field will be filled automatically by the current user id if not provided.
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  String? get author;
+
+  /// The id of the data owner that is responsible of this patient. When creating the patient, will be filled automatically by the current user data owner id ([HealthcareProfessional], [Patient] or [MedicalDevice]) if missing
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  String? get responsible;
+
+  /// A label is an item from a codification system that qualifies a patient as being member of a certain class, whatever the value it might have taken. If the label qualifies the content of a field, it means that whatever the content of the field, the label will always apply. LOINC is a codification system typically used for labels.
+  Set<CodingReference> get labels;
+
+  /// A code is an item from a codification system that qualifies the content of this patient.
+  Set<CodingReference> get codes;
+
+  /// Soft delete (unix epoch in ms) timestamp of the patient
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  int? get endOfLife;
+
+  /// the soft delete timestamp. When a patient is ”deleted“, this is set to a non null value: the moment of the deletion
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  int? get deletionDate;
+
+  /// the firstname (name) of the patient.
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  String? get firstName;
+
+  /// the lastname (surname) of the patient. This is the official lastname that should be used for official administrative purposes.
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  String? get lastName;
+
+  /// the list of all names of the patient, also containing the official full name information. Ordered by preference of use. First element is therefore the official name used for the patient in the application
+  List<PersonName> get names;
+
+  /// the name of the company this patient is member of.
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  String? get companyName;
+
+  /// the list of languages spoken by the patient ordered by fluency (alpha-2 code http://www.loc.gov/standards/iso639-2/ascii_8bits.html).
+  List<String> get languages;
+
+  /// the list of addresses (with address type).
+  List<Address> get addresses;
+
+  /// Mr., Ms., Pr., Dr. ...
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  String? get civility;
+
+  /// the gender of the patient: male, female, indeterminate, changed, changedToMale, changedToFemale, unknown
+  PatientGenderEnum? get gender;
+
+  /// the birth sex of the patient: male, female, indeterminate, unknown
+  PatientBirthSexEnum? get birthSex;
+
+  /// The id of the patient this patient has been merged with.
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  String? get mergeToPatientId;
+
+  /// The ids of the patients that have been merged inside this patient.
+  Set<String> get mergedIds;
+
+  /// An alias of the person, nickname, ...
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  String? get alias;
+
+  /// Is the patient active (boolean).
+  bool get active;
+
+  /// When not active, the reason for deactivation.
+  PatientDeactivationReasonEnum get deactivationReason;
+
+  /// Social security inscription number.
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  String? get ssin;
+
+  /// Lastname at birth (can be different of the current name), depending on the country, must be used to design the patient .
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  String? get maidenName;
+
+  /// Lastname of the spouse for a married woman, depending on the country, can be used to design the patient.
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  String? get spouseName;
+
+  /// Lastname of the partner, should not be used to design the patient.
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  String? get partnerName;
+
+  /// any of `single`, `in_couple`, `married`, `separated`, `divorced`, `divorcing`, `widowed`, `widower`, `complicated`, `unknown`, `contract`, `other`.
+  PatientPersonalStatusEnum? get personalStatus;
+
+  /// The birthdate encoded as a fuzzy date on 8 positions (YYYYMMDD) MM and/or DD can be set to 00 if unknown (19740000 is a valid date).
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  int? get dateOfBirth;
+
+  /// The date of death encoded as a fuzzy date on 8 positions (YYYYMMDD) MM and/or DD can be set to 00 if unknown (19740000 is a valid date).
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  int? get dateOfDeath;
+
+  /// The place of birth.
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  String? get placeOfBirth;
+
+  /// The place of death.
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  String? get placeOfDeath;
+
+  /// Is the patient deceased.
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  bool? get deceased;
+
+  /// The level of education (college degree, undergraduate, phd).
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  String? get education;
+
+  /// The current professional activity.
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  String? get profession;
+
+  /// A text note (can be confidential, encrypted by default).
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  String? get note;
+
+  /// An administrative note, not confidential.
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  String? get administrativeNote;
+
+  /// The nationality of the patient.
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  String? get nationality;
+
+  /// The race of the patient.
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  String? get race;
+
+  /// The ethnicity of the patient.
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  String? get ethnicity;
+
+  /// A picture usually saved in JPEG format.
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  String? get picture;
+
+  /// An external (from another source) id with no guarantee or requirement for unicity .
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  String? get externalId;
+
+  /// List of partners, or persons of contact (of class Partnership, see below).
+  List<Partnership> get partnerships;
+
+  /// Links (usually for therapeutic reasons) between this patient and healthcare parties (of class PatientHealthcareParty).
+  List<PatientHealthCareParty> get patientHealthCareParties;
+
+  /// Codified list of professions exercised by this patient.
+  List<CodingReference> get patientProfessions;
+
+  /// Extra parameters
+  Map<String, List<String>> get parameters;
+
+  /// Extra properties
+  Set<Property> get properties;
+
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  SystemMetaDataOwnerEncrypted? systemMetaData;
+
+}
+
+bool __potentiallyEncryptedPatientEquality(PotentiallyEncryptedPatient self, PotentiallyEncryptedPatient other) =>
+  other.id == self.id &&
+    other.rev == self.rev &&
+    ListEquality().equals(other.identifiers, self.identifiers) &&
+    other.created == self.created &&
+    other.modified == self.modified &&
+    other.author == self.author &&
+    other.responsible == self.responsible &&
+    SetEquality().equals(other.labels, self.labels) &&
+    SetEquality().equals(other.codes, self.codes) &&
+    other.endOfLife == self.endOfLife &&
+    other.deletionDate == self.deletionDate &&
+    other.firstName == self.firstName &&
+    other.lastName == self.lastName &&
+    ListEquality().equals(other.names, self.names) &&
+    other.companyName == self.companyName &&
+    ListEquality().equals(other.languages, self.languages) &&
+    ListEquality().equals(other.addresses, self.addresses) &&
+    other.civility == self.civility &&
+    other.gender == self.gender &&
+    other.birthSex == self.birthSex &&
+    other.mergeToPatientId == self.mergeToPatientId &&
+    SetEquality().equals(other.mergedIds, self.mergedIds) &&
+    other.alias == self.alias &&
+    other.active == self.active &&
+    other.deactivationReason == self.deactivationReason &&
+    other.ssin == self.ssin &&
+    other.maidenName == self.maidenName &&
+    other.spouseName == self.spouseName &&
+    other.partnerName == self.partnerName &&
+    other.personalStatus == self.personalStatus &&
+    other.dateOfBirth == self.dateOfBirth &&
+    other.dateOfDeath == self.dateOfDeath &&
+    other.placeOfBirth == self.placeOfBirth &&
+    other.placeOfDeath == self.placeOfDeath &&
+    other.deceased == self.deceased &&
+    other.education == self.education &&
+    other.profession == self.profession &&
+    other.note == self.note &&
+    other.administrativeNote == self.administrativeNote &&
+    other.nationality == self.nationality &&
+    other.race == self.race &&
+    other.ethnicity == self.ethnicity &&
+    other.picture == self.picture &&
+    other.externalId == self.externalId &&
+    ListEquality().equals(other.partnerships, self.partnerships) &&
+    ListEquality().equals(other.patientHealthCareParties, self.patientHealthCareParties) &&
+    ListEquality().equals(other.patientProfessions, self.patientProfessions) &&
+    MapEquality(values: ListEquality()).equals(other.parameters, self.parameters) &&
+    SetEquality().equals(other.properties, self.properties) &&
+    other.systemMetaData == self.systemMetaData;
+
+int __potentiallyEncryptedPatientHashCode(PotentiallyEncryptedPatient self) =>
+  // ignore: unnecessary_parenthesis
+  (self.id == null ? 0 : self.id!.hashCode) +
+  (self.rev == null ? 0 : self.rev!.hashCode) +
+  (self.identifiers.hashCode) +
+  (self.created == null ? 0 : self.created!.hashCode) +
+  (self.modified == null ? 0 : self.modified!.hashCode) +
+  (self.author == null ? 0 : self.author!.hashCode) +
+  (self.responsible == null ? 0 : self.responsible!.hashCode) +
+  (self.labels.hashCode) +
+  (self.codes.hashCode) +
+  (self.endOfLife == null ? 0 : self.endOfLife!.hashCode) +
+  (self.deletionDate == null ? 0 : self.deletionDate!.hashCode) +
+  (self.firstName == null ? 0 : self.firstName!.hashCode) +
+  (self.lastName == null ? 0 : self.lastName!.hashCode) +
+  (self.names.hashCode) +
+  (self.companyName == null ? 0 : self.companyName!.hashCode) +
+  (self.languages.hashCode) +
+  (self.addresses.hashCode) +
+  (self.civility == null ? 0 : self.civility!.hashCode) +
+  (self.gender == null ? 0 : self.gender!.hashCode) +
+  (self.birthSex == null ? 0 : self.birthSex!.hashCode) +
+  (self.mergeToPatientId == null ? 0 : self.mergeToPatientId!.hashCode) +
+  (self.mergedIds.hashCode) +
+  (self.alias == null ? 0 : self.alias!.hashCode) +
+  (self.active.hashCode) +
+  (self.deactivationReason.hashCode) +
+  (self.ssin == null ? 0 : self.ssin!.hashCode) +
+  (self.maidenName == null ? 0 : self.maidenName!.hashCode) +
+  (self.spouseName == null ? 0 : self.spouseName!.hashCode) +
+  (self.partnerName == null ? 0 : self.partnerName!.hashCode) +
+  (self.personalStatus == null ? 0 : self.personalStatus!.hashCode) +
+  (self.dateOfBirth == null ? 0 : self.dateOfBirth!.hashCode) +
+  (self.dateOfDeath == null ? 0 : self.dateOfDeath!.hashCode) +
+  (self.placeOfBirth == null ? 0 : self.placeOfBirth!.hashCode) +
+  (self.placeOfDeath == null ? 0 : self.placeOfDeath!.hashCode) +
+  (self.deceased == null ? 0 : self.deceased!.hashCode) +
+  (self.education == null ? 0 : self.education!.hashCode) +
+  (self.profession == null ? 0 : self.profession!.hashCode) +
+  (self.note == null ? 0 : self.note!.hashCode) +
+  (self.administrativeNote == null ? 0 : self.administrativeNote!.hashCode) +
+  (self.nationality == null ? 0 : self.nationality!.hashCode) +
+  (self.race == null ? 0 : self.race!.hashCode) +
+  (self.ethnicity == null ? 0 : self.ethnicity!.hashCode) +
+  (self.picture == null ? 0 : self.picture!.hashCode) +
+  (self.externalId == null ? 0 : self.externalId!.hashCode) +
+  (self.partnerships.hashCode) +
+  (self.patientHealthCareParties.hashCode) +
+  (self.patientProfessions.hashCode) +
+  (self.parameters.hashCode) +
+  (self.properties.hashCode) +
+  (self.systemMetaData == null ? 0 : self.systemMetaData!.hashCode);
+
+String __potentiallyEncryptedPatientFieldsString(PotentiallyEncryptedPatient self) =>
+  'id=${self.id}, rev=${self.rev}, identifiers=${self.identifiers}, created=${self.created}, modified=${self.modified}, author=${self.author}, responsible=${self.responsible}, labels=${self.labels}, codes=${self.codes}, endOfLife=${self.endOfLife}, deletionDate=${self.deletionDate}, firstName=${self.firstName}, lastName=${self.lastName}, names=${self.names}, companyName=${self.companyName}, languages=${self.languages}, addresses=${self.addresses}, civility=${self.civility}, gender=${self.gender}, birthSex=${self.birthSex}, mergeToPatientId=${self.mergeToPatientId}, mergedIds=${self.mergedIds}, alias=${self.alias}, active=${self.active}, deactivationReason=${self.deactivationReason}, ssin=${self.ssin}, maidenName=${self.maidenName}, spouseName=${self.spouseName}, partnerName=${self.partnerName}, personalStatus=${self.personalStatus}, dateOfBirth=${self.dateOfBirth}, dateOfDeath=${self.dateOfDeath}, placeOfBirth=${self.placeOfBirth}, placeOfDeath=${self.placeOfDeath}, deceased=${self.deceased}, education=${self.education}, profession=${self.profession}, note=${self.note}, administrativeNote=${self.administrativeNote}, nationality=${self.nationality}, race=${self.race}, ethnicity=${self.ethnicity}, picture=${self.picture}, externalId=${self.externalId}, partnerships=${self.partnerships}, patientHealthCareParties=${self.patientHealthCareParties}, patientProfessions=${self.patientProfessions}, parameters=${self.parameters}, properties=${self.properties}, systemMetaData=${self.systemMetaData}';
+
+Map<String, dynamic> __potentiallyEncryptedPatientToJson(PotentiallyEncryptedPatient self) {
+    final json = <String, dynamic>{};
+    if (self.id != null) {
+      json[r'id'] = self.id;
+    }
+    if (self.rev != null) {
+      json[r'rev'] = self.rev;
+    }
+    json[r'identifiers'] = self.identifiers;
+    if (self.created != null) {
+      json[r'created'] = self.created;
+    }
+    if (self.modified != null) {
+      json[r'modified'] = self.modified;
+    }
+    if (self.author != null) {
+      json[r'author'] = self.author;
+    }
+    if (self.responsible != null) {
+      json[r'responsible'] = self.responsible;
+    }
+    json[r'labels'] = self.labels.toList();
+    json[r'codes'] = self.codes.toList();
+    if (self.endOfLife != null) {
+      json[r'endOfLife'] = self.endOfLife;
+    }
+    if (self.deletionDate != null) {
+      json[r'deletionDate'] = self.deletionDate;
+    }
+    if (self.firstName != null) {
+      json[r'firstName'] = self.firstName;
+    }
+    if (self.lastName != null) {
+      json[r'lastName'] = self.lastName;
+    }
+    json[r'names'] = self.names;
+    if (self.companyName != null) {
+      json[r'companyName'] = self.companyName;
+    }
+    json[r'languages'] = self.languages;
+    json[r'addresses'] = self.addresses;
+    if (self.civility != null) {
+      json[r'civility'] = self.civility;
+    }
+    if (self.gender != null) {
+      json[r'gender'] = self.gender;
+    }
+    if (self.birthSex != null) {
+      json[r'birthSex'] = self.birthSex;
+    }
+    if (self.mergeToPatientId != null) {
+      json[r'mergeToPatientId'] = self.mergeToPatientId;
+    }
+    json[r'mergedIds'] = self.mergedIds.toList();
+    if (self.alias != null) {
+      json[r'alias'] = self.alias;
+    }
+    json[r'active'] = self.active;
+    json[r'deactivationReason'] = self.deactivationReason;
+    if (self.ssin != null) {
+      json[r'ssin'] = self.ssin;
+    }
+    if (self.maidenName != null) {
+      json[r'maidenName'] = self.maidenName;
+    }
+    if (self.spouseName != null) {
+      json[r'spouseName'] = self.spouseName;
+    }
+    if (self.partnerName != null) {
+      json[r'partnerName'] = self.partnerName;
+    }
+    if (self.personalStatus != null) {
+      json[r'personalStatus'] = self.personalStatus;
+    }
+    if (self.dateOfBirth != null) {
+      json[r'dateOfBirth'] = self.dateOfBirth;
+    }
+    if (self.dateOfDeath != null) {
+      json[r'dateOfDeath'] = self.dateOfDeath;
+    }
+    if (self.placeOfBirth != null) {
+      json[r'placeOfBirth'] = self.placeOfBirth;
+    }
+    if (self.placeOfDeath != null) {
+      json[r'placeOfDeath'] = self.placeOfDeath;
+    }
+    if (self.deceased != null) {
+      json[r'deceased'] = self.deceased;
+    }
+    if (self.education != null) {
+      json[r'education'] = self.education;
+    }
+    if (self.profession != null) {
+      json[r'profession'] = self.profession;
+    }
+    if (self.note != null) {
+      json[r'note'] = self.note;
+    }
+    if (self.administrativeNote != null) {
+      json[r'administrativeNote'] = self.administrativeNote;
+    }
+    if (self.nationality != null) {
+      json[r'nationality'] = self.nationality;
+    }
+    if (self.race != null) {
+      json[r'race'] = self.race;
+    }
+    if (self.ethnicity != null) {
+      json[r'ethnicity'] = self.ethnicity;
+    }
+    if (self.picture != null) {
+      json[r'picture'] = self.picture;
+    }
+    if (self.externalId != null) {
+      json[r'externalId'] = self.externalId;
+    }
+    json[r'partnerships'] = self.partnerships;
+    json[r'patientHealthCareParties'] = self.patientHealthCareParties;
+    json[r'patientProfessions'] = self.patientProfessions;
+    json[r'parameters'] = self.parameters;
+    json[r'properties'] = self.properties.toList();
+    if (self.systemMetaData != null) {
+      json[r'systemMetaData'] = self.systemMetaData;
+    }
+    return json;
+  }
 
 /// the gender of the patient: male, female, indeterminate, changed, changedToMale, changedToFemale, unknown
 class PatientGenderEnum {

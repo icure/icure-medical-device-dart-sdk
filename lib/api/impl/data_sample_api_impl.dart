@@ -48,7 +48,7 @@ class DataSampleApiImpl extends DataSampleApi {
       throw FormatException("Can't update the patient of a batch of data samples. Delete those samples and create new ones");
     }
 
-    final existingPatient = await api.basePatientApi.getPatient(currentUser, patientId, patientCryptoConfig(localCrypto));
+    final existingPatient = await api.patientApi.getPatientAndTryDecrypt(patientId);
     final ccContact = contactCryptoConfig(currentUser, localCrypto);
     base_api.DecryptedContactDto? createdOrModifiedContact;
 
@@ -63,7 +63,13 @@ class DataSampleApiImpl extends DataSampleApi {
       createdOrModifiedContact = await api.baseContactApi.modifyContact(currentUser, existingContact, ccContact);
     } else {
       final contactToCreate = _createContactDtoBasedOn(dataSample, existingContact);
-      createdOrModifiedContact = await api.baseContactApi.createContactWithPatient(currentUser, existingPatient!, contactToCreate, ccContact);
+      createdOrModifiedContact = await api.baseContactApi.createContactWithPatientInfo(
+        currentUser,
+        existingPatient!.id!,
+        existingPatient.systemMetaData!.delegations.toDelegationMapDto(),
+        contactToCreate,
+        ccContact
+      );
     }
 
     createdOrModifiedContact!.services.forEach((service) => contactsLinkedToDataSamplesCache.put(service.id, createdOrModifiedContact!));
@@ -118,9 +124,15 @@ class DataSampleApiImpl extends DataSampleApi {
         (throw StateError("Couldn't find patient related to batch of data samples ${existingContact.id}"));
     final servicesToDelete = existingContact.services.where((element) => requestBody.contains(element.id));
 
-    return (await api.baseContactApi
-            .deleteServices(currentUser, contactPatient, servicesToDelete.toList(), contactCryptoConfig(currentUser, localCrypto)))
-        ?.services
+    return (
+        await api.baseContactApi.deleteServicesWithPatientInfo(
+          currentUser,
+          contactPatient.id!,
+          contactPatient.systemMetaData!.delegations.toDelegationMapDto(),
+          servicesToDelete.toList(),
+          contactCryptoConfig(currentUser, localCrypto)
+        )
+    )?.services
         .where((element) => requestBody.contains(element.id))
         .where((element) => element.endOfLife != null)
         .map((e) => e.id)
@@ -301,10 +313,10 @@ class DataSampleApiImpl extends DataSampleApi {
     }
   }
 
-  Future<base_api.DecryptedPatientDto?> _getPatientOfContact(
+  Future<PotentiallyEncryptedPatient?> _getPatientOfContact(
       Crypto localCrypto, base_api.UserDto currentUser, base_api.DecryptedContactDto contactDto) async {
     return (await _getPatientIdOfContact(localCrypto, currentUser, contactDto))
-        ?.let((that) => api.basePatientApi.getPatient(currentUser, that, patientCryptoConfig(localCrypto)));
+        ?.let((that) => api.patientApi.getPatientAndTryDecrypt(that));
   }
 
   Future<base_api.DecryptedServiceDto?> _getServiceFromICure(String dataSampleId) async {
@@ -334,39 +346,47 @@ class DataSampleApiImpl extends DataSampleApi {
     final currentUser = await api.baseUserApi.getCurrentUser();
 
     // Check if delegatedBy has access
-    final contact = (await _getContactOfDataSample(localCrypto, currentUser!, dataSample, bypassCache: true)).item2;
+    final contact = (await _getContactOfDataSample(localCrypto, currentUser!, dataSample, bypassCache: true)).item2!;
 
-    // Check if delegatedTo already has access
-    if (contact!.delegations.entries.any((element) => element.key == delegatedTo)) {
+    final myId = currentUser.dataOwnerId()!;
+    final newSecretIds = await localCrypto.findAndDecryptPotentiallyUnknownKeysForDelegate(myId, delegatedTo, contact.delegations);
+    final newEncryptionKeys = await localCrypto.findAndDecryptPotentiallyUnknownKeysForDelegate(myId, delegatedTo, contact.encryptionKeys);
+    final newCfks = await localCrypto.findAndDecryptPotentiallyUnknownKeysForDelegate(myId, delegatedTo, contact.cryptedForeignKeys);
+
+    if (newSecretIds.isEmpty && newEncryptionKeys.isEmpty && newCfks.isEmpty) {
       return dataSample;
     }
 
-    final patientId = (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, contact.cryptedForeignKeys)).firstOrNull!.formatAsKey();
-    final sfk = (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, contact.delegations)).firstOrNull!.formatAsKey();
-    final ek = (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, contact.encryptionKeys)).firstOrNull!.formatAsKey();
-
     final ccContact = contactCryptoConfig(currentUser, localCrypto);
 
-    contact.delegations = await addDelegationBasedOn(contact.delegations, localCrypto, currentUser.dataOwnerId()!, delegatedTo, contact.id, sfk);
-    contact.encryptionKeys = await addDelegationBasedOn(contact.encryptionKeys, localCrypto, currentUser.dataOwnerId()!, delegatedTo, contact.id, ek);
-    contact.cryptedForeignKeys =
-        await addDelegationBasedOn(contact.cryptedForeignKeys, localCrypto, currentUser.dataOwnerId()!, delegatedTo, contact.id, patientId);
+    final newSecretIdsDelegations = await Future.wait(newSecretIds.map((clearKey) =>
+        createDelegationBasedOn(localCrypto, myId, delegatedTo, contact.id, clearKey.formatAsKey())
+    ));
+    final newEncryptionKeysDelegations = await Future.wait(newEncryptionKeys.map((clearKey) =>
+        createDelegationBasedOn(localCrypto, myId, delegatedTo, contact.id, clearKey.formatAsKey())
+    ));
+    final newCfksDelegations = await Future.wait(newCfks.map((clearKey) =>
+        createDelegationBasedOn(localCrypto, myId, delegatedTo, contact.id, clearKey.formatAsKey())
+    ));
+
+    final existingDelegationsForDelegate = contact.delegations[delegatedTo] ?? {};
+    contact.delegations[delegatedTo] = {...existingDelegationsForDelegate, ...newSecretIdsDelegations};
+    final existingEncryptionKeysForDelegate = contact.encryptionKeys[delegatedTo] ?? {};
+    contact.encryptionKeys[delegatedTo] = {...existingEncryptionKeysForDelegate, ...newEncryptionKeysDelegations};
+    final existingCfksForDelegate = contact.cryptedForeignKeys[delegatedTo] ?? {};
+    contact..cryptedForeignKeys[delegatedTo] = {...existingCfksForDelegate, ...newCfksDelegations};
 
     final updatedContact = await api.baseContactApi.modifyContact(currentUser, contact, ccContact);
 
-    return updatedContact?.services.firstOrNull?.toDataSample(updatedContact.id) ?? (throw StateError("Couldn't give access to dataSample"));
+    return updatedContact?.services.where((e) => e.id == dataSample.id).firstOrNull?.toDataSample(updatedContact.id)
+        ?? (throw StateError("Couldn't give access to dataSample"));
   }
 
-  Future<Map<String, Set<DelegationDto>>> addDelegationBasedOn(Map<String, Set<DelegationDto>> delegations, Crypto localCrypto, String dataOwnerId,
-      String delegatedTo, String objectId, String encKey) async {
-    return {...delegations}..addEntries([
-      MapEntry(delegatedTo, [
-        DelegationDto(
-            owner: dataOwnerId,
-            delegatedTo: delegatedTo,
-            key: (await localCrypto.encryptAESKeyForHcp(dataOwnerId, delegatedTo, objectId, encKey)).item1)
-      ].toSet()
-      )
-    ]);
+  Future<DelegationDto> createDelegationBasedOn(Crypto localCrypto, String dataOwnerId, String delegatedTo, String objectId, String encKey) async {
+    return DelegationDto(
+        owner: dataOwnerId,
+        delegatedTo: delegatedTo,
+        key: (await localCrypto.encryptAESKeyForHcp(dataOwnerId, delegatedTo, objectId, encKey)).item1
+    );
   }
 }

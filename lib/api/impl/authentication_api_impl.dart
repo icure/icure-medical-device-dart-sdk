@@ -130,7 +130,7 @@ class AuthenticationApiImpl extends AuthenticationApi {
       dataOwner.publicKey = userKeyPair.item2;
       final modDataOwner = await dataOwnerApi.modifyDataOwner(dataOwner);
 
-      if (user.patientId != null) {
+      if (user.patientId != null) { // implicitly && dataOwner.id == user.patientId
         await _initPatientDelegationsAndSave(authenticatedApi, modDataOwner as PatientDto, user, dataOwnerApi);
       }
     } else if (dataOwner.publicKey != userKeyPair.item2) {
@@ -142,14 +142,35 @@ class AuthenticationApiImpl extends AuthenticationApi {
 
   Future<void> _initPatientDelegationsAndSave(
       MedTechApi apiWithNewKeyPair, PatientDto modPat, UserDto user, DataOwnerApi<dynamic> dataOwnerApi) async {
-    final ccPatient = patientCryptoConfig(apiWithNewKeyPair.crypto);
-    final dataOwnerWithDelegations = await apiWithNewKeyPair.basePatientApi.rawGetPatient(modPat.id)
-        .then((updatedPatient) => DecryptedPatientDto.fromJson(updatedPatient!.toJson()).let((that) => that!.initDelegations(user, ccPatient)));
+    if (modPat.delegations.isEmpty &&  modPat.encryptionKeys.isEmpty) {
+      final ccPatient = patientCryptoConfig(apiWithNewKeyPair.crypto);
+      final dataOwnerWithDelegations = await apiWithNewKeyPair.basePatientApi.rawGetPatient(modPat.id)
+          .then((updatedPatient) => DecryptedPatientDto.fromJson(updatedPatient!.toJson()).let((that) => that!.initDelegations(user, ccPatient)));
 
-    final initialisedDataOwner = await apiWithNewKeyPair.basePatientApi.modifyPatient(user, dataOwnerWithDelegations, ccPatient);
-    if (initialisedDataOwner == null) {
-      throw FormatException("An error occurred while initializing your user");
+      final initialisedDataOwner = await apiWithNewKeyPair.basePatientApi.modifyPatient(user, dataOwnerWithDelegations, ccPatient);
+      if (initialisedDataOwner == null) {
+        throw FormatException("An error occurred while initializing your user");
+      }
+      apiWithNewKeyPair.crypto.clearCachesFor(initialisedDataOwner.id);
+    } else if (!modPat.delegations.containsKey(modPat.id)){
+      // Patient already existed and some hcp may have created encrypted data -> only create delegation
+      final ccPatient = patientCryptoConfig(apiWithNewKeyPair.crypto);
+      final sfk = Uuid().v4(options: {'rng': UuidUtil.cryptoRNG});
+      final keyAndOwner = await ccPatient.crypto.encryptAESKeyForHcp(modPat.id, modPat.id, modPat.id, sfk);
+      if (keyAndOwner.item2 != null) {
+        modPat.hcPartyKeys = keyAndOwner.item2!.hcPartyKeys;
+        modPat.aesExchangeKeys = keyAndOwner.item2!.aesExchangeKeys;
+        modPat.rev = keyAndOwner.item2!.rev;
+      }
+      final newDelegationsSet = modPat.delegations[modPat.id] ?? {};
+      final newDelegation = DelegationDto(
+          owner: modPat.id,
+          delegatedTo: modPat.id,
+          key: keyAndOwner.item1
+      );
+      newDelegationsSet.add(newDelegation);
+      modPat.delegations[modPat.id] = newDelegationsSet;
+      await apiWithNewKeyPair.basePatientApi.rawModifyPatient(modPat);
     }
-    apiWithNewKeyPair.crypto.clearCachesFor(initialisedDataOwner.id);
   }
 }

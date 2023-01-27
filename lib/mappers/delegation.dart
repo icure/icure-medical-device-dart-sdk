@@ -18,3 +18,13 @@ extension DelegationMapper on Delegation {
 extension DelegationDtoMapper on DelegationDto {
   Delegation toDelegation() => Delegation(tags: this.tags, owner: this.owner, delegatedTo: this.delegatedTo, key: this.key);
 }
+
+extension DelegationMapMapper on Map<String, List<Delegation>> {
+  Map<String, Set<DelegationDto>> toDelegationMapDto() =>
+    { for (final entry in this.entries) entry.key : entry.value.map((e) => e.toDelegationDto()).toSet() };
+}
+
+extension DelegationMapDtoMapper on Map<String, Set<DelegationDto>> {
+  Map<String, List<Delegation>> toDelegationMap() =>
+      { for (final entry in this.entries) entry.key : entry.value.map((e) => e.toDelegation()).toList() };
+}

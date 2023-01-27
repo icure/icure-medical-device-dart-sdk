@@ -84,4 +84,17 @@ abstract class PatientApi {
   /// * deviceId
   ///
   Future<Patient> giveAccessTo(Patient patient, String delegatedTo);
+
+  /// Gets a patient and tries to decrypt its content. If it is not possible to decrypt the content only the unencrypted
+  /// data will be available.
+  /// This method is useful to allow new patient users to access some of their own data before their doctor actually
+  /// gave them access to their own data: instead of giving an error if the data can't be decrypted (like what happens
+  /// in getPatient) you will be able to get at least partial information.
+  Future<PotentiallyEncryptedPatient?> getPatientAndTryDecrypt(String patientId,);
+
+  /// Modifies an encrypted patient, ensuring that the modified patient does not include any data which should be
+  /// encrypted.
+  /// Similarly to getPatientAndTryDecrypt this method is useful when a patient needs to update is own data before
+  /// an hcp gave him access to his own encrypted data.
+  Future<EncryptedPatient?> modifyEncryptedPatient(EncryptedPatient modifiedPatient,);
 }
