@@ -23,16 +23,19 @@ class UserApiImpl extends UserApi {
       final modifiedUser = user.toUserDto();
       final userToUpdate = await _constraintsUserModificationsBasedOnCurrentUserPermission(modifiedUser);
 
-      return (await api.baseUserApi.modifyUser(userToUpdate))?.toUser();
+      return (await api.baseUserApi.modifyUser(userToUpdate))?.toUser()
+        ?? (throw StateError("Cannot modify user with id ${user.id}"));
     } else {
-      return (await api.baseUserApi.createUser(user.toUserDto()))?.toUser();
+      return (await api.baseUserApi.createUser(user.toUserDto()))?.toUser()
+        ?? (throw StateError("Cannot create user"));
     }
   }
 
   Future<UserDto> _constraintsUserModificationsBasedOnCurrentUserPermission(UserDto modifiedUser) async {
-    final currentUser = await api.baseUserApi.getCurrentUser();
+    final currentUser = (await api.baseUserApi.getCurrentUser())
+        ?? (throw StateError("There is no user currently logged in. You must call this method from an authenticated MedTechApi"));
 
-    if (currentUser!.permissions.any((permission) => permission.grants.any((grant) => grant.type == PermissionItemDtoTypeEnum.ADMIN))) {
+    if (currentUser.permissions.any((permission) => permission.grants.any((grant) => grant.type == PermissionItemDtoTypeEnum.ADMIN))) {
       return modifiedUser;
     } else if (currentUser.healthcarePartyId != null) {
       final userToUpdate = await api.baseUserApi.getUser(modifiedUser.id);

@@ -15,24 +15,23 @@ class HealthcareElementApiImpl extends HealthcareElementApi {
   @override
   Future<HealthcareElement?> createOrModifyHealthcareElement(String patientId, HealthcareElement healthcareElement) async {
     final localCrypto = api.crypto;
-    final currentUser = await api.baseUserApi.getCurrentUser();
+    final currentUser = (await api.baseUserApi.getCurrentUser())
+        ?? (throw StateError("There is no user currently logged in. You must call this method from an authenticated MedTechApi"));
     final ccHealthElement = healthElementCryptoConfig(localCrypto);
     final ccPatient = patientCryptoConfig(localCrypto);
 
-    if (currentUser == null) {
-      throw StateError("Couldn't get current user");
-    }
-
     if (healthcareElement.rev != null) {
       if (healthcareElement.id == null || !Uuid.isValidUUID(fromString: healthcareElement.id!)) {
-        throw ArgumentError("Update id should be provided as an UUID");
+        throw ArgumentError("Error while updating: HealthcareElement id should be provided as an UUID v4 (String)");
       }
       final modifiedHealthElementDto = await api.baseHealthElementApi
           .modifyHealthElement(currentUser, HealthcareElementMapper(healthcareElement).toHealthElementDto(), ccHealthElement);
-      return modifiedHealthElementDto != null ? HealthElementDtoMapper(modifiedHealthElementDto).toHealthcareElement() : null;
+      return modifiedHealthElementDto != null
+          ? HealthElementDtoMapper(modifiedHealthElementDto).toHealthcareElement()
+          : (throw StateError("Could not modify healthElement ${healthcareElement.id}"));
     }
 
-    final patient = await api.patientApi.getPatientAndTryDecrypt(patientId) ?? (throw StateError("Patient not found"));
+    final patient = await api.patientApi.getPatientAndTryDecrypt(patientId) ?? (throw StateError("Error while getting patient with id $patientId"));
     final createdHealthElementDto = await api.baseHealthElementApi.createHealthElementWithPatientInfo(
       currentUser,
       patient.id!,
@@ -40,13 +39,14 @@ class HealthcareElementApiImpl extends HealthcareElementApi {
       HealthcareElementMapper(healthcareElement).toHealthElementDto(),
       ccHealthElement
     );
-    return createdHealthElementDto != null ? HealthElementDtoMapper(createdHealthElementDto).toHealthcareElement() : null;
+    return createdHealthElementDto != null ? HealthElementDtoMapper(createdHealthElementDto).toHealthcareElement() : (throw StateError("Could not create healthElement ${healthcareElement.id}"));;
   }
 
   @override
   Future<List<HealthcareElement>?> createOrModifyHealthcareElements(String patientId, List<HealthcareElement> healthcareElements) async {
     final localCrypto = api.crypto;
-    final currentUser = await api.baseUserApi.getCurrentUser();
+    final currentUser = (await api.baseUserApi.getCurrentUser())
+        ?? (throw StateError("There is no user currently logged in. You must call this method from an authenticated MedTechApi"));
     final ccHealthElement = healthElementCryptoConfig(localCrypto);
     final ccPatient = patientCryptoConfig(localCrypto);
 
@@ -54,13 +54,13 @@ class HealthcareElementApiImpl extends HealthcareElementApi {
     final healthcareElementsToUpdate = healthcareElements.toSet().difference(healthcareElementsToCreate).toSet();
 
     if (healthcareElementsToUpdate.any((element) => element.id == null || !Uuid.isValidUUID(fromString: element.id!))) {
-      throw FormatException("Update id should be provided as an UUID");
+      throw FormatException("Error while updating: HealthcareElement id should be provided as an UUID v4 (String)");
     }
 
     final healthElementDtosToUpdate = healthcareElementsToUpdate.map((e) => e.toHealthElementDto()).toList();
     final healthElementDtosToCreate = healthcareElementsToCreate.map((e) => e.toHealthElementDto()).toList();
 
-    final patient = await api.patientApi.getPatientAndTryDecrypt(patientId) ?? (throw StateError("Patient not found"));
+    final patient = await api.patientApi.getPatientAndTryDecrypt(patientId) ?? (throw StateError("Error while getting patient with id $patientId"));
     final heCreated = await api.baseHealthElementApi.createHealthElementsWithPatientInfo(
         currentUser!,
         patient.id!,
@@ -77,7 +77,7 @@ class HealthcareElementApiImpl extends HealthcareElementApi {
   @override
   Future<String?> deleteHealthcareElement(String id) async {
     return (await api.baseHealthElementApi.rawDeleteHealthElements(base_api.ListOfIdsDto(ids: [id])))?.single.rev ??
-        throwFormatException("Invalid health element id");
+        throwFormatException("An error occurred when deleting this HealthcareElement. Id: ${id}");
   }
 
   @override
@@ -87,21 +87,23 @@ class HealthcareElementApiImpl extends HealthcareElementApi {
     int? limit,
   }) async {
     final localCrypto = api.crypto;
-    final currentUser = await api.baseUserApi.getCurrentUser();
+    final currentUser = (await api.baseUserApi.getCurrentUser())
+        ?? (throw StateError("There is no user currently logged in. You must call this method from an authenticated MedTechApi"));
     final ccHealthElement = healthElementCryptoConfig(localCrypto);
 
     return (await api.baseHealthElementApi.filterHealthElements(
-            currentUser!, base_api.FilterChain<base_api.HealthElementDto>(filter.toAbstractFilterDto()), ccHealthElement, nextHealthElementId, limit))
+            currentUser, base_api.FilterChain<base_api.HealthElementDto>(filter.toAbstractFilterDto()), ccHealthElement, nextHealthElementId, limit))
         .toPaginatedListHealthcareElement();
   }
 
   @override
   Future<HealthcareElement?> getHealthcareElement(String id) async {
     final localCrypto = api.crypto;
-    final currentUser = await api.baseUserApi.getCurrentUser();
+    final currentUser = (await api.baseUserApi.getCurrentUser())
+        ?? (throw StateError("There is no user currently logged in. You must call this method from an authenticated MedTechApi"));
     final ccHealthElement = healthElementCryptoConfig(localCrypto);
 
-    return (await api.baseHealthElementApi.getHeathElement(currentUser!, id, ccHealthElement))?.toHealthcareElement();
+    return (await api.baseHealthElementApi.getHeathElement(currentUser, id, ccHealthElement))?.toHealthcareElement();
   }
 
   @override
@@ -112,11 +114,12 @@ class HealthcareElementApiImpl extends HealthcareElementApi {
   @override
   Future<HealthcareElement> giveAccessTo(HealthcareElement healthcareElement, String delegatedTo) async {
     final localCrypto = api.crypto;
-    final currentUser = await api.baseUserApi.getCurrentUser();
+    final currentUser = (await api.baseUserApi.getCurrentUser())
+        ?? (throw StateError("There is no user currently logged in. You must call this method from an authenticated MedTechApi"));
 
     // Check if delegatedBy has access
-    if (!healthcareElement.systemMetaData!.delegations.entries.any((element) => element.key == currentUser!.dataOwnerId())) {
-      throw StateError("DataOwner ${currentUser!.dataOwnerId()} does not have the right to access healthcare element ${healthcareElement.id}");
+    if (!healthcareElement.systemMetaData!.delegations.entries.any((element) => element.key == currentUser.dataOwnerId())) {
+      throw StateError("User ${currentUser.id} may not access healthcare element. Check that the healthcare element is owned by/shared to the actual user.");
     }
 
     final myId = currentUser!.dataOwnerId()!;
@@ -155,7 +158,7 @@ class HealthcareElementApiImpl extends HealthcareElementApi {
     final existingCfksForDelegate = healthcareElement.systemMetaData!.cryptedForeignKeys[delegatedTo] ?? [];
     healthcareElement.systemMetaData!.cryptedForeignKeys[delegatedTo] = [...existingCfksForDelegate, ...newCfksDelegations];
 
-    return (await createOrModifyHealthcareElement(patientId, healthcareElement)) ??
+    return (await createOrModifyHealthcareElement(patientId.formatAsKey(), healthcareElement)) ??
         (throw StateError("Couldn't give access to $delegatedTo to health element ${healthcareElement.id}"));
   }
 }

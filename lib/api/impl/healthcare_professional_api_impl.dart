@@ -16,7 +16,8 @@ class HealthcareProfessionalApiImpl extends HealthcareProfessionalApi {
   Future<HealthcareProfessional?> createOrModifyHealthcareProfessional(HealthcareProfessional healthcareProfessional) async =>
       (await (healthcareProfessional.rev?.let((it) => api.baseHealthcarePartyApi.modifyHealthcareParty(healthcareProfessional.toHealthcarePartyDto())) ??
               api.baseHealthcarePartyApi.createHealthcareParty(healthcareProfessional.toHealthcarePartyDto())))
-          ?.toHealthcareProfessional();
+          ?.toHealthcareProfessional()
+          ?? (throw StateError("Could not create or modify healthcare professional ${healthcareProfessional.id}"));
 
   @override
   Future<List<HealthcareProfessional>?> createOrModifyHealthcareProfessionals(List<HealthcareProfessional> healthcareProfessionals) async =>
@@ -27,7 +28,8 @@ class HealthcareProfessionalApiImpl extends HealthcareProfessionalApi {
 
   @override
   Future<String?> deleteHealthcareProfessional(String healthcareProfessionalId) async =>
-      (await this.deleteHealthcareProfessionals([healthcareProfessionalId]))?.first;
+      (await this.deleteHealthcareProfessionals([healthcareProfessionalId]))?.first
+        ?? (throw StateError("Could not delete healthcare professional ${healthcareProfessionalId}"));
 
   @override
   Future<List<String>?> deleteHealthcareProfessionals(List<String> hcpIds) async {
@@ -37,7 +39,8 @@ class HealthcareProfessionalApiImpl extends HealthcareProfessionalApi {
   @override
   Future<HealthcareProfessional?> getHealthcareProfessional(String healthcareProfessionalId) async {
     return HealthcarePartyDtoMapper(
-            await api.baseHealthcarePartyApi.getHealthcareParty(healthcareProfessionalId) ?? (throw ArgumentError("HealthcareProfessional not found")))
+            await api.baseHealthcarePartyApi.getHealthcareParty(healthcareProfessionalId)
+                ?? (throw ArgumentError("HealthcareProfessional with id $healthcareProfessionalId was not found")))
         .toHealthcareProfessional();
   }
 
