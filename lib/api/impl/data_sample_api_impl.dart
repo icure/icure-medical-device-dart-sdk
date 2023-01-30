@@ -17,24 +17,30 @@ class DataSampleApiImpl extends DataSampleApi {
 
   @override
   Future<DataSample?> createOrModifyDataSampleFor(String patientId, DataSample dataSample) async {
-    return (await createOrModifyDataSamplesFor(patientId, [dataSample]))?.single;
+    final processedDataSample = (await createOrModifyDataSamplesFor(patientId, [dataSample]))?.single;
+    if (processedDataSample == null) {
+      throw StateError("Could not create / modify data sample ${dataSample.id} for patient ${patientId}");
+    }
+    return processedDataSample;
   }
 
   @override
   Future<List<DataSample>?> createOrModifyDataSamplesFor(String patientId, List<DataSample> dataSample) async {
+
     if (dataSample.distinctBy((e) => e.batchId).length > 1) {
-      throw FormatException("Only data samples of a same batch can be processed together");
+      throw FormatException("Only data samples of a same batch (with the same batchId) can be processed together");
     }
 
     // Arbitrary : 1 service = 1K
     if (_countHierarchyOfDataSamples(0, 0, dataSample) > 1000) {
-      throw FormatException("Can't process more than 1000 data samples in the same batch");
+      throw FormatException("Too many data samples to process. Can't process more than 1000 data samples in the same batch");
     }
 
     final localCrypto = api.crypto;
-    final currentUser = await api.baseUserApi.getCurrentUser();
+    final currentUser = (await api.baseUserApi.getCurrentUser())
+      ?? (throw StateError("There is no user currently logged in. You must call this method from an authenticated MedTechApi"));
 
-    final contactTuple = await _getContactOfDataSample(localCrypto, currentUser!, dataSample.first);
+    final contactTuple = await _getContactOfDataSample(localCrypto, currentUser, dataSample.first);
     final contactCached = contactTuple.item1;
     final existingContact = contactTuple.item2;
 
@@ -48,7 +54,7 @@ class DataSampleApiImpl extends DataSampleApi {
       throw FormatException("Can't update the patient of a batch of data samples. Delete those samples and create new ones");
     }
 
-    final existingPatient = await api.basePatientApi.getPatient(currentUser, patientId, patientCryptoConfig(localCrypto));
+    final existingPatient = await api.patientApi.getPatientAndTryDecrypt(patientId);
     final ccContact = contactCryptoConfig(currentUser, localCrypto);
     base_api.DecryptedContactDto? createdOrModifiedContact;
 
@@ -63,7 +69,13 @@ class DataSampleApiImpl extends DataSampleApi {
       createdOrModifiedContact = await api.baseContactApi.modifyContact(currentUser, existingContact, ccContact);
     } else {
       final contactToCreate = _createContactDtoBasedOn(dataSample, existingContact);
-      createdOrModifiedContact = await api.baseContactApi.createContactWithPatient(currentUser, existingPatient!, contactToCreate, ccContact);
+      createdOrModifiedContact = await api.baseContactApi.createContactWithPatientInfo(
+        currentUser,
+        existingPatient!.id!,
+        existingPatient.systemMetaData!.delegations.toDelegationMapDto(),
+        contactToCreate,
+        ccContact
+      );
     }
 
     createdOrModifiedContact!.services.forEach((service) => contactsLinkedToDataSamplesCache.put(service.id, createdOrModifiedContact!));
@@ -74,10 +86,11 @@ class DataSampleApiImpl extends DataSampleApi {
   @override
   Future<String?> deleteAttachment(String dataSampleId, String documentId) async {
     final localCrypto = api.crypto;
-    final currentUser = await api.baseUserApi.getCurrentUser();
+    final currentUser = (await api.baseUserApi.getCurrentUser())
+      ?? (throw StateError("There is no user currently logged in. You must call this method from an authenticated MedTechApi"));
 
     final base_api.DecryptedContactDto existingContact =
-        (await _findContactsForDataSampleIds(currentUser!, localCrypto, [dataSampleId])).firstOrNull ??
+        (await _findContactsForDataSampleIds(currentUser, localCrypto, [dataSampleId])).firstOrNull ??
             (throw StateError("Could not find batch information of the data sample $dataSampleId"));
 
     final base_api.DecryptedServiceDto existingService =
@@ -103,10 +116,11 @@ class DataSampleApiImpl extends DataSampleApi {
   @override
   Future<List<String>?> deleteDataSamples(List<String> requestBody) async {
     final localCrypto = api.crypto;
-    final currentUser = await api.baseUserApi.getCurrentUser();
+    final currentUser = (await api.baseUserApi.getCurrentUser())
+        ?? (throw StateError("There is no user currently logged in. You must call this method from an authenticated MedTechApi"));
 
     final base_api.DecryptedContactDto existingContact =
-        (await _findContactsForDataSampleIds(currentUser!, localCrypto, requestBody)).firstOrNull ??
+        (await _findContactsForDataSampleIds(currentUser, localCrypto, requestBody)).firstOrNull ??
         (throw StateError("Could not find batch information of the data sample $requestBody"));
 
     final existingServiceIds = existingContact.services.map((e) => e.id);
@@ -118,9 +132,15 @@ class DataSampleApiImpl extends DataSampleApi {
         (throw StateError("Couldn't find patient related to batch of data samples ${existingContact.id}"));
     final servicesToDelete = existingContact.services.where((element) => requestBody.contains(element.id));
 
-    return (await api.baseContactApi
-            .deleteServices(currentUser, contactPatient, servicesToDelete.toList(), contactCryptoConfig(currentUser, localCrypto)))
-        ?.services
+    return (
+        await api.baseContactApi.deleteServicesWithPatientInfo(
+          currentUser,
+          contactPatient.id!,
+          contactPatient.systemMetaData!.delegations.toDelegationMapDto(),
+          servicesToDelete.toList(),
+          contactCryptoConfig(currentUser, localCrypto)
+        )
+    )?.services
         .where((element) => requestBody.contains(element.id))
         .where((element) => element.endOfLife != null)
         .map((e) => e.id)
@@ -130,10 +150,11 @@ class DataSampleApiImpl extends DataSampleApi {
   @override
   Future<PaginatedListDataSample?> filterDataSample(Filter<DataSample> filter, {String? nextDataSampleId, int? limit}) async {
     final localCrypto = api.crypto;
-    final currentUser = await api.baseUserApi.getCurrentUser();
+    final currentUser = (await api.baseUserApi.getCurrentUser())
+        ?? (throw StateError("There is no user currently logged in. You must call this method from an authenticated MedTechApi"));
 
     return PaginatedListServiceDtoMapper((await api.baseContactApi
-            .filterServicesBy(currentUser!, base_api.FilterChain(filter.toAbstractFilterDto()), null, nextDataSampleId, limit, localCrypto))!)
+            .filterServicesBy(currentUser, base_api.FilterChain(filter.toAbstractFilterDto()), null, nextDataSampleId, limit, localCrypto))!)
         .toPaginatedListDataSample();
   }
 
@@ -146,9 +167,10 @@ class DataSampleApiImpl extends DataSampleApi {
   @override
   Future<MultipartFile?> getDataSampleAttachmentContent(String dataSampleId, String documentId, String attachmentId) async {
     final localCrypto = api.crypto;
-    final currentUser = await api.baseUserApi.getCurrentUser();
+    final currentUser = (await api.baseUserApi.getCurrentUser())
+        ?? (throw StateError("There is no user currently logged in. You must call this method from an authenticated MedTechApi"));
 
-    final documentOfAttachment = await _getDataSampleAttachmentDocumentFromICure(localCrypto, currentUser!, dataSampleId, documentId);
+    final documentOfAttachment = await _getDataSampleAttachmentDocumentFromICure(localCrypto, currentUser, dataSampleId, documentId);
     return api.baseDocumentApi.rawGetDocumentAttachment(documentId, attachmentId,
         enckeys: (await _getDocumentEncryptionKeys(localCrypto, currentUser, documentOfAttachment)).join(","), fileName: null);
   }
@@ -156,9 +178,10 @@ class DataSampleApiImpl extends DataSampleApi {
   @override
   Future<Document?> getDataSampleAttachmentDocument(String dataSampleId, String documentId) async {
     final localCrypto = api.crypto;
-    final currentUser = await api.baseUserApi.getCurrentUser();
+    final currentUser = (await api.baseUserApi.getCurrentUser())
+        ?? (throw StateError("There is no user currently logged in. You must call this method from an authenticated MedTechApi"));
 
-    return DocumentDtoMapper((await _getDataSampleAttachmentDocumentFromICure(localCrypto, currentUser!, dataSampleId, documentId))).toDocument();
+    return DocumentDtoMapper((await _getDataSampleAttachmentDocumentFromICure(localCrypto, currentUser, dataSampleId, documentId))).toDocument();
   }
 
   @override
@@ -167,14 +190,19 @@ class DataSampleApiImpl extends DataSampleApi {
   }
 
   @override
-  Future<Document?> setDataSampleAttachment(String dataSampleId, ByteStream body,
-      {String? documentName, String? documentVersion, String? documentExternalUuid, String? documentLanguage}) async {
+  Future<Document?> setDataSampleAttachment(
+    String dataSampleId,
+    ByteStream body,
+    {String? documentName, String? documentVersion, String? documentExternalUuid, String? documentLanguage}
+  ) async {
 
     final localCrypto = api.crypto;
-    final currentUser = await api.baseUserApi.getCurrentUser();
+    final currentUser = (await api.baseUserApi.getCurrentUser())
+        ?? (throw StateError("There is no user currently logged in. You must call this method from an authenticated MedTechApi"));
 
     final existingDataSample = await getDataSample(dataSampleId);
-    final contactDataSample = (await _getContactOfDataSample(localCrypto, currentUser!, existingDataSample!)).item2
+
+    final contactDataSample = (await _getContactOfDataSample(localCrypto, currentUser, existingDataSample!)).item2
         ?? throwFormatException("Could not find batch information of the data sample $dataSampleId");
 
     final patientIdOfContact = (await _getPatientIdOfContact(localCrypto, currentUser, contactDataSample!))
@@ -301,17 +329,18 @@ class DataSampleApiImpl extends DataSampleApi {
     }
   }
 
-  Future<base_api.DecryptedPatientDto?> _getPatientOfContact(
+  Future<PotentiallyEncryptedPatient?> _getPatientOfContact(
       Crypto localCrypto, base_api.UserDto currentUser, base_api.DecryptedContactDto contactDto) async {
     return (await _getPatientIdOfContact(localCrypto, currentUser, contactDto))
-        ?.let((that) => api.basePatientApi.getPatient(currentUser, that, patientCryptoConfig(localCrypto)));
+        ?.let((that) => api.patientApi.getPatientAndTryDecrypt(that));
   }
 
   Future<base_api.DecryptedServiceDto?> _getServiceFromICure(String dataSampleId) async {
     final localCrypto = api.crypto;
-    final currentUser = await api.baseUserApi.getCurrentUser();
+    final currentUser = (await api.baseUserApi.getCurrentUser())
+        ?? (throw StateError("There is no user currently logged in. You must call this method from an authenticated MedTechApi"));
 
-    return (await api.baseContactApi.listServices(currentUser!, base_api.ListOfIdsDto(ids: [dataSampleId]), localCrypto)).firstOrNull;
+    return (await api.baseContactApi.listServices(currentUser, base_api.ListOfIdsDto(ids: [dataSampleId]), localCrypto)).firstOrNull;
   }
 
   Future<base_api.DecryptedDocumentDto> _getDataSampleAttachmentDocumentFromICure(
@@ -331,42 +360,51 @@ class DataSampleApiImpl extends DataSampleApi {
   @override
   Future<DataSample> giveAccessTo(DataSample dataSample, String delegatedTo) async {
     final localCrypto = api.crypto;
-    final currentUser = await api.baseUserApi.getCurrentUser();
+    final currentUser = (await api.baseUserApi.getCurrentUser())
+        ?? (throw StateError("There is no user currently logged in. You must call this method from an authenticated MedTechApi"));
 
     // Check if delegatedBy has access
-    final contact = (await _getContactOfDataSample(localCrypto, currentUser!, dataSample, bypassCache: true)).item2;
+    final contact = (await _getContactOfDataSample(localCrypto, currentUser!, dataSample, bypassCache: true)).item2!;
 
-    // Check if delegatedTo already has access
-    if (contact!.delegations.entries.any((element) => element.key == delegatedTo)) {
+    final myId = currentUser.dataOwnerId()!;
+    final newSecretIds = await localCrypto.findAndDecryptPotentiallyUnknownKeysForDelegate(myId, delegatedTo, contact.delegations);
+    final newEncryptionKeys = await localCrypto.findAndDecryptPotentiallyUnknownKeysForDelegate(myId, delegatedTo, contact.encryptionKeys);
+    final newCfks = await localCrypto.findAndDecryptPotentiallyUnknownKeysForDelegate(myId, delegatedTo, contact.cryptedForeignKeys);
+
+    if (newSecretIds.isEmpty && newEncryptionKeys.isEmpty && newCfks.isEmpty) {
       return dataSample;
     }
 
-    final patientId = (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, contact.cryptedForeignKeys)).firstOrNull!.formatAsKey();
-    final sfk = (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, contact.delegations)).firstOrNull!.formatAsKey();
-    final ek = (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, contact.encryptionKeys)).firstOrNull!.formatAsKey();
-
     final ccContact = contactCryptoConfig(currentUser, localCrypto);
 
-    contact.delegations = await addDelegationBasedOn(contact.delegations, localCrypto, currentUser.dataOwnerId()!, delegatedTo, contact.id, sfk);
-    contact.encryptionKeys = await addDelegationBasedOn(contact.encryptionKeys, localCrypto, currentUser.dataOwnerId()!, delegatedTo, contact.id, ek);
-    contact.cryptedForeignKeys =
-        await addDelegationBasedOn(contact.cryptedForeignKeys, localCrypto, currentUser.dataOwnerId()!, delegatedTo, contact.id, patientId);
+    final newSecretIdsDelegations = await Future.wait(newSecretIds.map((clearKey) =>
+        createDelegationBasedOn(localCrypto, myId, delegatedTo, contact.id, clearKey.formatAsKey())
+    ));
+    final newEncryptionKeysDelegations = await Future.wait(newEncryptionKeys.map((clearKey) =>
+        createDelegationBasedOn(localCrypto, myId, delegatedTo, contact.id, clearKey.formatAsKey())
+    ));
+    final newCfksDelegations = await Future.wait(newCfks.map((clearKey) =>
+        createDelegationBasedOn(localCrypto, myId, delegatedTo, contact.id, clearKey.formatAsKey())
+    ));
+
+    final existingDelegationsForDelegate = contact.delegations[delegatedTo] ?? {};
+    contact.delegations[delegatedTo] = {...existingDelegationsForDelegate, ...newSecretIdsDelegations};
+    final existingEncryptionKeysForDelegate = contact.encryptionKeys[delegatedTo] ?? {};
+    contact.encryptionKeys[delegatedTo] = {...existingEncryptionKeysForDelegate, ...newEncryptionKeysDelegations};
+    final existingCfksForDelegate = contact.cryptedForeignKeys[delegatedTo] ?? {};
+    contact..cryptedForeignKeys[delegatedTo] = {...existingCfksForDelegate, ...newCfksDelegations};
 
     final updatedContact = await api.baseContactApi.modifyContact(currentUser, contact, ccContact);
 
-    return updatedContact?.services.firstOrNull?.toDataSample(updatedContact.id) ?? (throw StateError("Couldn't give access to dataSample"));
+    return updatedContact?.services.where((e) => e.id == dataSample.id).firstOrNull?.toDataSample(updatedContact.id)
+        ?? (throw StateError("Impossible to give access to ${delegatedTo} to data sample ${dataSample.id} information"));
   }
 
-  Future<Map<String, Set<DelegationDto>>> addDelegationBasedOn(Map<String, Set<DelegationDto>> delegations, Crypto localCrypto, String dataOwnerId,
-      String delegatedTo, String objectId, String encKey) async {
-    return {...delegations}..addEntries([
-      MapEntry(delegatedTo, [
-        DelegationDto(
-            owner: dataOwnerId,
-            delegatedTo: delegatedTo,
-            key: (await localCrypto.encryptAESKeyForHcp(dataOwnerId, delegatedTo, objectId, encKey)).item1)
-      ].toSet()
-      )
-    ]);
+  Future<DelegationDto> createDelegationBasedOn(Crypto localCrypto, String dataOwnerId, String delegatedTo, String objectId, String encKey) async {
+    return DelegationDto(
+        owner: dataOwnerId,
+        delegatedTo: delegatedTo,
+        key: (await localCrypto.encryptAESKeyForHcp(dataOwnerId, delegatedTo, objectId, encKey)).item1
+    );
   }
 }

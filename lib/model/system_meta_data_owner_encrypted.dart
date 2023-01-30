@@ -37,7 +37,7 @@ class SystemMetaDataOwnerEncrypted {
 
   Map<String, List<Delegation>> encryptionKeys;
 
-  Map<String, Map<String, List<String>>> aesExchangeKeys;
+  Map<String, Map<String, Map<String, String>>> aesExchangeKeys;
 
   Map<String, Map<String, String>> transferKeys;
 
@@ -52,7 +52,7 @@ class SystemMetaDataOwnerEncrypted {
           MapEquality(values: ListEquality()).equals(other.cryptedForeignKeys, cryptedForeignKeys) &&
           MapEquality(values: ListEquality()).equals(other.delegations, delegations) &&
           MapEquality(values: ListEquality()).equals(other.encryptionKeys, encryptionKeys) &&
-          MapEquality(values: MapEquality(values: ListEquality())).equals(other.aesExchangeKeys, aesExchangeKeys) &&
+          MapEquality(values: MapEquality(values: MapEquality())).equals(other.aesExchangeKeys, aesExchangeKeys) &&
           MapEquality(values: MapEquality()).equals(other.transferKeys, transferKeys);
 
   @override
@@ -114,7 +114,7 @@ class SystemMetaDataOwnerEncrypted {
         cryptedForeignKeys: json[r'cryptedForeignKeys'] == null ? const {} : Delegation.mapListFromJson(json[r'cryptedForeignKeys']),
         delegations: json[r'delegations'] == null ? const {} : Delegation.mapListFromJson(json[r'delegations']),
         encryptionKeys: json[r'encryptionKeys'] == null ? const {} : Delegation.mapListFromJson(json[r'encryptionKeys']),
-        aesExchangeKeys: json[r'aesExchangeKeys'] == null ? const {} : mapOf(json[r'aesExchangeKeys'], (el) => mapWithListOfStringsFromJson(el)),
+        aesExchangeKeys: json[r'aesExchangeKeys'] == null ? const {} : mapOf(json[r'aesExchangeKeys'], (el) => mapWithMapOfStringsFromJson(el)),
         transferKeys: json[r'transferKeys'] == null ? const {} : mapWithMapOfStringsFromJson(json[r'transferKeys']),
       );
     }

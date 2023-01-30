@@ -27,7 +27,7 @@ class SystemMetaDataOwner {
 
   Map<String, String> privateKeyShamirPartitions;
 
-  Map<String, Map<String, List<String>>> aesExchangeKeys;
+  Map<String, Map<String, Map<String, String>>> aesExchangeKeys;
 
   Map<String, Map<String, String>> transferKeys;
 
@@ -40,7 +40,7 @@ class SystemMetaDataOwner {
           other.publicKey == publicKey &&
           MapEquality(values: ListEquality()).equals(other.hcPartyKeys, hcPartyKeys) &&
           MapEquality().equals(other.privateKeyShamirPartitions, privateKeyShamirPartitions) &&
-          MapEquality(values: MapEquality(values: ListEquality())).equals(other.aesExchangeKeys, aesExchangeKeys) &&
+          MapEquality(values: MapEquality(values: MapEquality())).equals(other.aesExchangeKeys, aesExchangeKeys) &&
           MapEquality(values: MapEquality()).equals(other.transferKeys, transferKeys) &&
           ListEquality().equals(other.lostHcPartyKeys, lostHcPartyKeys);
 
@@ -93,7 +93,7 @@ class SystemMetaDataOwner {
         hcPartyKeys: json[r'hcPartyKeys'] == null ? const {} : mapWithListOfStringsFromJson(json[r'hcPartyKeys']),
         privateKeyShamirPartitions: mapCastOfType<String, String>(json, r'privateKeyShamirPartitions')!,
         lostHcPartyKeys: json[r'lostHcPartyKeys'] == null ? const [] : (json[r'lostHcPartyKeys'] as List).cast<String>(),
-        aesExchangeKeys: json[r'aesExchangeKeys'] == null ? const {} : mapOf(json[r'aesExchangeKeys'], (el) => mapWithListOfStringsFromJson(el)),
+        aesExchangeKeys: json[r'aesExchangeKeys'] == null ? const {} : mapOf(json[r'aesExchangeKeys'], (el) => mapWithMapOfStringsFromJson(el)),
         transferKeys: json[r'transferKeys'] == null ? const {} : mapWithMapOfStringsFromJson(json[r'transferKeys']),
       );
     }
