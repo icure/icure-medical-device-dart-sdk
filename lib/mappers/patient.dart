@@ -92,6 +92,73 @@ extension PatientDtoMapper on DecryptedPatientDto {
           )
       );
 }
+
+extension EncryptedPatientDtoMapper on PatientDto {
+  EncryptedPatient toEncryptedPatient() =>
+      EncryptedPatient(
+          id: this.id,
+          identifiers: this.identifier.map((it) => it.toIdentifier()).toList(),
+          labels: this.tags.map((it) => it.toCodingReference()).toSet(),
+          codes: this.codes.map((it) => it.toCodingReference()).toSet(),
+          names: this.names.map((it) => it.toPersonName()).toList(),
+          languages: this.languages,
+          addresses: this.addresses.map((it) => it.toAddress()).toList(),
+          mergedIds: this.mergedIds,
+          active: this.active,
+          deactivationReason: this.deactivationReason?.toDeactivationReason() ?? PatientDeactivationReasonEnum.none,
+          partnerships: this.partnerships.map((it) => it.toPartnership()).toList(),
+          patientHealthCareParties: this.patientHealthCareParties.map((it) => it.toPatientHealthCareParty()).toList(),
+          patientProfessions: this.patientProfessions.map((it) => it.toCodingReference()).toList(),
+          parameters: this.parameters,
+          properties: this.properties.map((it) => it.toProperty()).toSet(),
+          rev: this.rev,
+          created: this.created,
+          modified: this.modified,
+          author: this.author,
+          responsible: this.responsible,
+          endOfLife: this.endOfLife,
+          deletionDate: this.deletionDate,
+          firstName: this.firstName,
+          lastName: this.lastName,
+          companyName: this.companyName,
+          civility: this.civility,
+          gender: this.gender?.toGender(),
+          birthSex: this.birthSex?.toBirthSex(),
+          mergeToPatientId: this.mergeToPatientId,
+          alias: this.alias,
+          ssin: this.ssin,
+          maidenName: this.maidenName,
+          spouseName: this.spouseName,
+          partnerName: this.partnerName,
+          personalStatus: this.personalStatus?.toPersonalStatus(),
+          dateOfBirth: this.dateOfBirth,
+          dateOfDeath: this.dateOfDeath,
+          placeOfBirth: this.placeOfBirth,
+          placeOfDeath: this.placeOfDeath,
+          deceased: this.deceased,
+          education: this.education,
+          profession: this.profession,
+          note: this.note,
+          administrativeNote: this.administrativeNote,
+          nationality: this.nationality,
+          race: this.race,
+          ethnicity: this.ethnicity,
+          picture: this.picture,
+          externalId: this.externalId,
+          systemMetaData: SystemMetaDataOwnerEncrypted(
+            publicKey: this.publicKey,
+            hcPartyKeys: this.hcPartyKeys,
+            privateKeyShamirPartitions: this.privateKeyShamirPartitions,
+            secretForeignKeys: this.secretForeignKeys.toList(),
+            cryptedForeignKeys: this.cryptedForeignKeys.map((k, v) => MapEntry(k, v.map((it) => it.toDelegation()).toList())) ,
+            delegations: this.delegations.map((k, v) => MapEntry(k, v.map((it) => it.toDelegation()).toList())),
+            encryptionKeys: this.encryptionKeys.map((k, v) => MapEntry(k, v.map((it) => it.toDelegation()).toList())),
+            aesExchangeKeys: this.aesExchangeKeys,
+            transferKeys: this.transferKeys,
+          )
+      );
+}
+
 extension PatientDtoDeactivationReasonEnumMapper on PatientDtoDeactivationReasonEnum {
   PatientDeactivationReasonEnum toDeactivationReason() => PatientDeactivationReasonEnum.values.firstWhere((it) => it.value == this.value, orElse: () => PatientDeactivationReasonEnum.none);
 }
@@ -166,7 +233,7 @@ extension PatientMapper on Patient {
         privateKeyShamirPartitions: this.systemMetaData?.privateKeyShamirPartitions ?? const {},
         secretForeignKeys: this.systemMetaData?.secretForeignKeys.toSet() ?? {},
         cryptedForeignKeys:
-            this.systemMetaData?.cryptedForeignKeys.map((k, v) => MapEntry(k, v.map((it) => it.toDelegationDto()).toSet())) ?? const {},
+        this.systemMetaData?.cryptedForeignKeys.map((k, v) => MapEntry(k, v.map((it) => it.toDelegationDto()).toSet())) ?? const {},
         delegations: this.systemMetaData?.delegations.map((k, v) => MapEntry(k, v.map((it) => it.toDelegationDto()).toSet())) ?? const {},
         encryptionKeys: this.systemMetaData?.encryptionKeys.map((k, v) => MapEntry(k, v.map((it) => it.toDelegationDto()).toSet())) ?? const {},
         aesExchangeKeys: this.systemMetaData?.aesExchangeKeys ?? const {},
@@ -175,6 +242,75 @@ extension PatientMapper on Patient {
 
   DataOwnerDto toDataOwnerDto() =>
       DataOwnerDto(DataOwnerType.patient, this.id!, this.systemMetaData?.hcPartyKeys ?? const {}, publicKey: this.systemMetaData?.publicKey, rev: this.rev);
+}
+
+extension EncryptedPatientMapper on EncryptedPatient {
+  PatientDto toPatientDto() =>
+      PatientDto(
+        id: this.id?.also((it) {
+          if (!Uuid.isValidUUID(fromString: it)) {
+            throw FormatException("Invalid id, id must be a valid UUID");
+          }
+        }) ?? uuid.v4(options: {'rng': UuidUtil.cryptoRNG}),
+        identifier: this.identifiers.map((it) => it.toIdentifierDto()).toList(),
+        tags: this.labels.map((it) => it.toCodeStubDto()).toSet(),
+        codes: this.codes.map((it) => it.toCodeStubDto()).toSet(),
+        names: this.names.map((it) => it.toPersonNameDto()).toList(),
+        languages: this.languages,
+        addresses: this.addresses.map((it) => it.toAddressDto()).toList(),
+        mergedIds: this.mergedIds,
+        active: this.active,
+        deactivationReason: this.deactivationReason.toDeactivationReason(),
+        partnerships: this.partnerships.map((it) => it.toPartnershipDto()).toList(),
+        patientHealthCareParties: this.patientHealthCareParties.map((it) => it.toPatientHealthCarePartyDto()).toList(),
+        patientProfessions: this.patientProfessions.map((it) => it.toCodeStubDto()).toList(),
+        parameters: this.parameters,
+        properties: this.properties.map((it) => it.toPropertyStubDto()).toSet(),
+        rev: this.rev,
+        created: this.created,
+        modified: this.modified,
+        author: this.author,
+        responsible: this.responsible,
+        endOfLife: this.endOfLife,
+        deletionDate: this.deletionDate,
+        firstName: this.firstName,
+        lastName: this.lastName,
+        companyName: this.companyName,
+        civility: this.civility,
+        gender: this.gender?.toGender(),
+        birthSex: this.birthSex?.toBirthSex(),
+        mergeToPatientId: this.mergeToPatientId,
+        alias: this.alias,
+        ssin: this.ssin,
+        maidenName: this.maidenName,
+        spouseName: this.spouseName,
+        partnerName: this.partnerName,
+        personalStatus: this.personalStatus?.toPersonalStatus(),
+        dateOfBirth: this.dateOfBirth,
+        dateOfDeath: this.dateOfDeath,
+        placeOfBirth: this.placeOfBirth,
+        placeOfDeath: this.placeOfDeath,
+        deceased: this.deceased,
+        education: this.education,
+        profession: this.profession,
+        note: this.note,
+        administrativeNote: this.administrativeNote,
+        nationality: this.nationality,
+        race: this.race,
+        ethnicity: this.ethnicity,
+        picture: this.picture,
+        externalId: this.externalId,
+        publicKey: this.systemMetaData?.publicKey,
+        hcPartyKeys: this.systemMetaData?.hcPartyKeys ?? const {},
+        privateKeyShamirPartitions: this.systemMetaData?.privateKeyShamirPartitions ?? const {},
+        secretForeignKeys: this.systemMetaData?.secretForeignKeys.toSet() ?? {},
+        cryptedForeignKeys:
+        this.systemMetaData?.cryptedForeignKeys.map((k, v) => MapEntry(k, v.map((it) => it.toDelegationDto()).toSet())) ?? const {},
+        delegations: this.systemMetaData?.delegations.map((k, v) => MapEntry(k, v.map((it) => it.toDelegationDto()).toSet())) ?? const {},
+        encryptionKeys: this.systemMetaData?.encryptionKeys.map((k, v) => MapEntry(k, v.map((it) => it.toDelegationDto()).toSet())) ?? const {},
+        aesExchangeKeys: this.systemMetaData?.aesExchangeKeys ?? const {},
+        transferKeys: this.systemMetaData?.transferKeys ?? const {},
+      );
 }
 
 extension PatientDeactivationReasonEnumMapper on PatientDeactivationReasonEnum {

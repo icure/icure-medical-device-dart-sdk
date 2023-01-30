@@ -419,7 +419,7 @@ class DataSampleFilter extends FilterBuilder<DataSample> {
       await _forPatients?.let((v) async {
         var localCrypto = v.item1;
         Set<String> secretForeignKeys = (await Future.wait(v.item2.map((p) {
-          var delegations = (p.systemMetaData?.delegations ?? {}).map((k, v) => MapEntry(k, v.map((d) => d.toDelegationDto()).toSet()));
+          var delegations = (p.systemMetaData?.delegations ?? {}).toDelegationMapDto();
           return localCrypto.decryptEncryptionKeys(dataOwnerId, delegations);
         })))
             .toSet()

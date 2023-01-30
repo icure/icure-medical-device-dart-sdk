@@ -81,48 +81,75 @@ class PatientApiImpl extends PatientApi {
       throw StateError("DataOwner ${currentUser.dataOwnerId()} does not have the right to access patient ${patient.id}");
     }
 
-    // Check if delegatedTo already has access
-    if (patient.systemMetaData!.delegations.entries.any((element) => element.key == delegatedTo)) {
+    final patientDto = patient.toPatientDto();
+
+    final myId = currentUser!.dataOwnerId()!;
+    final newSecretIds = await localCrypto.findAndDecryptPotentiallyUnknownKeysForDelegate(myId, delegatedTo, patientDto.delegations);
+    final newEncryptionKeys = await localCrypto.findAndDecryptPotentiallyUnknownKeysForDelegate(myId, delegatedTo, patientDto.encryptionKeys);
+
+    if (newSecretIds.isEmpty && newSecretIds.isEmpty) {
       return patient;
     }
 
-    final patientDto = patient.toPatientDto();
-
-    final keyAndOwner = await localCrypto.encryptAESKeyForHcp(currentUser.dataOwnerId()!, delegatedTo, patientDto.id,
-        (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, patientDto.delegations)).firstOrNull!.formatAsKey());
-    final delegation = Delegation(owner: currentUser.dataOwnerId(), delegatedTo: delegatedTo, key: keyAndOwner.item1);
+    DataOwnerDto? dataOwner = null;
+    final Map<String, String> encryptedKeys = {};
+    for (var clearKey in { ...newSecretIds, ...newEncryptionKeys }) {
+      final encryptedKeyAndOwner = await localCrypto.encryptAESKeyForHcp(
+          myId,
+          delegatedTo,
+          patientDto.id,
+          clearKey.formatAsKey()
+      );
+      encryptedKeys[clearKey] = encryptedKeyAndOwner.item1;
+      dataOwner = encryptedKeyAndOwner.item2 ?? dataOwner;
+    }
+    final newSecretIdsDelegations = newSecretIds.map((clearKey) =>
+        Delegation(owner: myId, delegatedTo: delegatedTo, key: encryptedKeys[clearKey]!)
+    );
+    final newEncryptionKeysDelegations = newEncryptionKeys.map((clearKey) =>
+        Delegation(owner: myId, delegatedTo: delegatedTo, key: encryptedKeys[clearKey]!)
+    );
 
     if (patient.systemMetaData == null) {
-      patient.systemMetaData = SystemMetaDataOwnerEncrypted(delegations: {
-        delegatedTo: [delegation]
-      });
-    } else {
-      patient.systemMetaData!.delegations = {...patient.systemMetaData!.delegations}..addEntries([
-          MapEntry(delegatedTo, [delegation])
-        ]);
+      patient.systemMetaData = SystemMetaDataOwnerEncrypted(delegations: {}, encryptionKeys: {});
     }
+    final existingDelegationsForDelegate = patient.systemMetaData!.delegations[delegatedTo] ?? [];
+    patient.systemMetaData!.delegations[delegatedTo] = [...existingDelegationsForDelegate, ...newSecretIdsDelegations];
+    final existingEncryptionKeysForDelegate = patient.systemMetaData!.encryptionKeys[delegatedTo] ?? [];
+    patient.systemMetaData!.encryptionKeys[delegatedTo] = [...existingEncryptionKeysForDelegate, ...newEncryptionKeysDelegations];
 
-    patient.systemMetaData!.encryptionKeys = {...patient.systemMetaData!.encryptionKeys}..addEntries([
-        MapEntry(delegatedTo, [
-          await DelegationExtended.delegationBasedOn(localCrypto, currentUser.dataOwnerId()!, delegatedTo, patient.id!,
-              (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, patientDto.encryptionKeys)).firstOrNull!.formatAsKey())
-        ])
-      ]);
-
-    final dataOwner = keyAndOwner.item2;
     if (dataOwner != null && dataOwner.dataOwnerId == patient.id) {
       patient.rev = dataOwner.rev;
       patient.systemMetaData!.hcPartyKeys = dataOwner.hcPartyKeys;
+      patient.systemMetaData!.aesExchangeKeys = dataOwner.aesExchangeKeys;
     }
 
     return (await createOrModifyPatient(patient)) ?? (throw StateError("Couldn't give access to $delegatedTo to patient ${patient.id}"));
   }
 
-  Future<Delegation> createDelegationBasedOn(Crypto localCrypto, String dataOwnerId,
-      String delegatedTo, String objectId, String keyToEncrypt) async {
-    return Delegation(
-        owner: dataOwnerId,
-        delegatedTo: delegatedTo,
-        key: (await localCrypto.encryptAESKeyForHcp(dataOwnerId, delegatedTo, objectId, keyToEncrypt)).item1);
+  @override
+  Future<PotentiallyEncryptedPatient?> getPatientAndTryDecrypt(String patientId) async {
+    final patient = await _api.basePatientApi.rawGetPatient(patientId);
+    if (patient == null) return null;
+    final config = patientCryptoConfig(_api.crypto);
+    final currentUser = (await _api.baseUserApi.getCurrentUser() ?? (throw StateError("Couldn't get current user")));
+    try {
+      return PatientDtoMapper(await config.decryptPatient(currentUser.dataOwnerId()!, patient)).toPatient();
+    } catch (e) {
+      return EncryptedPatientDtoMapper(patient).toEncryptedPatient();
+    }
+  }
+
+  @override
+  Future<EncryptedPatient?> modifyEncryptedPatient(EncryptedPatient modifiedPatient) async {
+    final config = patientCryptoConfig(_api.crypto);
+    final rawDto = EncryptedPatientMapper(modifiedPatient).toPatientDto();
+    final asDecrypted = DecryptedPatientDto.fromJson(rawDto.toJson());
+    if (asDecrypted == null || (await config.marshaller(asDecrypted)).item2 != null) {
+      throw ArgumentError('Impossible to modify non-decryptable patient if new data requires encryption');
+    }
+    final modified = await _api.basePatientApi.rawModifyPatient(rawDto);
+    if (modified == null) return null;
+    return EncryptedPatientDtoMapper(modified).toEncryptedPatient();
   }
 }

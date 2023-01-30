@@ -31,13 +31,15 @@ class HealthcareElementApiImpl extends HealthcareElementApi {
           : (throw StateError("Could not modify healthElement ${healthcareElement.id}"));
     }
 
-    final patient = await api.basePatientApi.getPatient(currentUser, patientId, ccPatient)
-        ?? (throw StateError("Error while getting patient with id $patientId"));
-    final createdHealthElementDto = await api.baseHealthElementApi
-        .createHealthElementWithPatient(currentUser, patient, HealthcareElementMapper(healthcareElement).toHealthElementDto(), ccHealthElement);
-    return createdHealthElementDto != null
-        ? HealthElementDtoMapper(createdHealthElementDto).toHealthcareElement()
-        : (throw StateError("Could not create healthElement ${healthcareElement.id}"));
+    final patient = await api.patientApi.getPatientAndTryDecrypt(patientId) ?? (throw StateError("Error while getting patient with id $patientId"));
+    final createdHealthElementDto = await api.baseHealthElementApi.createHealthElementWithPatientInfo(
+      currentUser,
+      patient.id!,
+      (patient.systemMetaData?.delegations ?? {}).toDelegationMapDto(),
+      HealthcareElementMapper(healthcareElement).toHealthElementDto(),
+      ccHealthElement
+    );
+    return createdHealthElementDto != null ? HealthElementDtoMapper(createdHealthElementDto).toHealthcareElement() : (throw StateError("Could not create healthElement ${healthcareElement.id}"));;
   }
 
   @override
@@ -58,10 +60,14 @@ class HealthcareElementApiImpl extends HealthcareElementApi {
     final healthElementDtosToUpdate = healthcareElementsToUpdate.map((e) => e.toHealthElementDto()).toList();
     final healthElementDtosToCreate = healthcareElementsToCreate.map((e) => e.toHealthElementDto()).toList();
 
-    final patient =
-        await base_api.PatientApiCrypto(api.basePatientApi).getPatient(currentUser!, patientId, ccPatient)
-            ?? (throw StateError("Error while getting patient with id $patientId"));
-    final heCreated = await api.baseHealthElementApi.createHealthElements(currentUser, patient, healthElementDtosToCreate, ccHealthElement);
+    final patient = await api.patientApi.getPatientAndTryDecrypt(patientId) ?? (throw StateError("Error while getting patient with id $patientId"));
+    final heCreated = await api.baseHealthElementApi.createHealthElementsWithPatientInfo(
+        currentUser!,
+        patient.id!,
+        patient.systemMetaData!.delegations.toDelegationMapDto(),
+        healthElementDtosToCreate,
+        ccHealthElement
+    );
     final heUpdated = await api.baseHealthElementApi.modifyHealthElements(currentUser, healthElementDtosToUpdate, ccHealthElement);
     final heProcessed = [...?heCreated, ...heUpdated];
 
@@ -116,41 +122,41 @@ class HealthcareElementApiImpl extends HealthcareElementApi {
       throw StateError("User ${currentUser.id} may not access healthcare element. Check that the healthcare element is owned by/shared to the actual user.");
     }
 
-    // Check if delegatedTo already has access
-    if (healthcareElement.systemMetaData!.delegations.entries.any((element) => element.key == delegatedTo)) {
+    final myId = currentUser!.dataOwnerId()!;
+    final healthcareElementDto = healthcareElement.toHealthElementDto();
+    final patientId = (await localCrypto.decryptEncryptionKeys(myId, healthcareElementDto.cryptedForeignKeys)).firstOrNull!.formatAsKey();
+    final newSecretIds = await localCrypto.findAndDecryptPotentiallyUnknownKeysForDelegate(myId, delegatedTo, healthcareElementDto.delegations);
+    final newEncryptionKeys = await localCrypto.findAndDecryptPotentiallyUnknownKeysForDelegate(myId, delegatedTo, healthcareElementDto.encryptionKeys);
+    final newCfks = await localCrypto.findAndDecryptPotentiallyUnknownKeysForDelegate(myId, delegatedTo, healthcareElementDto.cryptedForeignKeys);
+
+    if (newSecretIds.isEmpty && newEncryptionKeys.isEmpty && newCfks.isEmpty) {
       return healthcareElement;
     }
 
-    final healthcareElementDto = healthcareElement.toHealthElementDto();
-
-    final patientId =
-        (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, healthcareElementDto.cryptedForeignKeys)).firstOrNull;
-    final sfk = (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, healthcareElementDto.delegations)).firstOrNull;
-    final ek = (await localCrypto.decryptEncryptionKeys(currentUser.dataOwnerId()!, healthcareElementDto.encryptionKeys)).firstOrNull;
-
-    if (patientId == null || sfk == null || ek == null) {
-      throw StateError("User ${currentUser.id} could not decrypt secret info of healthcare element ${healthcareElementDto.id}. Check that the healthcare element is owned by/shared to the actual user.");
-    }
-
-    final delegation = await DelegationExtended.delegationBasedOn(localCrypto, currentUser.dataOwnerId()!, delegatedTo, healthcareElement.id!, sfk.formatAsKey());
+    final newSecretIdsDelegations = await Future.wait(newSecretIds.map((clearKey) =>
+        DelegationExtended.delegationBasedOn(localCrypto, myId, delegatedTo, healthcareElement.id!, clearKey.formatAsKey())
+    ));
+    final newEncryptionKeysDelegations = await Future.wait(newEncryptionKeys.map((clearKey) =>
+        DelegationExtended.delegationBasedOn(localCrypto, myId, delegatedTo, healthcareElement.id!, clearKey.formatAsKey())
+    ));
+    final newCfksDelegations = await Future.wait(newCfks.map((clearKey) =>
+        DelegationExtended.delegationBasedOn(localCrypto, myId, delegatedTo, healthcareElement.id!, clearKey.formatAsKey())
+    ));
 
     if (healthcareElement.systemMetaData == null) {
-      healthcareElement.systemMetaData = SystemMetaDataEncrypted(delegations: {
-        delegatedTo: [delegation]
-      });
-    } else {
-      healthcareElement.systemMetaData!.delegations = {...healthcareElement.systemMetaData!.delegations}..addEntries([
-          MapEntry(delegatedTo, [delegation])
-        ]);
+      healthcareElement.systemMetaData = SystemMetaDataEncrypted(
+        delegations: {},
+        cryptedForeignKeys: {},
+        encryptionKeys: {}
+      );
     }
 
-    healthcareElement.systemMetaData!.encryptionKeys = {...healthcareElement.systemMetaData!.encryptionKeys}..addEntries([
-        MapEntry(delegatedTo, [await DelegationExtended.delegationBasedOn(localCrypto, currentUser.dataOwnerId()!, delegatedTo, healthcareElement.id!, ek.formatAsKey())])
-      ]);
-
-    healthcareElement.systemMetaData!.cryptedForeignKeys = {...healthcareElement.systemMetaData!.cryptedForeignKeys}..addEntries([
-        MapEntry(delegatedTo, [ await DelegationExtended.delegationBasedOn(localCrypto, currentUser.dataOwnerId()!, delegatedTo, healthcareElement.id!, patientId.formatAsKey())])
-      ]);
+    final existingDelegationsForDelegate = healthcareElement.systemMetaData!.delegations[delegatedTo] ?? [];
+    healthcareElement.systemMetaData!.delegations[delegatedTo] = [...existingDelegationsForDelegate, ...newSecretIdsDelegations];
+    final existingEncryptionKeysForDelegate = healthcareElement.systemMetaData!.encryptionKeys[delegatedTo] ?? [];
+    healthcareElement.systemMetaData!.encryptionKeys[delegatedTo] = [...existingEncryptionKeysForDelegate, ...newEncryptionKeysDelegations];
+    final existingCfksForDelegate = healthcareElement.systemMetaData!.cryptedForeignKeys[delegatedTo] ?? [];
+    healthcareElement.systemMetaData!.cryptedForeignKeys[delegatedTo] = [...existingCfksForDelegate, ...newCfksDelegations];
 
     return (await createOrModifyHealthcareElement(patientId.formatAsKey(), healthcareElement)) ??
         (throw StateError("Couldn't give access to $delegatedTo to health element ${healthcareElement.id}"));
