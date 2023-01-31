@@ -1,3 +1,7 @@
+# 1.5.3
+
+- Fix a bug that caused corruption of encrypted data on modification of unencrypted patient data.
+
 # 1.5.2
 
 - Fix a bug that caused corruption of the Patient entity data the first time the new patient user logins through the
