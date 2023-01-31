@@ -46,6 +46,7 @@ extension HealthElementDtoMapper on DecryptedHealthElementDto {
         cryptedForeignKeys: this.cryptedForeignKeys.map((key, value) => MapEntry(key, value.map((e) => e.toDelegation()).toList())),
         delegations: this.delegations.map((key, value) => MapEntry(key, value.map((e) => e.toDelegation()).toList())),
         encryptionKeys: this.encryptionKeys.map((key, value) => MapEntry(key, value.map((e) => e.toDelegation()).toList())),
+        encryptedSelf: this.encryptedSelf
       )
       );
 }
@@ -84,5 +85,6 @@ extension HealthcareElementMapper on HealthcareElement {
         delegations: this.systemMetaData?.delegations.map((key, value) => MapEntry(key, value.map((e) => e.toDelegationDto()).toSet())) ??
             const <String, Set<DelegationDto>>{},
         encryptionKeys: this.systemMetaData?.encryptionKeys.map((key, value) => MapEntry(key, value.map((e) => e.toDelegationDto()).toSet())) ?? const <String, Set<DelegationDto>>{},
+        encryptedSelf: this.systemMetaData?.encryptedSelf
       );
 }
