@@ -89,6 +89,7 @@ extension PatientDtoMapper on DecryptedPatientDto {
             encryptionKeys: this.encryptionKeys.map((k, v) => MapEntry(k, v.map((it) => it.toDelegation()).toList())),
             aesExchangeKeys: this.aesExchangeKeys,
             transferKeys: this.transferKeys,
+            encryptedSelf: this.encryptedSelf
           )
       );
 }
@@ -155,6 +156,7 @@ extension EncryptedPatientDtoMapper on PatientDto {
             encryptionKeys: this.encryptionKeys.map((k, v) => MapEntry(k, v.map((it) => it.toDelegation()).toList())),
             aesExchangeKeys: this.aesExchangeKeys,
             transferKeys: this.transferKeys,
+            encryptedSelf: this.encryptedSelf
           )
       );
 }
@@ -238,6 +240,7 @@ extension PatientMapper on Patient {
         encryptionKeys: this.systemMetaData?.encryptionKeys.map((k, v) => MapEntry(k, v.map((it) => it.toDelegationDto()).toSet())) ?? const {},
         aesExchangeKeys: this.systemMetaData?.aesExchangeKeys ?? const {},
         transferKeys: this.systemMetaData?.transferKeys ?? const {},
+        encryptedSelf: this.systemMetaData?.encryptedSelf
       );
 
   DataOwnerDto toDataOwnerDto() =>
@@ -310,6 +313,7 @@ extension EncryptedPatientMapper on EncryptedPatient {
         encryptionKeys: this.systemMetaData?.encryptionKeys.map((k, v) => MapEntry(k, v.map((it) => it.toDelegationDto()).toSet())) ?? const {},
         aesExchangeKeys: this.systemMetaData?.aesExchangeKeys ?? const {},
         transferKeys: this.systemMetaData?.transferKeys ?? const {},
+        encryptedSelf: this.systemMetaData?.encryptedSelf
       );
 }
 

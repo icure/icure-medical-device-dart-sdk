@@ -243,5 +243,6 @@ void main() {
     expect(updated!.note, null);
     expect(updated.firstName, "Gianfranco");
     expect(updated.rev != encrypted.rev, true, reason: "Patient revision should have changed");
+    expect((await hcpApi!.patientApi.getPatient(patient.id!))?.note, patient.note!);
   });
 }

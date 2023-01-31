@@ -17,6 +17,7 @@ class SystemMetaDataEncrypted {
     this.cryptedForeignKeys = const {},
     this.delegations = const {},
     this.encryptionKeys = const {},
+    this.encryptedSelf = null
   });
 
   List<String> secretForeignKeys;
@@ -27,6 +28,8 @@ class SystemMetaDataEncrypted {
 
   Map<String, List<Delegation>> encryptionKeys;
 
+  String? encryptedSelf;
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -34,16 +37,17 @@ class SystemMetaDataEncrypted {
           UnorderedIterableEquality().equals(other.secretForeignKeys, secretForeignKeys) &&
           MapEquality(values: UnorderedIterableEquality()).equals(other.cryptedForeignKeys, cryptedForeignKeys) &&
           MapEquality(values: UnorderedIterableEquality()).equals(other.delegations, delegations) &&
-          MapEquality(values: UnorderedIterableEquality()).equals(other.encryptionKeys, encryptionKeys);
+          MapEquality(values: UnorderedIterableEquality()).equals(other.encryptionKeys, encryptionKeys) &&
+          encryptedSelf == other.encryptedSelf;
 
   @override
   int get hashCode =>
       // ignore: unnecessary_parenthesis
-      (secretForeignKeys.hashCode) + (cryptedForeignKeys.hashCode) + (delegations.hashCode) + (encryptionKeys.hashCode);
+      (secretForeignKeys.hashCode) + (cryptedForeignKeys.hashCode) + (delegations.hashCode) + (encryptionKeys.hashCode) + (encryptedSelf?.hashCode ?? 0);
 
   @override
   String toString() =>
-      'SystemMetaDataEncrypted[secretForeignKeys=$secretForeignKeys, cryptedForeignKeys=$cryptedForeignKeys, delegations=$delegations, encryptionKeys=$encryptionKeys]';
+      'SystemMetaDataEncrypted[secretForeignKeys=$secretForeignKeys, cryptedForeignKeys=$cryptedForeignKeys, delegations=$delegations, encryptionKeys=$encryptionKeys, encryptedSelf=$encryptedSelf]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -51,6 +55,9 @@ class SystemMetaDataEncrypted {
     json[r'cryptedForeignKeys'] = cryptedForeignKeys;
     json[r'delegations'] = delegations;
     json[r'encryptionKeys'] = encryptionKeys;
+    if (encryptedSelf != null) {
+      json[r'encryptedSelf'] = encryptedSelf;
+    }
     return json;
   }
 
@@ -77,6 +84,7 @@ class SystemMetaDataEncrypted {
         cryptedForeignKeys: json[r'cryptedForeignKeys'] == null ? const {} : Delegation.mapListFromJson(json[r'cryptedForeignKeys']),
         delegations: json[r'delegations'] == null ? const {} : Delegation.mapListFromJson(json[r'delegations']),
         encryptionKeys: json[r'encryptionKeys'] == null ? const {} : Delegation.mapListFromJson(json[r'encryptionKeys']),
+        encryptedSelf: json[r'encryptionKeys'] == null ? null : json[r'encryptionKeys'] as String
       );
     }
     return null;

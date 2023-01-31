@@ -21,7 +21,9 @@ class SystemMetaDataOwnerEncrypted {
     this.delegations = const {},
     this.encryptionKeys = const {},
     this.aesExchangeKeys = const {},
-    this.transferKeys = const {}});
+    this.transferKeys = const {},
+    this.encryptedSelf = null
+  });
 
   String? publicKey;
 
@@ -41,6 +43,8 @@ class SystemMetaDataOwnerEncrypted {
 
   Map<String, Map<String, String>> transferKeys;
 
+  String? encryptedSelf;
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -53,7 +57,8 @@ class SystemMetaDataOwnerEncrypted {
           MapEquality(values: ListEquality()).equals(other.delegations, delegations) &&
           MapEquality(values: ListEquality()).equals(other.encryptionKeys, encryptionKeys) &&
           MapEquality(values: MapEquality(values: MapEquality())).equals(other.aesExchangeKeys, aesExchangeKeys) &&
-          MapEquality(values: MapEquality()).equals(other.transferKeys, transferKeys);
+          MapEquality(values: MapEquality()).equals(other.transferKeys, transferKeys) &&
+          encryptedSelf == other.encryptedSelf;
 
   @override
   int get hashCode =>
@@ -66,11 +71,12 @@ class SystemMetaDataOwnerEncrypted {
       (delegations.hashCode) +
       (encryptionKeys.hashCode) +
       (aesExchangeKeys.hashCode) +
-      (transferKeys.hashCode);
+      (transferKeys.hashCode) +
+      (encryptedSelf?.hashCode ?? 0);
 
   @override
   String toString() =>
-      'SystemMetaDataOwnerEncrypted[publicKey=$publicKey, hcPartyKeys=$hcPartyKeys, privateKeyShamirPartitions=$privateKeyShamirPartitions, secretForeignKeys=$secretForeignKeys, cryptedForeignKeys=$cryptedForeignKeys, delegations=$delegations, encryptionKeys=$encryptionKeys, aesExchangeKeys=$aesExchangeKeys, transferKeys=$transferKeys';
+      'SystemMetaDataOwnerEncrypted[publicKey=$publicKey, hcPartyKeys=$hcPartyKeys, privateKeyShamirPartitions=$privateKeyShamirPartitions, secretForeignKeys=$secretForeignKeys, cryptedForeignKeys=$cryptedForeignKeys, delegations=$delegations, encryptionKeys=$encryptionKeys, aesExchangeKeys=$aesExchangeKeys, transferKeys=$transferKeys, encryptedSelf=$encryptedSelf]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -85,6 +91,9 @@ class SystemMetaDataOwnerEncrypted {
     json[r'encryptionKeys'] = encryptionKeys;
     json[r'aesExchangeKeys'] = aesExchangeKeys;
     json[r'transferKeys'] = transferKeys;
+    if (encryptedSelf != null) {
+      json[r'encryptedSelf'] = encryptedSelf;
+    }
     return json;
   }
 
@@ -116,6 +125,7 @@ class SystemMetaDataOwnerEncrypted {
         encryptionKeys: json[r'encryptionKeys'] == null ? const {} : Delegation.mapListFromJson(json[r'encryptionKeys']),
         aesExchangeKeys: json[r'aesExchangeKeys'] == null ? const {} : mapOf(json[r'aesExchangeKeys'], (el) => mapWithMapOfStringsFromJson(el)),
         transferKeys: json[r'transferKeys'] == null ? const {} : mapWithMapOfStringsFromJson(json[r'transferKeys']),
+        encryptedSelf: json[r'encryptedSelf'] == null ? null : json[r'encryptedSelf'] as String,
       );
     }
     return null;
