@@ -68,6 +68,68 @@ class PatientApiImpl extends PatientApi {
 
   @override
   Future<Patient> giveAccessTo(Patient patient, String delegatedTo) async {
+    final updateData = await _giveAccessTo(
+        patient.id!,
+        patient.systemMetaData?.delegations ?? {},
+        patient.systemMetaData?.encryptionKeys ?? {},
+        delegatedTo
+    );
+    if (updateData == null) return patient;
+    if (patient.systemMetaData == null) {
+      patient.systemMetaData = SystemMetaDataOwnerEncrypted();
+    }
+    patient.systemMetaData!.encryptionKeys = updateData.updatedEncryptionKeys;
+    patient.systemMetaData!.delegations = updateData.updatedDelegations;
+    if (updateData.updatedRev != null) {
+      patient.rev = updateData.updatedRev;
+    }
+    if (updateData.updatedAesExchangeKeys != null) {
+      patient.systemMetaData!.aesExchangeKeys = updateData.updatedAesExchangeKeys!;
+    }
+    if (updateData.updatedHcPartyKeys != null) {
+      patient.systemMetaData!.hcPartyKeys = updateData.updatedHcPartyKeys!;
+    }
+    return (await createOrModifyPatient(patient)) ?? (throw StateError("Couldn't give access to $delegatedTo to patient ${patient.id}"));
+  }
+
+  @override
+  Future<PotentiallyEncryptedPatient> giveAccessToPotentiallyEncrypted(PotentiallyEncryptedPatient patient, String delegatedTo) async {
+    if (patient is Patient) {
+      return await giveAccessTo(patient, delegatedTo);
+    } else if (patient is EncryptedPatient) {
+      final updateData = await _giveAccessTo(
+          patient.id!,
+          patient.systemMetaData?.delegations ?? {},
+          patient.systemMetaData?.encryptionKeys ?? {},
+          delegatedTo
+      );
+      if (updateData == null) return patient;
+      if (patient.systemMetaData == null) {
+        patient.systemMetaData = SystemMetaDataOwnerEncrypted();
+      }
+      patient.systemMetaData!.encryptionKeys = updateData.updatedEncryptionKeys;
+      patient.systemMetaData!.delegations = updateData.updatedDelegations;
+      if (updateData.updatedRev != null) {
+        patient.rev = updateData.updatedRev;
+      }
+      if (updateData.updatedAesExchangeKeys != null) {
+        patient.systemMetaData!.aesExchangeKeys = updateData.updatedAesExchangeKeys!;
+      }
+      if (updateData.updatedHcPartyKeys != null) {
+        patient.systemMetaData!.hcPartyKeys = updateData.updatedHcPartyKeys!;
+      }
+      return (await modifyEncryptedPatient(patient)) ?? (throw StateError("Couldn't give access to $delegatedTo to patient ${patient.id}"));
+    } else {
+      throw ArgumentError("Unexpected type for patient $patient");
+    }
+  }
+
+  Future<_PatientGiveAccessUpdate?> _giveAccessTo(
+      String patientId,
+      Map<String, List<Delegation>> existingDelegations,
+      Map<String, List<Delegation>> existingEncryptionKeys,
+      String delegatedTo
+  ) async {
     final localCrypto = _api.crypto;
     final currentUser = (await _api.baseUserApi.getCurrentUser())
         ?? (throw StateError("There is no user currently logged in. You must call this method from an authenticated MedTechApi"));
@@ -76,19 +138,25 @@ class PatientApiImpl extends PatientApi {
       throw StateError("The current user is not a data owner. You must been either a patient, a device or a healthcare professional to call this method");
     }
 
-  // Check if delegatedBy has access
-    if (!patient.systemMetaData!.delegations.entries.any((element) => element.key == currentUser.dataOwnerId())) {
-      throw StateError("DataOwner ${currentUser.dataOwnerId()} does not have the right to access patient ${patient.id}");
+    // Check if delegatedBy has access
+    if (!existingDelegations.entries.any((element) => element.key == currentUser.dataOwnerId())) {
+      throw StateError("DataOwner ${currentUser.dataOwnerId()} does not have the right to access patient ${patientId}");
     }
 
-    final patientDto = patient.toPatientDto();
-
-    final myId = currentUser!.dataOwnerId()!;
-    final newSecretIds = await localCrypto.findAndDecryptPotentiallyUnknownKeysForDelegate(myId, delegatedTo, patientDto.delegations);
-    final newEncryptionKeys = await localCrypto.findAndDecryptPotentiallyUnknownKeysForDelegate(myId, delegatedTo, patientDto.encryptionKeys);
+    final myId = currentUser.dataOwnerId()!;
+    final newSecretIds = await localCrypto.findAndDecryptPotentiallyUnknownKeysForDelegate(
+        myId,
+        delegatedTo,
+        existingDelegations.map((key, value) => MapEntry(key, value.map((e) => e.toDelegationDto()).toSet()))
+    );
+    final newEncryptionKeys = await localCrypto.findAndDecryptPotentiallyUnknownKeysForDelegate(
+        myId,
+        delegatedTo,
+        existingEncryptionKeys.map((key, value) => MapEntry(key, value.map((e) => e.toDelegationDto()).toSet()))
+    );
 
     if (newSecretIds.isEmpty && newSecretIds.isEmpty) {
-      return patient;
+      return null;
     }
 
     DataOwnerDto? dataOwner = null;
@@ -97,7 +165,7 @@ class PatientApiImpl extends PatientApi {
       final encryptedKeyAndOwner = await localCrypto.encryptAESKeyForHcp(
           myId,
           delegatedTo,
-          patientDto.id,
+          patientId,
           clearKey.formatAsKey()
       );
       encryptedKeys[clearKey] = encryptedKeyAndOwner.item1;
@@ -105,26 +173,31 @@ class PatientApiImpl extends PatientApi {
     }
     final newSecretIdsDelegations = newSecretIds.map((clearKey) =>
         Delegation(owner: myId, delegatedTo: delegatedTo, key: encryptedKeys[clearKey]!)
-    );
+    ).toList();
     final newEncryptionKeysDelegations = newEncryptionKeys.map((clearKey) =>
         Delegation(owner: myId, delegatedTo: delegatedTo, key: encryptedKeys[clearKey]!)
-    );
+    ).toList();
 
-    if (patient.systemMetaData == null) {
-      patient.systemMetaData = SystemMetaDataOwnerEncrypted(delegations: {}, encryptionKeys: {});
+    final Map<String, List<Delegation>> updatedDelegations = {
+      ...existingDelegations,
+      delegatedTo: [...(existingDelegations[delegatedTo] ?? []), ...newSecretIdsDelegations]
+    };
+    final Map<String, List<Delegation>> updatedEncryptionKeys = {
+      ...existingEncryptionKeys,
+      delegatedTo: [...(existingEncryptionKeys[delegatedTo] ?? []), ...newEncryptionKeysDelegations]
+    };
+
+    if (dataOwner != null && dataOwner.dataOwnerId == patientId) {
+      return _PatientGiveAccessUpdate(
+        updatedRev: dataOwner.rev,
+        updatedHcPartyKeys: dataOwner.hcPartyKeys,
+        updatedAesExchangeKeys: dataOwner.aesExchangeKeys,
+        updatedDelegations: updatedDelegations,
+        updatedEncryptionKeys: updatedEncryptionKeys
+      );
+    } else {
+      return _PatientGiveAccessUpdate(updatedDelegations: updatedDelegations, updatedEncryptionKeys: updatedEncryptionKeys);
     }
-    final existingDelegationsForDelegate = patient.systemMetaData!.delegations[delegatedTo] ?? [];
-    patient.systemMetaData!.delegations[delegatedTo] = [...existingDelegationsForDelegate, ...newSecretIdsDelegations];
-    final existingEncryptionKeysForDelegate = patient.systemMetaData!.encryptionKeys[delegatedTo] ?? [];
-    patient.systemMetaData!.encryptionKeys[delegatedTo] = [...existingEncryptionKeysForDelegate, ...newEncryptionKeysDelegations];
-
-    if (dataOwner != null && dataOwner.dataOwnerId == patient.id) {
-      patient.rev = dataOwner.rev;
-      patient.systemMetaData!.hcPartyKeys = dataOwner.hcPartyKeys;
-      patient.systemMetaData!.aesExchangeKeys = dataOwner.aesExchangeKeys;
-    }
-
-    return (await createOrModifyPatient(patient)) ?? (throw StateError("Couldn't give access to $delegatedTo to patient ${patient.id}"));
   }
 
   @override
@@ -152,4 +225,20 @@ class PatientApiImpl extends PatientApi {
     if (modified == null) return null;
     return EncryptedPatientDtoMapper(modified).toEncryptedPatient();
   }
+}
+
+class _PatientGiveAccessUpdate {
+  _PatientGiveAccessUpdate({
+    this.updatedRev,
+    this.updatedHcPartyKeys,
+    this.updatedAesExchangeKeys,
+    required this.updatedDelegations,
+    required this.updatedEncryptionKeys
+  });
+
+  String? updatedRev;
+  Map<String, List<String>>? updatedHcPartyKeys;
+  Map<String, Map<String, Map<String, String>>>? updatedAesExchangeKeys;
+  Map<String, List<Delegation>> updatedDelegations;
+  Map<String, List<Delegation>> updatedEncryptionKeys;
 }

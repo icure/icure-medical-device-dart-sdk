@@ -209,9 +209,14 @@ void main() {
       expect(foundDataSamplesByPatient[0].id, newSample.id);
 
       print("By giving each other's access to the patient entity both patient and hcp can now find all data samples");
-      final pu0 = await hcpApi!.patientApi.getPatient(patient.id!);
-      final pu1 = await hcpApi!.patientApi.giveAccessTo(pu0!, patient.id!);
-      final updatedPatient = await patientApi.patientApi.giveAccessTo(pu1, hcpId!);
+      await patientApi.patientApi.giveAccessToPotentiallyEncrypted(
+          (await patientApi.patientApi.getPatientAndTryDecrypt(patient.id!))!,
+          hcpId!
+      );
+      final updatedPatient = await hcpApi!.patientApi.giveAccessTo((
+          await hcpApi!.patientApi.getPatient(patient.id!))!,
+          patient.id!
+      );
       final filterForPatient2 = await new DataSampleFilter()
           .forDataOwner(patient.id!)
           .forPatients(patientApi.crypto, [updatedPatient])
@@ -228,21 +233,21 @@ void main() {
       expect(foundDataSamplesByHcp2.length, 2);
       expect(foundDataSamplesByHcp2.map((e) => e.id), containsAll([dataSample.id, newSample.id]));
     });
-  });
 
-  test('Patient should be able to modify his non-encrypted data even if he was not yet given full access to it', () async {
-    final patientApiDetails = await createPatientApi();
-    final patient = patientApiDetails.item1;
-    final patientApi = patientApiDetails.item4;
-    final encrypted = (await patientApi.patientApi.getPatientAndTryDecrypt(patient.id!)) as EncryptedPatient;
-    encrypted.note = "This is not allowed";
-    expect(patientApi.patientApi.modifyEncryptedPatient(encrypted), throwsArgumentError);
-    encrypted.note = null;
-    encrypted.firstName = "Gianfranco";
-    final updated = await patientApi.patientApi.modifyEncryptedPatient(encrypted);
-    expect(updated!.note, null);
-    expect(updated.firstName, "Gianfranco");
-    expect(updated.rev != encrypted.rev, true, reason: "Patient revision should have changed");
-    expect((await hcpApi!.patientApi.getPatient(patient.id!))?.note, patient.note!);
+    test('Patient should be able to modify his non-encrypted data even if he was not yet given full access to it', () async {
+      final patientApiDetails = await createPatientApi();
+      final patient = patientApiDetails.item1;
+      final patientApi = patientApiDetails.item4;
+      final encrypted = (await patientApi.patientApi.getPatientAndTryDecrypt(patient.id!)) as EncryptedPatient;
+      encrypted.note = "This is not allowed";
+      expect(patientApi.patientApi.modifyEncryptedPatient(encrypted), throwsArgumentError);
+      encrypted.note = null;
+      encrypted.firstName = "Gianfranco";
+      final updated = await patientApi.patientApi.modifyEncryptedPatient(encrypted);
+      expect(updated!.note, null);
+      expect(updated.firstName, "Gianfranco");
+      expect(updated.rev != encrypted.rev, true, reason: "Patient revision should have changed");
+      expect((await hcpApi!.patientApi.getPatient(patient.id!))?.note, patient.note!);
+    });
   });
 }
