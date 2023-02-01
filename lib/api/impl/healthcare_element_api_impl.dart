@@ -62,7 +62,7 @@ class HealthcareElementApiImpl extends HealthcareElementApi {
 
     final patient = await api.patientApi.getPatientAndTryDecrypt(patientId) ?? (throw StateError("Error while getting patient with id $patientId"));
     final heCreated = await api.baseHealthElementApi.createHealthElementsWithPatientInfo(
-        currentUser!,
+        currentUser,
         patient.id!,
         patient.systemMetaData!.delegations.toDelegationMapDto(),
         healthElementDtosToCreate,
@@ -122,7 +122,7 @@ class HealthcareElementApiImpl extends HealthcareElementApi {
       throw StateError("User ${currentUser.id} may not access healthcare element. Check that the healthcare element is owned by/shared to the actual user.");
     }
 
-    final myId = currentUser!.dataOwnerId()!;
+    final myId = currentUser.dataOwnerId()!;
     final healthcareElementDto = healthcareElement.toHealthElementDto();
     final patientId = (await localCrypto.decryptEncryptionKeys(myId, healthcareElementDto.cryptedForeignKeys)).firstOrNull!.formatAsKey();
     final newSecretIds = await localCrypto.findAndDecryptPotentiallyUnknownKeysForDelegate(myId, delegatedTo, healthcareElementDto.delegations);

@@ -195,14 +195,14 @@ void main() {
       print("But they can only find their own data samples");
       final filterForHcp = await new DataSampleFilter()
           .forDataOwner(hcpId!)
-          .forPatients(hcpApi!.crypto, [patient])
+          .forPatients(hcpApi!.crypto, [(await hcpApi!.patientApi.getPatient(patient.id!))!])
           .build();
       final foundDataSamplesByHcp = (await hcpApi!.dataSampleApi.filterDataSample(filterForHcp))!.rows;
       expect(foundDataSamplesByHcp.length, 1);
       expect(foundDataSamplesByHcp[0].id, dataSample.id);
       final filterForPatient = await new DataSampleFilter()
           .forDataOwner(patient.id!)
-          .forPatients(patientApi.crypto, [patient])
+          .forPatients(patientApi.crypto, [(await patientApi.patientApi.getPatientAndTryDecrypt(patient.id!))!])
           .build();
       final foundDataSamplesByPatient = (await patientApi.dataSampleApi.filterDataSample(filterForPatient))!.rows;
       expect(foundDataSamplesByPatient.length, 1);
@@ -238,12 +238,12 @@ void main() {
       final patientApiDetails = await createPatientApi();
       final patient = patientApiDetails.item1;
       final patientApi = patientApiDetails.item4;
-      final encrypted = (await patientApi.patientApi.getPatientAndTryDecrypt(patient.id!)) as EncryptedPatient;
+      final encrypted = (await patientApi.patientApi.getPatientAndTryDecrypt(patient.id!))!;
       encrypted.note = "This is not allowed";
-      expect(patientApi.patientApi.modifyEncryptedPatient(encrypted), throwsArgumentError);
+      expect(patientApi.patientApi.modifyPotentiallyEncryptedPatient(encrypted), throwsArgumentError);
       encrypted.note = null;
       encrypted.firstName = "Gianfranco";
-      final updated = await patientApi.patientApi.modifyEncryptedPatient(encrypted);
+      final updated = await patientApi.patientApi.modifyPotentiallyEncryptedPatient(encrypted);
       expect(updated!.note, null);
       expect(updated.firstName, "Gianfranco");
       expect(updated.rev != encrypted.rev, true, reason: "Patient revision should have changed");
