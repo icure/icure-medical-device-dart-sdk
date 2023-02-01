@@ -364,7 +364,7 @@ class DataSampleApiImpl extends DataSampleApi {
         ?? (throw StateError("There is no user currently logged in. You must call this method from an authenticated MedTechApi"));
 
     // Check if delegatedBy has access
-    final contact = (await _getContactOfDataSample(localCrypto, currentUser!, dataSample, bypassCache: true)).item2!;
+    final contact = (await _getContactOfDataSample(localCrypto, currentUser, dataSample, bypassCache: true)).item2!;
 
     final myId = currentUser.dataOwnerId()!;
     final newSecretIds = await localCrypto.findAndDecryptPotentiallyUnknownKeysForDelegate(myId, delegatedTo, contact.delegations);
