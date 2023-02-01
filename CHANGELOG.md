@@ -1,3 +1,8 @@
+# 1.5.4
+
+- Interface for potentially encrypted patient now includes setters
+- More api methods can use potentially encrypted patient
+
 # 1.5.3
 
 - Fix a bug that caused corruption of encrypted data on modification of unencrypted patient data.
