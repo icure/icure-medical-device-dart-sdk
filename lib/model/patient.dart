@@ -604,6 +604,7 @@ abstract class PotentiallyEncryptedPatient {
   /// Consider adding a "default:" property in the specification file to hide this note.
   ///
   String? get id;
+  set id(String? value);
 
   /// the revision of the patient in the database, used for conflict management / optimistic locking.
   ///
@@ -613,9 +614,11 @@ abstract class PotentiallyEncryptedPatient {
   /// Consider adding a "default:" property in the specification file to hide this note.
   ///
   String? get rev;
+  set rev(String? value);
 
   /// Typically used for business / client identifiers. An identifier should identify a patient uniquely and unambiguously. However, iCure can't guarantee the uniqueness of those identifiers : This is something you need to take care of.
   List<Identifier> get identifiers;
+  set identifiers(List<Identifier> value);
 
   /// the creation date of the patient (encoded as epoch).
   ///
@@ -625,6 +628,7 @@ abstract class PotentiallyEncryptedPatient {
   /// Consider adding a "default:" property in the specification file to hide this note.
   ///
   int? get created;
+  set created(int? value);
 
   /// the last modification date of the patient (encoded as epoch).
   ///
@@ -634,6 +638,7 @@ abstract class PotentiallyEncryptedPatient {
   /// Consider adding a "default:" property in the specification file to hide this note.
   ///
   int? get modified;
+  set modified(int? value);
 
   /// The id of the [User] that created this patient. When creating the patient, this field will be filled automatically by the current user id if not provided.
   ///
@@ -643,6 +648,7 @@ abstract class PotentiallyEncryptedPatient {
   /// Consider adding a "default:" property in the specification file to hide this note.
   ///
   String? get author;
+  set author(String? value);
 
   /// The id of the data owner that is responsible of this patient. When creating the patient, will be filled automatically by the current user data owner id ([HealthcareProfessional], [Patient] or [MedicalDevice]) if missing
   ///
@@ -652,12 +658,15 @@ abstract class PotentiallyEncryptedPatient {
   /// Consider adding a "default:" property in the specification file to hide this note.
   ///
   String? get responsible;
+  set responsible(String? value);
 
   /// A label is an item from a codification system that qualifies a patient as being member of a certain class, whatever the value it might have taken. If the label qualifies the content of a field, it means that whatever the content of the field, the label will always apply. LOINC is a codification system typically used for labels.
   Set<CodingReference> get labels;
+  set labels(Set<CodingReference> value);
 
   /// A code is an item from a codification system that qualifies the content of this patient.
   Set<CodingReference> get codes;
+  set codes(Set<CodingReference> value);
 
   /// Soft delete (unix epoch in ms) timestamp of the patient
   ///
@@ -667,6 +676,7 @@ abstract class PotentiallyEncryptedPatient {
   /// Consider adding a "default:" property in the specification file to hide this note.
   ///
   int? get endOfLife;
+  set endOfLife(int? value);
 
   /// the soft delete timestamp. When a patient is ”deleted“, this is set to a non null value: the moment of the deletion
   ///
@@ -676,6 +686,7 @@ abstract class PotentiallyEncryptedPatient {
   /// Consider adding a "default:" property in the specification file to hide this note.
   ///
   int? get deletionDate;
+  set deletionDate(int? value);
 
   /// the firstname (name) of the patient.
   ///
@@ -685,6 +696,7 @@ abstract class PotentiallyEncryptedPatient {
   /// Consider adding a "default:" property in the specification file to hide this note.
   ///
   String? get firstName;
+  set firstName(String? value);
 
   /// the lastname (surname) of the patient. This is the official lastname that should be used for official administrative purposes.
   ///
@@ -694,9 +706,11 @@ abstract class PotentiallyEncryptedPatient {
   /// Consider adding a "default:" property in the specification file to hide this note.
   ///
   String? get lastName;
+  set lastName(String? value);
 
   /// the list of all names of the patient, also containing the official full name information. Ordered by preference of use. First element is therefore the official name used for the patient in the application
   List<PersonName> get names;
+  set names(List<PersonName> value);
 
   /// the name of the company this patient is member of.
   ///
@@ -706,12 +720,15 @@ abstract class PotentiallyEncryptedPatient {
   /// Consider adding a "default:" property in the specification file to hide this note.
   ///
   String? get companyName;
+  set companyName(String? value);
 
   /// the list of languages spoken by the patient ordered by fluency (alpha-2 code http://www.loc.gov/standards/iso639-2/ascii_8bits.html).
   List<String> get languages;
+  set languages(List<String> value);
 
   /// the list of addresses (with address type).
   List<Address> get addresses;
+  set addresses(List<Address> value);
 
   /// Mr., Ms., Pr., Dr. ...
   ///
@@ -721,12 +738,15 @@ abstract class PotentiallyEncryptedPatient {
   /// Consider adding a "default:" property in the specification file to hide this note.
   ///
   String? get civility;
+  set civility(String? value);
 
   /// the gender of the patient: male, female, indeterminate, changed, changedToMale, changedToFemale, unknown
   PatientGenderEnum? get gender;
+  set gender(PatientGenderEnum? value);
 
   /// the birth sex of the patient: male, female, indeterminate, unknown
   PatientBirthSexEnum? get birthSex;
+  set birthSex(PatientBirthSexEnum? value);
 
   /// The id of the patient this patient has been merged with.
   ///
@@ -736,9 +756,11 @@ abstract class PotentiallyEncryptedPatient {
   /// Consider adding a "default:" property in the specification file to hide this note.
   ///
   String? get mergeToPatientId;
+  set mergeToPatientId(String? value);
 
   /// The ids of the patients that have been merged inside this patient.
   Set<String> get mergedIds;
+  set mergedIds(Set<String> value);
 
   /// An alias of the person, nickname, ...
   ///
@@ -748,12 +770,15 @@ abstract class PotentiallyEncryptedPatient {
   /// Consider adding a "default:" property in the specification file to hide this note.
   ///
   String? get alias;
+  set alias(String? value);
 
   /// Is the patient active (boolean).
   bool get active;
+  set active(bool value);
 
   /// When not active, the reason for deactivation.
   PatientDeactivationReasonEnum get deactivationReason;
+  set deactivationReason(PatientDeactivationReasonEnum value);
 
   /// Social security inscription number.
   ///
@@ -763,6 +788,7 @@ abstract class PotentiallyEncryptedPatient {
   /// Consider adding a "default:" property in the specification file to hide this note.
   ///
   String? get ssin;
+  set ssin(String? value);
 
   /// Lastname at birth (can be different of the current name), depending on the country, must be used to design the patient .
   ///
@@ -772,6 +798,7 @@ abstract class PotentiallyEncryptedPatient {
   /// Consider adding a "default:" property in the specification file to hide this note.
   ///
   String? get maidenName;
+  set maidenName(String? value);
 
   /// Lastname of the spouse for a married woman, depending on the country, can be used to design the patient.
   ///
@@ -781,6 +808,7 @@ abstract class PotentiallyEncryptedPatient {
   /// Consider adding a "default:" property in the specification file to hide this note.
   ///
   String? get spouseName;
+  set spouseName(String? value);
 
   /// Lastname of the partner, should not be used to design the patient.
   ///
@@ -790,9 +818,11 @@ abstract class PotentiallyEncryptedPatient {
   /// Consider adding a "default:" property in the specification file to hide this note.
   ///
   String? get partnerName;
+  set partnerName(String? value);
 
   /// any of `single`, `in_couple`, `married`, `separated`, `divorced`, `divorcing`, `widowed`, `widower`, `complicated`, `unknown`, `contract`, `other`.
   PatientPersonalStatusEnum? get personalStatus;
+  set personalStatus(PatientPersonalStatusEnum? value);
 
   /// The birthdate encoded as a fuzzy date on 8 positions (YYYYMMDD) MM and/or DD can be set to 00 if unknown (19740000 is a valid date).
   ///
@@ -802,6 +832,7 @@ abstract class PotentiallyEncryptedPatient {
   /// Consider adding a "default:" property in the specification file to hide this note.
   ///
   int? get dateOfBirth;
+  set dateOfBirth(int? value);
 
   /// The date of death encoded as a fuzzy date on 8 positions (YYYYMMDD) MM and/or DD can be set to 00 if unknown (19740000 is a valid date).
   ///
@@ -811,6 +842,7 @@ abstract class PotentiallyEncryptedPatient {
   /// Consider adding a "default:" property in the specification file to hide this note.
   ///
   int? get dateOfDeath;
+  set dateOfDeath(int? value);
 
   /// The place of birth.
   ///
@@ -820,6 +852,7 @@ abstract class PotentiallyEncryptedPatient {
   /// Consider adding a "default:" property in the specification file to hide this note.
   ///
   String? get placeOfBirth;
+  set placeOfBirth(String? value);
 
   /// The place of death.
   ///
@@ -829,6 +862,7 @@ abstract class PotentiallyEncryptedPatient {
   /// Consider adding a "default:" property in the specification file to hide this note.
   ///
   String? get placeOfDeath;
+  set placeOfDeath(String? value);
 
   /// Is the patient deceased.
   ///
@@ -838,6 +872,7 @@ abstract class PotentiallyEncryptedPatient {
   /// Consider adding a "default:" property in the specification file to hide this note.
   ///
   bool? get deceased;
+  set deceased(bool? value);
 
   /// The level of education (college degree, undergraduate, phd).
   ///
@@ -847,6 +882,7 @@ abstract class PotentiallyEncryptedPatient {
   /// Consider adding a "default:" property in the specification file to hide this note.
   ///
   String? get education;
+  set education(String? value);
 
   /// The current professional activity.
   ///
@@ -856,6 +892,7 @@ abstract class PotentiallyEncryptedPatient {
   /// Consider adding a "default:" property in the specification file to hide this note.
   ///
   String? get profession;
+  set profession(String? value);
 
   /// A text note (can be confidential, encrypted by default).
   ///
@@ -865,6 +902,7 @@ abstract class PotentiallyEncryptedPatient {
   /// Consider adding a "default:" property in the specification file to hide this note.
   ///
   String? get note;
+  set note(String? value);
 
   /// An administrative note, not confidential.
   ///
@@ -874,6 +912,7 @@ abstract class PotentiallyEncryptedPatient {
   /// Consider adding a "default:" property in the specification file to hide this note.
   ///
   String? get administrativeNote;
+  set administrativeNote(String? value);
 
   /// The nationality of the patient.
   ///
@@ -883,6 +922,7 @@ abstract class PotentiallyEncryptedPatient {
   /// Consider adding a "default:" property in the specification file to hide this note.
   ///
   String? get nationality;
+  set nationality(String? value);
 
   /// The race of the patient.
   ///
@@ -892,6 +932,7 @@ abstract class PotentiallyEncryptedPatient {
   /// Consider adding a "default:" property in the specification file to hide this note.
   ///
   String? get race;
+  set race(String? value);
 
   /// The ethnicity of the patient.
   ///
@@ -901,6 +942,7 @@ abstract class PotentiallyEncryptedPatient {
   /// Consider adding a "default:" property in the specification file to hide this note.
   ///
   String? get ethnicity;
+  set ethnicity(String? value);
 
   /// A picture usually saved in JPEG format.
   ///
@@ -910,6 +952,7 @@ abstract class PotentiallyEncryptedPatient {
   /// Consider adding a "default:" property in the specification file to hide this note.
   ///
   String? get picture;
+  set picture(String? value);
 
   /// An external (from another source) id with no guarantee or requirement for unicity .
   ///
@@ -919,21 +962,26 @@ abstract class PotentiallyEncryptedPatient {
   /// Consider adding a "default:" property in the specification file to hide this note.
   ///
   String? get externalId;
+  set externalId(String? value);
 
   /// List of partners, or persons of contact (of class Partnership, see below).
   List<Partnership> get partnerships;
+  set partnerships(List<Partnership> value);
 
   /// Links (usually for therapeutic reasons) between this patient and healthcare parties (of class PatientHealthcareParty).
   List<PatientHealthCareParty> get patientHealthCareParties;
+  set patientHealthCareParties(List<PatientHealthCareParty> value);
 
   /// Codified list of professions exercised by this patient.
   List<CodingReference> get patientProfessions;
+  set patientProfessions(List<CodingReference> value);
 
   /// Extra parameters
   Map<String, List<String>> get parameters;
 
   /// Extra properties
   Set<Property> get properties;
+  set properties(Set<Property> value);
 
   ///
   /// Please note: This property should have been non-nullable! Since the specification file
@@ -941,8 +989,8 @@ abstract class PotentiallyEncryptedPatient {
   /// source code must fall back to having a nullable type.
   /// Consider adding a "default:" property in the specification file to hide this note.
   ///
-  SystemMetaDataOwnerEncrypted? systemMetaData;
-
+  SystemMetaDataOwnerEncrypted? get systemMetaData;
+  set systemMetaData(SystemMetaDataOwnerEncrypted? value);
 }
 
 bool __potentiallyEncryptedPatientEquality(PotentiallyEncryptedPatient self, PotentiallyEncryptedPatient other) =>

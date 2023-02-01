@@ -225,7 +225,7 @@ class HealthcareElementFilter extends FilterBuilder<HealthcareElement> {
   Set<String>? _byIds;
   Set<Identifier>? _byIdentifiers;
   HealthcareElementByHcPartyTagCodeFilter? _byTagCodeFilter;
-  Tuple2<Crypto, List<Patient>>? _forPatients;
+  Tuple2<Crypto, List<PotentiallyEncryptedPatient>>? _forPatients;
 
   List<HealthcareElementFilter>? _union;
   List<HealthcareElementFilter>? _intersection;
@@ -252,7 +252,7 @@ class HealthcareElementFilter extends FilterBuilder<HealthcareElement> {
     return this;
   }
 
-  HealthcareElementFilter forPatients(Crypto crypto, List<Patient> patients) {
+  HealthcareElementFilter forPatients(Crypto crypto, List<PotentiallyEncryptedPatient> patients) {
     this._forPatients = Tuple2(crypto, patients);
     return this;
   }
@@ -355,7 +355,7 @@ class DataSampleFilter extends FilterBuilder<DataSample> {
   Set<String>? _byIds;
   Set<Identifier>? _byIdentifiers;
   DataSampleByHcPartyTagCodeDateFilter? _byTagCodeDateFilter;
-  Tuple2<Crypto, List<Patient>>? _forPatients;
+  Tuple2<Crypto, List<PotentiallyEncryptedPatient>>? _forPatients;
   List<DataSampleFilter>? _union;
   List<DataSampleFilter>? _intersection;
 
@@ -387,7 +387,7 @@ class DataSampleFilter extends FilterBuilder<DataSample> {
     return this;
   }
 
-  DataSampleFilter forPatients(Crypto crypto, List<Patient> patients) {
+  DataSampleFilter forPatients(Crypto crypto, List<PotentiallyEncryptedPatient> patients) {
     this._forPatients = Tuple2(crypto, patients);
     return this;
   }

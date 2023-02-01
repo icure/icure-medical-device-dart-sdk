@@ -94,9 +94,9 @@ abstract class PatientApi {
   /// in getPatient) you will be able to get at least partial information.
   Future<PotentiallyEncryptedPatient?> getPatientAndTryDecrypt(String patientId,);
 
-  /// Modifies an encrypted patient, ensuring that the modified patient does not include any data which should be
-  /// encrypted.
+  /// Modifies a potentially encrypted patient, ensuring that if the patient could not be decrypted there was no change
+  /// to data which should be encrypted according to the current api configuration.
   /// Similarly to getPatientAndTryDecrypt this method is useful when a patient needs to update is own data before
   /// an hcp gave him access to his own encrypted data.
-  Future<EncryptedPatient?> modifyEncryptedPatient(EncryptedPatient modifiedPatient,);
+  Future<PotentiallyEncryptedPatient?> modifyPotentiallyEncryptedPatient(PotentiallyEncryptedPatient modifiedPatient,);
 }

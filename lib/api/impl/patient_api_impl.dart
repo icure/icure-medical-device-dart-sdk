@@ -49,7 +49,7 @@ class PatientApiImpl extends PatientApi {
     final ccPatient = patientCryptoConfig(localCrypto);
 
     return (await base_api.PatientApiCrypto(_api.basePatientApi).filterPatientsBy(
-            currentUser!, base_api.FilterChain<base_api.PatientDto>(filter.toAbstractFilterDto()), startKey, nextPatientId, limit, ccPatient))
+            currentUser, base_api.FilterChain<base_api.PatientDto>(filter.toAbstractFilterDto()), startKey, nextPatientId, limit, ccPatient))
         ?.toPaginatedListPatient();
   }
 
@@ -68,68 +68,21 @@ class PatientApiImpl extends PatientApi {
 
   @override
   Future<Patient> giveAccessTo(Patient patient, String delegatedTo) async {
-    final updateData = await _giveAccessTo(
-        patient.id!,
-        patient.systemMetaData?.delegations ?? {},
-        patient.systemMetaData?.encryptionKeys ?? {},
-        delegatedTo
-    );
-    if (updateData == null) return patient;
-    if (patient.systemMetaData == null) {
-      patient.systemMetaData = SystemMetaDataOwnerEncrypted();
+    final updatedPatient = await giveAccessToPotentiallyEncrypted(patient, delegatedTo);
+    if (updatedPatient is Patient) {
+      return updatedPatient;
     }
-    patient.systemMetaData!.encryptionKeys = updateData.updatedEncryptionKeys;
-    patient.systemMetaData!.delegations = updateData.updatedDelegations;
-    if (updateData.updatedRev != null) {
-      patient.rev = updateData.updatedRev;
-    }
-    if (updateData.updatedAesExchangeKeys != null) {
-      patient.systemMetaData!.aesExchangeKeys = updateData.updatedAesExchangeKeys!;
-    }
-    if (updateData.updatedHcPartyKeys != null) {
-      patient.systemMetaData!.hcPartyKeys = updateData.updatedHcPartyKeys!;
-    }
-    return (await createOrModifyPatient(patient)) ?? (throw StateError("Couldn't give access to $delegatedTo to patient ${patient.id}"));
+    throw StateError("Patient could not be decrypted after giveAccessTo update\nOriginal: ${patient}\nUpdated: ${updatedPatient}");
   }
 
   @override
   Future<PotentiallyEncryptedPatient> giveAccessToPotentiallyEncrypted(PotentiallyEncryptedPatient patient, String delegatedTo) async {
-    if (patient is Patient) {
-      return await giveAccessTo(patient, delegatedTo);
-    } else if (patient is EncryptedPatient) {
-      final updateData = await _giveAccessTo(
-          patient.id!,
-          patient.systemMetaData?.delegations ?? {},
-          patient.systemMetaData?.encryptionKeys ?? {},
-          delegatedTo
-      );
-      if (updateData == null) return patient;
-      if (patient.systemMetaData == null) {
-        patient.systemMetaData = SystemMetaDataOwnerEncrypted();
-      }
-      patient.systemMetaData!.encryptionKeys = updateData.updatedEncryptionKeys;
-      patient.systemMetaData!.delegations = updateData.updatedDelegations;
-      if (updateData.updatedRev != null) {
-        patient.rev = updateData.updatedRev;
-      }
-      if (updateData.updatedAesExchangeKeys != null) {
-        patient.systemMetaData!.aesExchangeKeys = updateData.updatedAesExchangeKeys!;
-      }
-      if (updateData.updatedHcPartyKeys != null) {
-        patient.systemMetaData!.hcPartyKeys = updateData.updatedHcPartyKeys!;
-      }
-      return (await modifyEncryptedPatient(patient)) ?? (throw StateError("Couldn't give access to $delegatedTo to patient ${patient.id}"));
-    } else {
+    if (!(patient is Patient) && !(patient is EncryptedPatient))  {
       throw ArgumentError("Unexpected type for patient $patient");
     }
-  }
-
-  Future<_PatientGiveAccessUpdate?> _giveAccessTo(
-      String patientId,
-      Map<String, List<Delegation>> existingDelegations,
-      Map<String, List<Delegation>> existingEncryptionKeys,
-      String delegatedTo
-  ) async {
+    final patientId = patient.id!;
+    final existingDelegations = patient.systemMetaData?.delegations ?? {};
+    final existingEncryptionKeys = patient.systemMetaData?.encryptionKeys ?? {};
     final localCrypto = _api.crypto;
     final currentUser = (await _api.baseUserApi.getCurrentUser())
         ?? (throw StateError("There is no user currently logged in. You must call this method from an authenticated MedTechApi"));
@@ -156,7 +109,7 @@ class PatientApiImpl extends PatientApi {
     );
 
     if (newSecretIds.isEmpty && newSecretIds.isEmpty) {
-      return null;
+      return patient;
     }
 
     DataOwnerDto? dataOwner = null;
@@ -187,58 +140,51 @@ class PatientApiImpl extends PatientApi {
       delegatedTo: [...(existingEncryptionKeys[delegatedTo] ?? []), ...newEncryptionKeysDelegations]
     };
 
-    if (dataOwner != null && dataOwner.dataOwnerId == patientId) {
-      return _PatientGiveAccessUpdate(
-        updatedRev: dataOwner.rev,
-        updatedHcPartyKeys: dataOwner.hcPartyKeys,
-        updatedAesExchangeKeys: dataOwner.aesExchangeKeys,
-        updatedDelegations: updatedDelegations,
-        updatedEncryptionKeys: updatedEncryptionKeys
-      );
-    } else {
-      return _PatientGiveAccessUpdate(updatedDelegations: updatedDelegations, updatedEncryptionKeys: updatedEncryptionKeys);
+    if (patient.systemMetaData == null) {
+      patient.systemMetaData = SystemMetaDataOwnerEncrypted();
     }
+    if (dataOwner != null && dataOwner.dataOwnerId == patientId) {
+      patient.rev = dataOwner.rev;
+      patient.systemMetaData!.hcPartyKeys = dataOwner.hcPartyKeys;
+      patient.systemMetaData!.aesExchangeKeys = dataOwner.aesExchangeKeys;
+    }
+    patient.systemMetaData!.encryptionKeys = updatedEncryptionKeys;
+    patient.systemMetaData!.delegations = updatedDelegations;
+    return (await modifyPotentiallyEncryptedPatient(patient)) ?? (throw StateError("Couldn't give access to $delegatedTo to patient ${patient.id}"));
   }
 
   @override
   Future<PotentiallyEncryptedPatient?> getPatientAndTryDecrypt(String patientId) async {
     final patient = await _api.basePatientApi.rawGetPatient(patientId);
     if (patient == null) return null;
-    final config = patientCryptoConfig(_api.crypto);
-    final currentUser = (await _api.baseUserApi.getCurrentUser() ?? (throw StateError("Couldn't get current user")));
-    try {
-      return PatientDtoMapper(await config.decryptPatient(currentUser.dataOwnerId()!, patient)).toPatient();
-    } catch (e) {
-      return EncryptedPatientDtoMapper(patient).toEncryptedPatient();
-    }
+    return await _tryDecrypt(patient);
   }
 
   @override
-  Future<EncryptedPatient?> modifyEncryptedPatient(EncryptedPatient modifiedPatient) async {
+  Future<PotentiallyEncryptedPatient?> modifyPotentiallyEncryptedPatient(PotentiallyEncryptedPatient modifiedPatient) async {
     final config = patientCryptoConfig(_api.crypto);
-    final rawDto = EncryptedPatientMapper(modifiedPatient).toPatientDto();
-    final asDecrypted = DecryptedPatientDto.fromJson(rawDto.toJson());
-    if (asDecrypted == null || (await config.marshaller(asDecrypted)).item2 != null) {
+    if (!(modifiedPatient is EncryptedPatient) && !(modifiedPatient is Patient)) {
+      throw ArgumentError('Unexpected type for patient ${modifiedPatient}');
+    }
+    final rawJson = modifiedPatient is EncryptedPatient
+      ? EncryptedPatientMapper(modifiedPatient).toPatientDto().toJson()
+      : PatientMapper(modifiedPatient as Patient).toPatientDto().toJson();
+    final asDecrypted = DecryptedPatientDto.fromJson(rawJson);
+    if (asDecrypted == null || (modifiedPatient is EncryptedPatient && (await config.marshaller(asDecrypted)).item2 != null)) {
       throw ArgumentError('Impossible to modify non-decryptable patient if new data requires encryption');
     }
-    final modified = await _api.basePatientApi.rawModifyPatient(rawDto);
-    if (modified == null) return null;
-    return EncryptedPatientDtoMapper(modified).toEncryptedPatient();
+    final modified = await _api.basePatientApi.rawModifyPatient(PatientDto.fromJson(rawJson)!);
+    if (modified == null) throw StateError("Could not modify patient ${modifiedPatient.id}");
+    return await _tryDecrypt(modified);
   }
-}
 
-class _PatientGiveAccessUpdate {
-  _PatientGiveAccessUpdate({
-    this.updatedRev,
-    this.updatedHcPartyKeys,
-    this.updatedAesExchangeKeys,
-    required this.updatedDelegations,
-    required this.updatedEncryptionKeys
-  });
-
-  String? updatedRev;
-  Map<String, List<String>>? updatedHcPartyKeys;
-  Map<String, Map<String, Map<String, String>>>? updatedAesExchangeKeys;
-  Map<String, List<Delegation>> updatedDelegations;
-  Map<String, List<Delegation>> updatedEncryptionKeys;
+  Future<PotentiallyEncryptedPatient> _tryDecrypt(PatientDto patientDto) async {
+    final config = patientCryptoConfig(_api.crypto);
+    final currentUser = (await _api.baseUserApi.getCurrentUser() ?? (throw StateError("Couldn't get current user")));
+    try {
+      return PatientDtoMapper(await config.decryptPatient(currentUser.dataOwnerId()!, patientDto)).toPatient();
+    } catch (e) {
+      return EncryptedPatientDtoMapper(patientDto).toEncryptedPatient();
+    }
+  }
 }
