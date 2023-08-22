@@ -10,6 +10,7 @@ Dart 2.12 or later
 ### Pub.dev
 The recommended way to get this package is through pub.dev, add the following dependency to your pubspec.yaml
 ```
+
 dependencies:
   icure_medical_device_dart_sdk:
     path: /path/to/openapi
